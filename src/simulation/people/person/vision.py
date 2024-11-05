@@ -1,5 +1,5 @@
-from memory import Memory
-from src.simulation.grid.grid import Grid
+from .memory import Memory
+from simulation.grid.grid import Grid
 
 
 class Vision:

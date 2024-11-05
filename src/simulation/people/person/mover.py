@@ -3,7 +3,7 @@ from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.dijkstra import DijkstraFinder
 from copy import deepcopy
-from src.simulation.people.person.vision import Vision
+from simulation.people.person.vision import Vision
 
 
 class Mover:

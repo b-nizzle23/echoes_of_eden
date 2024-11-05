@@ -32,6 +32,7 @@ class GridGenerator:
 
     def _place_town_in_center(self):
         # Read town layout from town.txt
+        # TODO: create a town.txt file to read from?
         town_layout = self._read_town_layout("../../../data/town.txt")
         # Calculate town position
         town_width = len(town_layout[0])

@@ -1,6 +1,6 @@
 import heapq
 
-from src.simulation.people.person.scheduler.task.task_factory import TaskFactory
+from simulation.people.person.scheduler.task.task_factory import TaskFactory
 
 
 class Scheduler:

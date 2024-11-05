@@ -1,4 +1,4 @@
-from src.simulation.people.person.person import Person
+from simulation.people.person.person import Person
 import random
 
 

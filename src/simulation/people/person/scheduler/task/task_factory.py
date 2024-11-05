@@ -1,7 +1,7 @@
-from src.simulation.people.person.scheduler.task.task_type import TaskType
-from src.simulation.people.person.scheduler.task.eat import Eat
-from src.simulation.people.person.scheduler.task.find_home import FindHome
-from src.simulation.people.person.scheduler.task.find_spouse import FindSpouse
+from simulation.people.person.scheduler.task.task_type import TaskType
+from simulation.people.person.scheduler.task.eat import Eat
+from simulation.people.person.scheduler.task.find_home import FindHome
+from simulation.people.person.scheduler.task.find_spouse import FindSpouse
 
 
 class TaskFactory:

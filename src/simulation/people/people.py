@@ -1,4 +1,4 @@
-from src.simulation.people.people_generator import PeopleGenerator
+from simulation.people.people_generator import PeopleGenerator
 
 
 class People:

@@ -1,7 +1,7 @@
-from src.simulation.people.person.memory import Memory
-from src.simulation.people.person.mover import Mover
-from src.simulation.people.person.scheduler.scheduler import Scheduler
-from src.simulation.people.person.scheduler.task.task_type import TaskType
+from simulation.people.person.memory import Memory
+from simulation.people.person.mover import Mover
+from simulation.people.person.scheduler.scheduler import Scheduler
+from simulation.people.person.scheduler.task.task_type import TaskType
 
 
 class Person:

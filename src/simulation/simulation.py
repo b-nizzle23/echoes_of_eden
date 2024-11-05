@@ -1,5 +1,5 @@
-from src.simulation.grid.grid import Grid
-from src.simulation.people.people import People
+from simulation.grid.grid import Grid
+from simulation.people.people import People
 
 
 class Simulation:

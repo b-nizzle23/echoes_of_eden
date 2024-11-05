@@ -1,4 +1,4 @@
-from src.simulation.grid.grid_generator import GridGenerator
+from simulation.grid.grid_generator import GridGenerator
 
 
 class Grid:

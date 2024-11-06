@@ -2,9 +2,15 @@ import heapq
 from typing import List, Optional
 
 from src.simulation.people.person.person import Person
+<<<<<<< Updated upstream:src/simulation/people/person/scheduler/scheduler.py
 from task.task import Task
 from task.task_factory import TaskFactory
 from task.task_type import TaskType
+=======
+from src.simulation.people.person._scheduler.task.task_factory import TaskFactory
+from src.simulation.people.person._scheduler.task.task import Task
+from src.simulation.people.person._scheduler.task.task_type import TaskType
+>>>>>>> Stashed changes:src/simulation/people/person/_scheduler/scheduler.py
 from src.simulation.simulation import Simulation
 
 

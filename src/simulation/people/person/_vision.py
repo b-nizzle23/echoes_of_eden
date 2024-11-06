@@ -1,7 +1,11 @@
 from copy import copy
 from enum import Enum
 from typing import Callable, Dict
+<<<<<<< Updated upstream:src/simulation/people/person/vision.py
 
+=======
+from src.simulation.people.person._memory import Memory
+>>>>>>> Stashed changes:src/simulation/people/person/_vision.py
 from src.simulation.grid.grid import Grid
 from src.simulation.grid.location import Location
 from src.simulation.people.person.memory import Memory

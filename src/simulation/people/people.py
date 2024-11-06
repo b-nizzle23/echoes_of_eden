@@ -1,3 +1,7 @@
+<<<<<<< Updated upstream
+=======
+from src.simulation.people._people_generator import PeopleGenerator
+>>>>>>> Stashed changes
 from typing import List
 
 from people_generator import PeopleGenerator

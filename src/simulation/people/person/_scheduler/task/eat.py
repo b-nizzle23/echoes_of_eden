@@ -1,5 +1,9 @@
 from src.simulation.people.person.person import Person
+<<<<<<< Updated upstream:src/simulation/people/person/scheduler/task/eat.py
 from task import Task
+=======
+from src.simulation.people.person._scheduler.task.task import Task
+>>>>>>> Stashed changes:src/simulation/people/person/_scheduler/task/eat.py
 from src.simulation.simulation import Simulation
 
 

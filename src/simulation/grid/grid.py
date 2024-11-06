@@ -1,6 +1,11 @@
+<<<<<<< Updated upstream
 from typing import Dict, List
 
 from grid_generator import GridGenerator
+=======
+from typing import List, Dict
+from _grid_generator import GridGenerator
+>>>>>>> Stashed changes
 from location import Location
 
 

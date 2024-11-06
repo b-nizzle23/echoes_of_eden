@@ -1,6 +1,6 @@
 # Echoes of Eden
 
-## Summery
+## Summary
 
 ## How to Run
 

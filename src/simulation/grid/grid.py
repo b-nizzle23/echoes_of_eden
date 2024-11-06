@@ -1,7 +1,7 @@
 from copy import deepcopy
 from typing import Dict, List
 from location import Location
-from src.simulation.grid.grid_generator import GridGenerator
+from grid_generator import GridGenerator
 
 class Grid:
     _char_to_num: Dict[str, int] = {

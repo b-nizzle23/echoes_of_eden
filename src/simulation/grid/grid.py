@@ -1,12 +1,27 @@
+from copy import deepcopy
+from typing import Dict, List
+
 from src.simulation.grid.grid_generator import GridGenerator
 
 
 class Grid:
+    _char_to_num: Dict[str, int] = {
+        'h': 10,
+        'H': 0,
+        'b': 10,
+        'B': 0,
+        'f': 3,
+        'F': 5,
+        'm': 0,
+        'M': 0,
+        ' ': 1,
+        '*': 10
+    }
     def __init__(self, size):
         grid_generator = GridGenerator(size)
         self._width = size
         self._height = size
-        self._grid = grid_generator.generate()
+        self._grid: List[List[str]] = grid_generator.generate()
         self.buildings = self._find_buildings()
 
     def _find_buildings(self):
@@ -14,7 +29,6 @@ class Grid:
         return {}
 
     def is_valid_location_for_person(self, location):
-        # TODO check if a person could stand there (not on a tree or building)
         pass
 
     def is_location_in_bounds(self, location):
@@ -42,10 +56,14 @@ class Grid:
         self._grid[y][x] = " "
         return 100
 
-    def get_path_finding_matrix(self):
-        # TODO return a 2d array of numbers
-        # look at https://github.com/brean/python-pathfinding/blob/main/docs/01_basic_usage.md for more details
-        pass
+    def get_path_finding_matrix(self) -> List[List[int]]:
+        path_finding_matrix: List[List[int | str]] = deepcopy(self._grid)
+        for i in range(len(self._grid)):
+            row = self._grid[i]
+            for j in range(len(row)):
+                cell = row[j]
+                path_finding_matrix[i][j] = self._char_to_num[cell]
+        return path_finding_matrix
 
     def is_tree(self, location):
         self._is_item(location[0], location[1], "*")

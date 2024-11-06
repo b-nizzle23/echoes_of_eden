@@ -9,16 +9,9 @@ from pathfinding.finder.dijkstra import DijkstraFinder
 
 from src.simulation.grid.grid import Grid
 from src.simulation.grid.location import Location
-<<<<<<< Updated upstream:src/simulation/people/person/mover.py
 from memory import Memory
 from person import Person
 from vision import Vision
-=======
-from src.simulation.people.person._memory import Memory
-from src.simulation.people.person.person import Person
-from src.simulation.people.person._vision import Vision
-from typing import Optional, List
->>>>>>> Stashed changes:src/simulation/people/person/_mover.py
 
 
 class Mover:

@@ -1,12 +1,3 @@
-<<<<<<< Updated upstream:src/simulation/people/person/scheduler/task/task_factory.py
-=======
-from src.simulation.people.person.person import Person
-from src.simulation.people.person._scheduler.task.task import Task
-from src.simulation.people.person._scheduler.task.task_type import TaskType
-from src.simulation.people.person._scheduler.task.eat import Eat
-from src.simulation.people.person._scheduler.task.find_home import FindHome
-from src.simulation.people.person._scheduler.task.find_spouse import FindSpouse
->>>>>>> Stashed changes:src/simulation/people/person/_scheduler/task/task_factory.py
 from typing import Type
 
 from src.simulation.people.person.person import Person

@@ -1,10 +1,11 @@
+from typing import Optional
+
 from src.simulation.grid.building.home import Home
 from src.simulation.grid.location import Location
-from _memory import Memory
-from _mover import Mover
-from _scheduler.scheduler import Scheduler
-from _scheduler.task.task_type import TaskType
-from typing import Optional
+from memory import Memory
+from mover import Mover
+from scheduler.scheduler import Scheduler
+from scheduler.task.task_type import TaskType
 from src.simulation.simulation import Simulation
 
 

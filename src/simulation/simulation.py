@@ -1,7 +1,6 @@
-from src.simulation.grid.grid import Grid
-from src.simulation.people.people import People
-
-from src.simulation.result.stats import Stats
+from grid.grid import Grid
+from people.people import People
+from result.stats import Stats
 
 
 class Simulation:
@@ -23,7 +22,7 @@ class Simulation:
             if day % self._days_per_year == 0:
                 self._grid.grow_trees()
                 # todo: add a disaster percentage chance (crops diseased, house burned, cemetary makes zombies, mines collapse, divorce, be preggers 'pregaganant')
-                
+
                 self._people.age()
 
         return stats

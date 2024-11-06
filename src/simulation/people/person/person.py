@@ -1,11 +1,11 @@
+from typing import Optional
+
 from src.simulation.grid.building.home import Home
 from src.simulation.grid.location import Location
-from src.simulation.people.person.memory import Memory
-from src.simulation.people.person.mover import Mover
-from src.simulation.people.person.scheduler.scheduler import Scheduler
-from src.simulation.people.person.scheduler.task.task_type import TaskType
-from typing import Optional, Tuple
-
+from memory import Memory
+from mover import Mover
+from scheduler.scheduler import Scheduler
+from scheduler.task.task_type import TaskType
 from src.simulation.simulation import Simulation
 
 
@@ -48,10 +48,10 @@ class Person:
 
         if not self._spouse:
             self._scheduler.add(TaskType.FIND_SPOUSE)
-        
+
         if self._hunger < 50:
             self._scheduler.add(TaskType.EAT)
-        # todo figure out other actions 
+        # todo figure out other actions
 
     def get_location(self) -> Location:
         return self._location
@@ -66,7 +66,7 @@ class Person:
     def eat(self) -> None:
         self._hunger = min(self._hunger + 10, 100)
 
-    def assign_spouse(self, spouse: 'Person') -> None:
+    def assign_spouse(self, spouse: "Person") -> None:
         self._spouse = spouse
 
     def assign_home(self, home: Home) -> None:

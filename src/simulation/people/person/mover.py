@@ -1,17 +1,17 @@
 from copy import copy
 from random import randint
+from typing import List, Optional
+
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid as PathFindingGrid
 from pathfinding.core.node import GridNode as PathFindingGridNode
-
-from src.simulation.grid.grid import Grid
 from pathfinding.finder.dijkstra import DijkstraFinder
 
+from src.simulation.grid.grid import Grid
 from src.simulation.grid.location import Location
-from src.simulation.people.person.memory import Memory
-from src.simulation.people.person.person import Person
-from src.simulation.people.person.vision import Vision
-from typing import Optional, List
+from memory import Memory
+from person import Person
+from vision import Vision
 
 
 class Mover:

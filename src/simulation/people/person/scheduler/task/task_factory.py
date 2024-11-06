@@ -1,11 +1,11 @@
-from src.simulation.people.person.person import Person
-from src.simulation.people.person.scheduler.task.task import Task
-from src.simulation.people.person.scheduler.task.task_type import TaskType
-from src.simulation.people.person.scheduler.task.eat import Eat
-from src.simulation.people.person.scheduler.task.find_home import FindHome
-from src.simulation.people.person.scheduler.task.find_spouse import FindSpouse
 from typing import Type
 
+from src.simulation.people.person.person import Person
+from eat import Eat
+from find_home import FindHome
+from find_spouse import FindSpouse
+from task import Task
+from task_type import TaskType
 from src.simulation.simulation import Simulation
 
 

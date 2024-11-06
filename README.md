@@ -14,6 +14,8 @@
    - `poetry run mypy src/**/*.py`
 3. An opinionated code formatter that enforces a consistent style.
    - `poetry run black src/**/*.py`
+   - `poetry run isort src/**/*.py`
+   - `poetry run autoflake --in-place --remove-unused-variables src/**/*.py`
 
 ## Libraries to look into
 

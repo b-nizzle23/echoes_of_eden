@@ -1,8 +1,8 @@
-from src.simulation.grid.location import Location
-from src.simulation.people.person.person import Person
 import random
 from typing import List
 
+from src.simulation.grid.location import Location
+from src.simulation.people.person.person import Person
 from src.simulation.simulation import Simulation
 
 

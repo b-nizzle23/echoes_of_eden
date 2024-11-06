@@ -1,10 +1,10 @@
 import heapq
-from typing import Optional, List
+from typing import List, Optional
 
 from src.simulation.people.person.person import Person
-from src.simulation.people.person.scheduler.task.task_factory import TaskFactory
-from src.simulation.people.person.scheduler.task.task import Task
-from src.simulation.people.person.scheduler.task.task_type import TaskType
+from task.task import Task
+from task.task_factory import TaskFactory
+from task.task_type import TaskType
 from src.simulation.simulation import Simulation
 
 
@@ -21,9 +21,9 @@ class Scheduler:
 
     def _add(self, task: Task | None) -> None:
         if not Task:
-            return 
+            return
         heapq.heappush(self._tasks, task)
-        
+
     def _pop(self) -> Task | None:
         return heapq.heappop(self._tasks)
 

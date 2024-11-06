@@ -23,7 +23,6 @@ class GridGenerator:
         self.num_mines: int = 1
         self.num_barns: int = 1
 
-
     def generate(self) -> List[List[str]]:
         self._grid = [[" " for _ in range(self._width)] for _ in range(self._height)]
         self._add_clustered_trees()

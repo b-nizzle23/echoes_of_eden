@@ -1,6 +1,6 @@
 from abc import ABC
 
-from src.simulation.grid.grid import Grid
+from ..grid import Grid
 
 
 class Building(ABC):

@@ -1,7 +1,6 @@
-from src.simulation.grid.grid import Grid
-from src.simulation.people.people import People
-
-from src.simulation.result.stats import Stats
+from grid.grid import Grid
+from people.people import People
+from result.stats import Stats
 
 
 class Simulation:

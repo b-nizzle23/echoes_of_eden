@@ -1,4 +1,4 @@
-from typing import Set, List
+from typing import List, Set
 
 from src.simulation.grid.location import Location
 

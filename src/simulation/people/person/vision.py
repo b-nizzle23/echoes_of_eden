@@ -1,113 +1,115 @@
-from memory import Memory
+from copy import copy
+from enum import Enum
+from typing import Callable, Dict
+from src.simulation.people.person.memory import Memory
 from src.simulation.grid.grid import Grid
+from src.simulation.grid.location import Location
+from src.simulation.people.person.person import Person
+
+
+class Direction(Enum):
+    LEFT = "l"
+    RIGHT = "r"
+    UP = "u"
+    DOWN = "d"
 
 
 class Vision:
-    def __init__(self, person, grid: Grid, visibility):
+    def __init__(self, person: Person, grid: Grid, visibility: int) -> None:
         self._person = person
         self._grid = grid
         self._visibility = visibility
 
-    def look_around(self):
-        what_is_around = Memory()
-        self._search(self._person.get_location(), self._visibility, what_is_around, [])
-        return what_is_around
+    def look_around(self) -> Memory:
+        memory = Memory()
+        current_location = copy(self._person.get_location())
+        self._search(current_location, self._visibility, memory, set())
+        return memory
 
-    def _search(self, location, visibility, what_is_around, blocked):
-        if visibility <= 0:
+    def _search(
+        self,
+        location: Location,
+        visibility: int,
+        memory: Memory,
+        blocked: set[Location],
+    ) -> None:
+        if visibility <= 0 or location in blocked:
             return
-        if location in blocked:
-            return
-        x = location[0]
-        y = location[1]
-        blocked.append((x, y))
-        for i in range(-1, 2):
-            for j in range(-1, 2):
-                a = x + i
-                b = y + j
-                if self._is_out_of_bounds(a, b) or self._is_blocked(blocked, a, b):
+
+        blocked.add(location)
+
+        for dx in range(-1, 2):
+            for dy in range(-1, 2):
+                if (dx, dy) == (0, 0):
                     continue
-                self._add_to_memory(what_is_around, blocked, i, j, a, b)
-                self._search((a, b), visibility - 1, what_is_around, blocked)
+                next_loc = Location(location.x + dx, location.y + dy)
+                if self._is_valid_location(next_loc, blocked):
+                    self._process_location(memory, blocked, next_loc)
+                    self._search(next_loc, visibility - 1, memory, blocked)
 
-    def _add_to_memory(self, what_is_around, blocked, i, j, a, b):
-        location = (a, b)
-        if not self._grid.is_location_in_bounds(location):
+    def _process_location(
+        self, memory: Memory, blocked: set[Location], location: Location
+    ) -> None:
+        if not self._grid.is_location_in_bounds(
+            location
+        ) or not self._grid.is_valid_location_for_person(location):
             return
-        if self._grid.is_barn(location):
-            what_is_around.add("barns", location)
-            self._block(blocked, i, j, a, b)
-        if self._grid.is_construction_barn(location):
-            what_is_around.add("construction_barns", location)
-            self._block(blocked, i, j, a, b)
-        elif self._grid.is_home(location):
-            what_is_around.add("homes", location)
-            self._block(blocked, i, j, a, b)
-        elif self._grid.is_construction_home(location):
-            what_is_around.add("construction_homes", location)
-            self._block(blocked, i, j, a, b)
-        elif self._grid.is_farm(location):
-            what_is_around.add("farms", location)
-            self._block(blocked, i, j, a, b)
-        elif self._grid.is_construction_farm(location):
-            what_is_around.add("construction_farms", location)
-            self._block(blocked, i, j, a, b)
-        elif self._grid.is_mine(location):
-            what_is_around.add("mines", location)
-            self._block(blocked, i, j, a, b)
-        elif self._grid.is_construction_mine(location):
-            what_is_around.add("construction_mines", location)
-            self._block(blocked, i, j, a, b)
-        elif self._grid.is_tree(location):
-            what_is_around.add("trees", location)
-            self._block(blocked, i, j, a, b)
+
+        if self._is_blocking_object(location, memory):
+            self._block_view(blocked, location)
         elif self._grid.is_empty(location):
-            what_is_around.add("empties", location)
+            memory.add("empties", location)
         else:
-            raise Exception("I see a char you didn't tell me about")
+            raise Exception(f"Unknown character at: {location}")
 
-    def _is_out_of_bounds(self, x, y):
+    def _is_blocking_object(self, location: Location, memory: Memory) -> bool:
+        blocking_objects: Dict[str, Callable[[Location], bool]] = {
+            "barn": self._grid.is_barn,
+            "construction_barn": self._grid.is_construction_barn,
+            "home": self._grid.is_home,
+            "construction_home": self._grid.is_construction_home,
+            "farm": self._grid.is_farm,
+            "construction_farm": self._grid.is_construction_farm,
+            "mine": self._grid.is_mine,
+            "construction_mine": self._grid.is_construction_mine,
+            "tree": self._grid.is_tree,
+        }
+
+        for obj_type, check_fn in blocking_objects.items():
+            if check_fn(location):
+                memory.add(f"{obj_type}s", location)
+                return True
+        return False
+
+    def _block_view(self, blocked: set[Location], location: Location) -> None:
+        blocked.add(location)
+        for direction in Direction:
+            self._mark_blocked_in_direction(blocked, location, direction)
+
+    def _mark_blocked_in_direction(
+        self, blocked: set[Location], location: Location, direction: Direction
+    ) -> None:
+        x, y = location.x, location.y
+        if direction == Direction.LEFT:
+            for k in range(x, -1, -1):
+                blocked.add(Location(k, y))
+        elif direction == Direction.RIGHT:
+            for k in range(x, self._grid.get_width()):
+                blocked.add(Location(k, y))
+        elif direction == Direction.DOWN:
+            for k in range(y, self._grid.get_height()):
+                blocked.add(Location(x, k))
+        elif direction == Direction.UP:
+            for k in range(y, -1, -1):
+                blocked.add(Location(x, k))
+
+    def _is_valid_location(self, location: Location, blocked: set[Location]) -> bool:
+        return not self._is_out_of_bounds(location) and location not in blocked
+
+    def _is_out_of_bounds(self, location: Location) -> bool:
         return (
-            x < 0
-            or y < 0
-            or x >= self._grid.get_width()
-            or y >= self._grid.get_height()
+            location.x < 0
+            or location.y < 0
+            or location.x >= self._grid.get_width()
+            or location.y >= self._grid.get_height()
         )
-
-    def _block(self, blocked, i, j, a, b):
-        blocked.append((a, b))
-        if not self._is_diagonal(i, j):
-            direction = self._get_direction(i, j)
-            if direction == "l":
-                for k in range(a, 0, -1):
-                    blocked.append((a + k, b))
-            elif direction == "r":
-                for k in range(a, self._grid.get_width()):
-                    blocked.append((a + k, b))
-            elif direction == "d":
-                for k in range(b, self._grid.get_height()):
-                    blocked.append((a, b + k))
-            elif direction == "u":
-                for k in range(b, 0, -1):
-                    blocked.append((a, b + k))
-
-    @staticmethod
-    def _is_blocked(blocked, x, y):
-        return (x, y) in blocked
-
-    @staticmethod
-    def _is_diagonal(i, j):
-        return i < 0 < j or j < 0 < i or (i < 0 and j < 0) or (i > 0 and j > 0)
-
-    @staticmethod
-    def _get_direction(i, j):
-        if i == 0 and j == 1:
-            return "r"
-        if i == 0 and j == -1:
-            return "l"
-        if i == 1 and j == 0:
-            return "u"
-        if i == -1 and j == 0:
-            return "d"
-        else:
-            raise Exception("invalid coordinates")

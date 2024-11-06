@@ -1,19 +1,23 @@
 from src.simulation.people.people_generator import PeopleGenerator
+from typing import List
+
+from src.simulation.people.person.person import Person
+from src.simulation.simulation import Simulation
 
 
 class People:
-    def __init__(self, simulation, actions_per_day):
-        self._actions_per_day = actions_per_day
-        people_generator = PeopleGenerator(simulation)
-        self._people = people_generator.generate()
+    def __init__(self, simulation: Simulation, actions_per_day: int) -> None:
+        self._actions_per_day: int = actions_per_day
+        people_generator: PeopleGenerator = PeopleGenerator(simulation)
+        self._people: List[Person] = people_generator.generate()
 
-    def print(self):
+    def print(self) -> None:
         for person in self._people:
             print(person)
 
-    def take_actions_for_day(self):
+    def take_actions_for_day(self) -> None:
         for action in range(self._actions_per_day):
-            dead = []
+            dead: List[Person] = []
             for person in self._people:
                 if person.is_dead():
                     dead.append(person)
@@ -22,6 +26,6 @@ class People:
             for person in dead:
                 self._people.remove(person)
 
-    def age(self):
+    def age(self) -> None:
         for person in self._people:
             person.age()

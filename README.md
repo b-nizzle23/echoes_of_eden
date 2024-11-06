@@ -1,6 +1,6 @@
 # Echoes of Eden
 
-## Summery
+## Summary
 
 ## How to Run
 
@@ -18,6 +18,4 @@
 ## Libraries to look into
 
 rich - colors to the terminal
-argparse - run from the terminal
 tqdm - loading bars
-seaborn - plotting

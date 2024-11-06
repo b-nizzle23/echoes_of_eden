@@ -1,6 +1,7 @@
-from loguru import logger
-import sys
 import os
+import sys
+
+from loguru import logger
 
 
 def setup_logger(mode: str = "dev") -> None:

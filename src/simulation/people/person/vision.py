@@ -1,9 +1,10 @@
 from copy import copy
 from enum import Enum
 from typing import Callable, Dict
-from src.simulation.people.person.memory import Memory
+
 from src.simulation.grid.grid import Grid
 from src.simulation.grid.location import Location
+from src.simulation.people.person.memory import Memory
 from src.simulation.people.person.person import Person
 
 

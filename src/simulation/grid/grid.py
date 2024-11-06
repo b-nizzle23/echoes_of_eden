@@ -1,4 +1,5 @@
-from typing import List, Dict
+from typing import Dict, List
+
 from grid_generator import GridGenerator
 from location import Location
 

@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 
-from src.simulation.grid.grid import Grid
 from src.simulation.people.person.person import Person
+from src.simulation.simulation import Simulation
 
 
 class Task(ABC):
-    def __init__(self, grid: Grid, person: Person, priority: int) -> None:
-        self._grid: Grid = grid
+    def __init__(self, simulation: Simulation, person: Person, priority: int) -> None:
+        self._simulation: Simulation = simulation
         self._person: Person = person
         self._priority: int = priority  # 10 high to 1 low
         self._is_finished: bool = False

@@ -1,4 +1,4 @@
-from src.simulation.people.person.scheduler.task.task import Task
+from task import Task
 
 
 class FindHome(Task):

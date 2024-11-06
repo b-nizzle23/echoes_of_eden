@@ -1,5 +1,5 @@
 from src.simulation.people.person.person import Person
-from src.simulation.people.person.scheduler.task.task import Task
+from task import Task
 from src.simulation.simulation import Simulation
 
 

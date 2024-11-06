@@ -1,4 +1,4 @@
-from src.simulation.grid.building.building import Building
+from building import Building
 
 
 class Barn(Building):

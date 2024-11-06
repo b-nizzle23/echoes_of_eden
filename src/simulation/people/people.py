@@ -1,8 +1,9 @@
-from src.simulation.people.people_generator import PeopleGenerator
 from typing import List
 
-from src.simulation.people.person.person import Person
-from src.simulation.simulation import Simulation
+from people_generator import PeopleGenerator
+from person.person import Person
+
+from ..simulation import Simulation
 
 
 class People:

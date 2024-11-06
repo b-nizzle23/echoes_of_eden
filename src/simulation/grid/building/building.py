@@ -21,7 +21,7 @@ class Building(ABC):
         self._height: int = height
         self._construction_char: str = construction_char
         self._char: str = char
-        # todo add resources or somethin' ie. wood obtained vs wood required, etc. 
+        # todo add resources or somethin' ie. wood obtained vs wood required, etc.
         self._start_construction()
 
     def _start_construction(self) -> None:

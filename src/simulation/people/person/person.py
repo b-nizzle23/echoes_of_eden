@@ -48,10 +48,10 @@ class Person:
 
         if not self._spouse:
             self._scheduler.add(TaskType.FIND_SPOUSE)
-        
+
         if self._hunger < 50:
             self._scheduler.add(TaskType.EAT)
-        # todo figure out other actions 
+        # todo figure out other actions
 
     def get_location(self) -> Location:
         return self._location
@@ -66,7 +66,7 @@ class Person:
     def eat(self) -> None:
         self._hunger = min(self._hunger + 10, 100)
 
-    def assign_spouse(self, spouse: 'Person') -> None:
+    def assign_spouse(self, spouse: "Person") -> None:
         self._spouse = spouse
 
     def assign_home(self, home: Home) -> None:

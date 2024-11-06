@@ -3,15 +3,15 @@ class Location:
         self.x = x
         self.y = y
 
-    def distance_to(self, other: 'Location') -> float:
+    def distance_to(self, other: "Location") -> float:
         if not isinstance(other, Location):
             raise ValueError("Argument must be a Location instance")
         return ((self.x - other.x) ** 2 + (self.y - other.y) ** 2) ** 0.5
 
-    def is_one_away(self, other: 'Location') -> bool:
+    def is_one_away(self, other: "Location") -> bool:
         return abs(self.x - other.x) <= 1 and abs(self.y - other.y) <= 1
 
-    def __copy__(self) -> 'Location':
+    def __copy__(self) -> "Location":
         return Location(self.x, self.y)
 
     def __str__(self) -> str:

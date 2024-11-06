@@ -21,9 +21,9 @@ class Scheduler:
 
     def _add(self, task: Task | None) -> None:
         if not Task:
-            return 
+            return
         heapq.heappush(self._tasks, task)
-        
+
     def _pop(self) -> Task | None:
         return heapq.heappop(self._tasks)
 

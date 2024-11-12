@@ -124,9 +124,6 @@ class Person:
     def get_home(self) -> Optional[Home]:
         return self._home
 
-    def get_spouse(self) -> Optional["Person"]:
-        return self._spouse
-
     def get_age(self) -> int:
         return self._age
 
@@ -173,10 +170,15 @@ class Person:
         if self._home == home:
             return
         self._home = home
-        home.assign_owner()
+        home.assign_owner(self)
         if self.has_spouse():
             self.get_spouse().assign_home(home)
 
+    def remove_home(self):
+        if not self._home:
+            return
+        self._home = None
+        self._spouse.remove_home()
     
     def set_health(self, health: int) -> None:
         self._health += health

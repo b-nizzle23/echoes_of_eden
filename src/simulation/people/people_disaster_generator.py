@@ -1,5 +1,4 @@
 import random
-from copy import deepcopy
 
 from src.simulation.people.people import People
 from src.simulation.grid.location import Location

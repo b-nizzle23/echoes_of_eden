@@ -23,6 +23,7 @@ class FindHome(Task):
                     )
                     if isinstance(structure, Home):
                         if not structure.has_owner():
+                            structure.assign_owner(self._person)
                             self._person.assign_home(structure)
                             self._finished()
                             return

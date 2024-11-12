@@ -22,6 +22,10 @@ class Work(Structure, ABC):
         self._max_worker_count = max_worker_count
         self._max_work_count = max_work_count
         self._workers: Dict[Person, int] = {}
+        self._decrease_yield_count: int = 0  # work iterations of bad yield
+
+    def decrease_yield(self) -> None:
+        self._decrease_yield_count += 5
 
     def has_capacity(self) -> bool:
         """
@@ -46,9 +50,10 @@ class Work(Structure, ABC):
 
         if self._workers[person] > self._max_work_count:
             self.remove_worker(person)
-            return int(
-                self._get_yield()
-            )  # Return the generated yield amount as an integer.
+            y: int = int(self._get_yield())
+            if self._decrease_yield_count > 0:
+                return y // 2
+            return y
 
         return None
 

@@ -8,3 +8,4 @@ class Barn(Store):
         # Barn stores food, wood, and stone with specific capacities
         allowed_resources = {"food": 500, "stone": 100, "wood": 200}
         super().__init__(grid, location, 3, 3, "B", allowed_resources)
+

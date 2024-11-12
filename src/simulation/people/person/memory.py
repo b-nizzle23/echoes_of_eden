@@ -1,5 +1,7 @@
 from typing import List, Set
 
+from poetry.console.commands import self
+
 from src.simulation.grid.location import Location
 
 
@@ -17,6 +19,8 @@ class Memory:
         self._empties: Set[Location] = set()
         self._people: Set[Location] = set()
         self._items: List[str] = list(vars(self).keys())
+        self._mine_rewards = {mine: 0 for mine in self._mines}
+        self._farm_rewards = {farm: 0 for farm in self._farms}
 
     def get_barn_locations(self) -> Set[Location]:
         return self._barns
@@ -39,6 +43,14 @@ class Memory:
     def get_building_locations(self) -> Set[Location]:
         return self._barns | self._farms | self._mines | self._homes | self._trees
 
+    def get_farm_rewards(self) -> dict[Location, float]:
+        return self._farm_rewards
+
+    def get_mine_rewards(self) -> dict[Location, float]:
+        return self._mine_rewards
+
+    def update_farm_rewards
+
     def dont_know_where_anything_is(self) -> bool:
         return not (self._barns or self._farms or self._homes or self._mines)
 
@@ -52,6 +64,10 @@ class Memory:
             return
         if what not in self._items:
             return
+        if what == 'farms':
+            self._farm_rewards[where] = 0
+        if what == 'mines':
+            self._mine_rewards[where] = 0
         for item in self._items:
             if item != what:
                 self._remove(item, where)
@@ -60,6 +76,10 @@ class Memory:
     def _remove(self, what: str, where: Location) -> None:
         if what is None or where is None:
             return
+        if what == 'farms':
+            del self._farm_rewards[where]
+        if what == 'mines':
+            del self._mine_rewards[where]
         if what not in self._items:
             return
         if where in getattr(self, what):

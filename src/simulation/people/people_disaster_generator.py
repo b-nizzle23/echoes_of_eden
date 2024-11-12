@@ -1,6 +1,7 @@
 import random
 
 from src.simulation.people.people import People
+from src.simulation.grid.location import Location
 from src.simulation.people.person.scheduler.scheduler import Scheduler
 
 
@@ -36,7 +37,6 @@ class PeopleDisasterGenerator:
 
     def _divorce(self, severity: int) -> None:
         """Divorce event, causing relationship breakdown."""
-        print("A divorce has occurred!")
         percent_affected = severity * 5 / 100
         married_list = [person for person in self.get_people().get_people_list() if person.get_spouse()]
         # Calculate the number of people to affect
@@ -55,60 +55,43 @@ class PeopleDisasterGenerator:
     def _sickness(self, severity: int) -> None:
         """Person gets sick, losing health."""
         affected_people = self._get_affected_people(severity, 0.1)
-
         for person in affected_people:
             person.set_health(-30) # arbitrary decrement value
 
     def _craving(self, severity: int) -> None:
         """Craving causes hunger to increase."""
         affected_people = self._get_affected_people(severity, 0.1)
-
         for person in affected_people:
             person.set_hunger(-30) # arbitrary decrement value
 
     def _death(self, severity: int) -> None:
         """A person dies."""
         affected_people = self._get_affected_people(severity, 0.1)
-
         for person in affected_people:
             person.set_health(-101) # person is dead
 
     def _forget_tasks(self, severity: int) -> None:
         """Person forgets their tasks."""
         affected_people = self._get_affected_people(severity, 0.1)
-
         for person in affected_people:
             person = Scheduler(person.get_simulation(), person)
             person.flush()
 
     def _sleepwalk(self, severity: int) -> None:
         """A person sleepwalks into the woods."""
-        print("A person is sleepwalking into the woods!")
-        # Severity could determine how far they go or the danger
-        if severity > 5:
-            print("They've wandered deep into the woods! They might be lost.")
-        else:
-            print("They wandered just outside, but they're safe.")
-
-        # Logic to move the person on the map
-        # self.person.location = self._random_corner()  # Move the person to one of the corners of the map
+        affected_people = self._get_affected_people(severity, 0.1)
+        for person in affected_people:
+            # send person to a random corner of the grid.
+            person.set_location(Location(0, 0))
 
     def _so_many_babies(self, severity: int) -> None:
         """A person or group has a baby boom."""
-        print("So many babies! A new generation begins!")
-        # Severity could determine how many babies are born
-        babies = severity  # Severity defines the number of babies
-        print(f"{babies} new babies have been born!")
-        # Logic to handle the increase in population
-        # self.population += babies
+        people = self.get_people()
+        if severity > 5:
+            people.make_babies() # triplets
+        people.make_babies() # twins         
 
-    def _random_corner(self):
-        """Helper function to randomly return a corner of the map."""
-        # Example corners for a 2D map
-        corners = [(0, 0), (0, 10), (10, 0), (10, 10)]
-        return random.choice(corners)
-
-    def _get_affected_people(self, severity: int, percent: float) -> List[Person]:
+    def _get_affected_people(self, severity: int, percent: float) -> People:
         percent_affected = severity * percent
         person_list = random.shuffle(self.get_people().get_people_list())
         num_affected = int(len(person_list) * percent_affected)

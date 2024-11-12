@@ -31,6 +31,7 @@ class Scheduler:
         self._all_tasks = []
 
     def add(self, what: TaskType) -> None:
+        # TODO ensure only one type of each Task is in the scheduler at a time
         task: Task = self._task_factory.create_instance(what)
         if task:
             self._all_tasks.append(task)

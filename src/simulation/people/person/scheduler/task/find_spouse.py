@@ -14,7 +14,7 @@ class FindSpouse(Task):
     @override
     def execute(self) -> None:
         if not self._person.has_spouse():
-            for other in self._simulation.get_people_object().get_person_list():
+            for other in self._simulation.get_people():
                 if not other.has_spouse():
                     self._person.assign_spouse(other)
                     other.assign_spouse(self._person)

@@ -50,7 +50,7 @@ class People:
     def get_time(self) -> int:
         return self._time
     
-    def get_people_list(self) -> List:
+    def get_people(self) -> List:
         return self._people
         
     def flush(self):
@@ -84,9 +84,6 @@ class People:
             average_hunger += person.get_hunger()
         average_hunger /= len(self._people)
         return average_hunger
-
-    def get_person_list(self) -> List[Person]:
-        return self._people
 
     def make_babies(self) -> None:
         for person in self.get_married_people():

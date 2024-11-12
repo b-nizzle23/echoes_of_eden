@@ -9,9 +9,6 @@ from src.simulation.people.person.scheduler.scheduler import Scheduler
 class PeopleDisasterGenerator:
     def __init__(self, people: People):
         self._people = people
-    
-    def get_people(self) -> People:
-        return self._people
 
     def generate(self, chance: float) -> None:
         """Randomly trigger one of several disasters with a given chance."""
@@ -38,7 +35,7 @@ class PeopleDisasterGenerator:
     def _divorce(self, severity: int) -> None:
         """Divorce event, causing relationship breakdown."""
         percent_affected = severity * 5 / 100
-        married_list = [person for person in self.get_people().get_people_list() if person.get_spouse()]
+        married_list = [person for person in self._people if person.get_spouse()]
         # Calculate the number of people to affect
         num_affected = int(len(married_list) * percent_affected)
         # Randomly select the individuals to be affected by divorce
@@ -86,13 +83,13 @@ class PeopleDisasterGenerator:
 
     def _so_many_babies(self, severity: int) -> None:
         """A person or group has a baby boom."""
-        people = self.get_people()
+        people = self._people
         if severity > 5:
             people.make_babies() # triplets
         people.make_babies() # twins         
 
     def _get_affected_people(self, severity: int, percent: float) -> People:
         percent_affected = severity * percent
-        person_list = random.shuffle(self.get_people().get_people_list())
+        person_list = random.shuffle(self._people.get_people())
         num_affected = int(len(person_list) * percent_affected)
         return random.sample(person_list, num_affected)

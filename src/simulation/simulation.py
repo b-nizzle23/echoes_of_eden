@@ -1,12 +1,17 @@
 from grid.grid import Grid
 from people.people import People
 from visualization.visualizer import Visualizer
-
+from src.settings import settings
 
 class Simulation:
     def __init__(
-        self, actions_per_day: int, days_per_year: int, years: int, grid_size: int
+        self
     ) -> None:
+        actions_per_day = settings.get("actions_per_day", 5)
+        days_per_year = settings.get("days_per_year", 365)
+        years = settings.get("years", 50)
+        grid_size = settings.get("grid_size", 100)
+        
         self._days_per_year: int = days_per_year
         self._years: int = years
         self._grid: Grid = Grid(self, grid_size)

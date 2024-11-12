@@ -90,7 +90,7 @@ class PeopleDisasterGenerator:
 
     def _get_affected_people(self, severity: int, percent: float) -> People:
         percent_affected = severity * percent
-        people = deepcopy(self._people.get_people())
+        people = self._people.get_people()
         random.shuffle(people)
         num_affected = int(len(people) * percent_affected)
         return random.sample(people, num_affected)

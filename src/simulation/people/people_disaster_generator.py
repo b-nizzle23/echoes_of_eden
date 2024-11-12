@@ -1,9 +1,9 @@
 import random
+from copy import deepcopy
 
 from src.simulation.people.people import People
 from src.simulation.grid.location import Location
 from src.simulation.people.person.scheduler.scheduler import Scheduler
-
 
 
 class PeopleDisasterGenerator:
@@ -26,7 +26,7 @@ class PeopleDisasterGenerator:
             ]
 
             # Randomly pick number of disasters to trigger, along with random severities
-            disaster_count = random.ranint(1, len(disaster_methods) // 2)
+            disaster_count = random.randint(1, len(disaster_methods) // 2)
             for _ in range(disaster_count):
                 severity = random.randint(1, 10)  # Severity between 1 and 10
                 chosen_disaster = random.choice(disaster_methods)
@@ -46,8 +46,8 @@ class PeopleDisasterGenerator:
             if person not in visited:
                 spouse = person.get_spouse()
                 person.divorce()
-                visited.append(person)
-                visited.append(spouse)
+                visited.add(person)
+                visited.add(spouse)
 
     def _sickness(self, severity: int) -> None:
         """Person gets sick, losing health."""
@@ -90,6 +90,7 @@ class PeopleDisasterGenerator:
 
     def _get_affected_people(self, severity: int, percent: float) -> People:
         percent_affected = severity * percent
-        person_list = random.shuffle(self._people.get_people())
-        num_affected = int(len(person_list) * percent_affected)
-        return random.sample(person_list, num_affected)
+        people = deepcopy(self._people.get_people())
+        random.shuffle(people)
+        num_affected = int(len(people) * percent_affected)
+        return random.sample(people, num_affected)

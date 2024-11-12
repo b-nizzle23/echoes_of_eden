@@ -1,5 +1,5 @@
-max_simulations: 100
-actions_per_day: 20
-days_per_year: 365
-years: 100
-grid_size: 200
+max_simulations: 1
+actions_per_day: 10
+days_per_year: 100
+years: 5
+grid_size: 100

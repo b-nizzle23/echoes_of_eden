@@ -102,6 +102,8 @@ class Navigator:
             self._get_construction_tasks()
         )
 
+        # TODO: before you start construction on a new building, check to see if there are already
+        #  buildings of that type under construction. And if there is, go build one of those
         if building_type not in building_data:
             raise Exception(f"Unknown structure type: {building_type}")
 

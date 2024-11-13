@@ -47,6 +47,8 @@ class Memory:
             for location in getattr(other, item):
                 self.add(item, location)
 
+    # TODO: Add a param here for time to keep track of how old the person was
+    #  when they added that thing to their memory
     def add(self, what: str, where: Location) -> None:
         if what is None or where is None:
             return

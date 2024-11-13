@@ -32,6 +32,9 @@ class Memories:
         
         self._memories: Set[Memory] = set()
         
+    def get_memories(self) -> Set[Memory]:
+        return self._memories
+        
     def _get_locations(self, char: str) -> Set[Location]:
         return set(map(lambda memory: memory.get_where(), filter(lambda memory: memory.get_what() == char, self._memories)))
 
@@ -68,15 +71,28 @@ class Memories:
     def get_building_locations(self) -> Set[Location]:
         return self.get_barn_locations() | self.get_farm_locations() | self.get_mine_locations() | self.get_home_locations()
 
-    # TODO finish this
-    def combine(self, other: "Memories") -> None:
-        pass
-
-    # TODO: Add a param here for time to keep track of how old the person was
-    #  when they added that thing to their memory
     # TODO filter locations for building locations (top left corner)
-    def add(self, what: str, where: Location) -> None:
-        pass
+    def combine(self, other: "Memories") -> None:
+        # Merge the memories from both 'self' and 'other', keeping the newest memory for each location
+        for memory in other.get_memories():
+            existing_memory = next((m for m in self._memories if m.get_where() == memory.get_where()), None)
+            if existing_memory:
+                # If an existing memory is found for the same location, compare the timestamps
+                if memory.get_when() > existing_memory.get_when():
+                    # Replace the old memory with the newer one
+                    self._remove(memory.get_where())
+                    self._memories.add(memory)
+            else:
+                # If no memory exists for this location, simply add the new memory
+                self._memories.add(memory)
 
-    def _remove(self, what: str, where: Location) -> None:
-        pass
+    def add(self, what: str, where: Location) -> None:
+        # Remove any existing memory for the same location
+        self._remove(where)
+        # Create a new memory and add it to the set
+        new_memory = Memory(what, where, self._person.get_time())
+        self._memories.add(new_memory)
+
+    def _remove(self, where: Location) -> None:
+        # Remove memory at the specified location if it exists
+        self._memories = {memory for memory in self._memories if memory.get_where() != where}

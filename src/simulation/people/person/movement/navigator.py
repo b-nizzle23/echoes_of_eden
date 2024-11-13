@@ -99,16 +99,23 @@ class Navigator:
             self._get_structure_locations()
         )
         construction_tasks: Dict[StructureType, TaskType] = (
+            self._get_start_construction_tasks()
+        )
+        """Find and move to the specified building construction type."""
+        construction_site_data: Dict[StructureType, Callable[[], Set[Location]]] = (
+            self._get_construction_structure_locations()
+        )
+        build_tasks: Dict[StructureType, TaskType] = (
             self._get_construction_tasks()
         )
 
-        # TODO: before you start construction on a new building, check to see if there are already
-        #  buildings of that type under construction. And if there is, go build one of those
         if building_type not in building_data:
             raise Exception(f"Unknown structure type: {building_type}")
 
         buildings: List[Location] = list(building_data[building_type]())
         construction_type: Optional[TaskType] = construction_tasks.get(building_type)
+        construction_sites: List[Location] = list(construction_site_data[building_type]())
+        build_type: Optional[TaskType] = build_tasks.get(building_type)
 
         building = self._move_to(buildings)
 
@@ -117,7 +124,13 @@ class Navigator:
             and not building
             and self._searched_building_count >= (len(buildings) * 0.37)
         ):
-            self._person.get_scheduler().add(construction_type)
+
+            if len(construction_sites) > 0:
+                # construct those building
+                self._person.get_scheduler().add(build_type)
+            else:
+                # begin construction on a building of that type
+                self._person.get_scheduler().add(construction_type)
             return True, None
 
         return False, building
@@ -134,14 +147,35 @@ class Navigator:
             StructureType.TREE: self._person.get_memory().get_tree_locations,
         }
 
+    def _get_construction_structure_locations(
+        self,
+    ) -> Dict[StructureType, Callable[[], Set[Location]]]:
+        """Return the locations of various construction sites."""
+        return {
+            StructureType.FARM: self._person.get_memory().get_farm_construction_locations,
+            StructureType.MINE: self._person.get_memory().get_mine_construction_locations,
+            StructureType.BARN: self._person.get_memory().get_barn_construction_locations,
+            StructureType.HOME: self._person.get_memory().get_home_construction_locations,
+        }
+
     @staticmethod
-    def _get_construction_tasks() -> Dict[StructureType, TaskType]:
+    def _get_start_construction_tasks() -> Dict[StructureType, TaskType]:
         """Return the construction tasks for each building type."""
         return {
             StructureType.FARM: TaskType.START_FARM_CONSTRUCTION,
             StructureType.MINE: TaskType.START_MINE_CONSTRUCTION,
             StructureType.BARN: TaskType.START_BARN_CONSTRUCTION,
             StructureType.HOME: TaskType.START_HOME_CONSTRUCTION,
+        }
+
+    @staticmethod
+    def _get_construction_tasks() -> Dict[StructureType, TaskType]:
+        """Return the build tasks for each construction site."""
+        return {
+            StructureType.FARM: TaskType.BUILD_FARM,
+            StructureType.MINE: TaskType.BUILD_MINE,
+            StructureType.BARN: TaskType.BUILD_BARN,
+            StructureType.HOME: TaskType.BUILD_HOME,
         }
 
     def _is_structure_nearby_and_has_capacity(

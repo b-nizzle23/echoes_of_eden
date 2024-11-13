@@ -7,7 +7,7 @@ from src.simulation.grid.structure.store.home import Home
 from src.simulation.grid.structure.work.farm import Farm
 from src.simulation.grid.structure.work.mine import Mine
 from src.simulation.grid.structure.work.work import Work
-from src.simulation.grid.tempurature import get_temperature_for_day
+from src.simulation.grid.temperature import get_temperature_for_day
 from src.simulation.simulation import Simulation
 from structure.structure import Structure
 from grid_generator import GridGenerator

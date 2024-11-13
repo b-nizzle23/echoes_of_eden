@@ -114,14 +114,14 @@ class Person:
     def _add_work_tasks(self) -> None:
         if not self._backpack.has_capacity():
             return
-        keys = list(self._rewards.keys())
+        keys: Dict[TaskType] = list(self._rewards.keys())
         epsilon: float = 0.05
         if np.random.rand() < epsilon:
             # Exploration: randomly select an action
-            random_index = np.random.randint(0, len(keys) - 1)
-            task_type = keys[random_index]
+            random_index: int = np.random.randint(0, len(keys) - 1)
+            task_type: TaskType = keys[random_index]
         else:
-            task_type = max(self._rewards, key=self._rewards.get)
+            task_type: TaskType = max(self._rewards, key=self._rewards.get)
         self._scheduler.add(task_type)
 
     def update_rewards(self, reward: int, task_type: TaskType) -> None:

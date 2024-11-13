@@ -13,6 +13,7 @@ class Mine(Work):
         max_work_count = 4
         super().__init__(grid, location, 3, 3, "M", max_worker_count, max_work_count)
 
+
     @override
     def _get_yield(self) -> float:
         """

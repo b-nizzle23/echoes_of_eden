@@ -21,6 +21,8 @@ class Memory:
         self._items: List[str] = list(vars(self).keys())
         self._mine_rewards = {mine: 0 for mine in self._mines}
         self._farm_rewards = {farm: 0 for farm in self._farms}
+        self._mine_action_counts = {mine:0 for mine in self._mines}
+        self._farm_action_counts = {farm: 0 for farm in self._farms}
 
     def get_barn_locations(self) -> Set[Location]:
         return self._barns
@@ -49,7 +51,13 @@ class Memory:
     def get_mine_rewards(self) -> dict[Location, float]:
         return self._mine_rewards
 
-    def update_farm_rewards
+    def update_farm_rewards(self, where: Location, reward: float) -> None:
+        self._farm_action_counts[where] += 1
+        self._farm_rewards[where] += (reward - self._farm_rewards[where])/self._farm_action_counts[where]
+
+    def update_mine_rewards(self, where: Location, reward: float) -> None:
+        self._mine_action_counts[where] += 1
+        self._mine_rewards[where] += (reward - self._mine_rewards[where])/self._mine_action_counts[where]
 
     def dont_know_where_anything_is(self) -> bool:
         return not (self._barns or self._farms or self._homes or self._mines)
@@ -66,8 +74,10 @@ class Memory:
             return
         if what == 'farms':
             self._farm_rewards[where] = 0
+            self._farm_action_counts[where] = 0
         if what == 'mines':
             self._mine_rewards[where] = 0
+            self._mine_action_counts[where] = 0
         for item in self._items:
             if item != what:
                 self._remove(item, where)

@@ -7,7 +7,7 @@ from src.simulation.grid.structure.store.home import Home
 from src.simulation.grid.structure.work.farm import Farm
 from src.simulation.grid.structure.work.mine import Mine
 from src.simulation.grid.structure.work.work import Work
-from src.simulation.grid.tempurature import get_temperature_for_day
+from src.simulation.grid.temperature import get_temperature_for_day
 from src.simulation.simulation import Simulation
 from structure.structure import Structure
 from grid_generator import GridGenerator
@@ -39,6 +39,8 @@ class Grid:
         self._height: int = size
         self._grid: List[List[str]] = grid_generator.generate()
         self._structure_factory = StructureFactory(self)
+        
+        # TODO disjoint set with trees for yield groups
         self._buildings: Dict[Location, Structure] = (
             self._find_buildings()
         )  # stores the top left corner of every structure

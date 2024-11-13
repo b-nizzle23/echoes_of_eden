@@ -66,4 +66,4 @@ class TaskFactory:
         task_class: Type = self._constructors[what]
         if not task_class:
             return None
-        return task_class(self._simulation, self._person)
+        return task_class(self._simulation, self._person, what)

@@ -31,12 +31,17 @@ class Scheduler:
         self._all_tasks = []
 
     def add(self, what: TaskType) -> None:
-        # TODO ensure only one type of each Task is in the scheduler at a time
+        unique: bool = True
         task: Task = self._task_factory.create_instance(what)
         if task:
-            self._all_tasks.append(task)
-            heapq.heappush(self._tasks, task)
-            self._last_added_time = self._get_current_time()
+            for other in self._tasks:
+                if type(other) == type(task):
+                    unique = False
+                    break
+            if unique:
+                self._all_tasks.append(task)
+                heapq.heappush(self._tasks, task)
+                self._last_added_time = self._get_current_time()
 
     def _add(self, task: Optional[Task]) -> None:
         if task:

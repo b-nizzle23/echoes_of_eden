@@ -16,7 +16,7 @@ class Navigator:
         """Initialize the Navigator with references to Simulation and Person."""
         self._simulation: Simulation = simulation  # Direct reference to Simulation
         self._person: Person = person
-        self._moving_to_building_type: Optional[str] = None
+        self._moving_to_building_type: Optional[StructureType] = None
         self._visited_buildings: Set[Structure] = set()
         self._searched_building_count: int = 0
         self._structure: Optional[Structure] = None
@@ -102,6 +102,8 @@ class Navigator:
             self._get_construction_tasks()
         )
 
+        # TODO: before you start construction on a new building, check to see if there are already
+        #  buildings of that type under construction. And if there is, go build one of those
         if building_type not in building_data:
             raise Exception(f"Unknown structure type: {building_type}")
 

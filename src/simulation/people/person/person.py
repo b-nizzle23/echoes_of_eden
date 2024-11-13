@@ -1,4 +1,6 @@
-from typing import List, Optional, Set
+from typing import List, Optional, Set, Dict
+
+import numpy as np
 import random
 
 from scheduler.scheduler import Scheduler
@@ -44,10 +46,13 @@ class Person:
         self._spouse_preference: bool = bool(random.getrandombits(1))
         self._house_preference: bool = bool(random.getrandombits(1))
 
-        self._visited_buildings: Set[Structure] = set()
-        self._moving_to_building_type: Optional[StructureType] = None
-        self._building: Optional[Structure] = None
-        self._searched_building_count: int = 0
+        # preferences per person
+        self._hunger_preference: int = random.randint(50, 100)
+        self._spouse_preference: bool = bool(random.getrandombits(1))
+        self._house_preference: bool = bool(random.getrandombits(1))
+
+        self._rewards: Dict[TaskType, int] = {}
+
 
     def get_backpack(self) -> Backpack:
         return self._backpack
@@ -123,15 +128,30 @@ class Person:
             if not self.has_home() and self._house_preference:
                 self._scheduler.add(TaskType.FIND_HOME)
 
-        # TODO only try to do WORK if there is space in the backpack
-
+        # 4.5 Epsilon-Greedy algorithm to decide what to do
         # TODO: get all 3 of work tasks and 4 of construction
 
-        # TODO: add WORK_MINE or CHOP_TREE task if you find no wood/stone in the barn during a build task?
+        self._add_work_tasks()
 
         # 5. If you've got nothing else to do, explore
         if len(self._scheduler.get_tasks()) == 0:
             self._scheduler.add(TaskType.EXPLORE)
+
+    def _add_work_tasks(self) -> None:
+        if not self._backpack.has_capacity():
+            return
+        keys: list = list(self._rewards.keys())
+        epsilon: float = 0.05
+        if np.random.rand() < epsilon:
+            # Exploration: randomly select an action
+            random_index: int = np.random.randint(0, len(keys) - 1)
+            task_type: TaskType = keys[random_index]
+        else:
+            task_type: TaskType = max(self._rewards, key=self._rewards.get)
+        self._scheduler.add(task_type)
+
+    def update_rewards(self, reward: int, task_type: TaskType) -> None:
+        self._rewards[task_type] += reward
 
     def get_location(self) -> Location:
         return self._location

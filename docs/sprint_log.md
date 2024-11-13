@@ -101,16 +101,16 @@ Stay organized and on track with your assignments and tasks!
 - **Goals**:
     - ...
 
-| Date       | Hours | Name   | Notes                                                         |
-|------------|-------|--------|---------------------------------------------------------------|
-| 2024-11-11 | 8     | Nate     | Fix bugs, complete todos, help brighton with disasters ticket |
+| Date       | Hours | Name   | Notes                                                                           |
+|------------|-------|--------|---------------------------------------------------------------------------------|
+| 2024-11-11 | 10    | Nate     | Fix bugs, complete todos, help brighton with disasters ticket, meet with Bellis |
 | 2024-11-11 | 5     | Brighton | work on disasters ticket and begin walk-through of People think differently ticket. |
-| 2024-11-12 |       |          |                                                               |
-| 2024-11-13 |       |          |                                                               |
-| 2024-11-14 |       |          |                                                               |
-| 2024-11-15 |       |          |                                                               |
-| 2024-11-18 |       |          |                                                               |
-| 2024-11-19 |       |          |                                                               |
+| 2024-11-12 |       |          |                                                                                 |
+| 2024-11-13 |       |          |                                                                                 |
+| 2024-11-14 |       |          |                                                                                 |
+| 2024-11-15 |       |          |                                                                                 |
+| 2024-11-18 |       |          |                                                                                 |
+| 2024-11-19 |       |          |                                                                                 |
 | 2024-11-__ | _     | _____    |                                                               |
 
 

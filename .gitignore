@@ -519,15 +519,17 @@ celerybeat.pid
 
 # Environments
 .env
-env/dev.env
-env/prod.env
-!env/example.prod.env
-!env/example.dev.env
+/env
 .venv
 venv/
-ENV/
 env.bak/
 venv.bak/
+
+# settings
+settings/dev_settings.yaml
+settings/prod_settings.yaml
+!settings/example.dev_settings.yaml
+!settings/example.prod_settings.yaml
 
 # Spyder project settings
 .spyderproject

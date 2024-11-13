@@ -15,6 +15,7 @@ seaborn = "^0.13.2"
 tqdm = "^4.66.6"
 isort = "^5.13.2"
 autoflake = "^2.3.1"
+dynaconf = "^3.2.6"
 
 [tool.poetry.group.dev.dependencies]
 pylint = "^3.3.1"

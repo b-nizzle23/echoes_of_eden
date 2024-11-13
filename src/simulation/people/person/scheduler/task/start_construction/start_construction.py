@@ -29,7 +29,7 @@ class StartConstruction(Task, ABC):
     def execute(self) -> None:
         self._search_time += 1
         if self._search_time >= 20:
-            self._finished()
+            self._finished(False)
             return
         empties: List[Location] = self._person.get_empties()
         location = self._find_fitting_group(empties)

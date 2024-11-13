@@ -53,10 +53,10 @@ class Build(Task, ABC):
                     self._finished()
                 else:
                     move_result: MoveResult = (
-                        self._person.move_to_workable_structure(self._store_structure)
+                        self._person.move_to_workable_structure(self._store_structure, self._what_resource)
                     )
                     if move_result.has_failed():
-                        self._finished()
+                        self._finished(False)
                         return 
                     self._store: Optional[Store] = move_result.get_structure()
             else:
@@ -67,7 +67,7 @@ class Build(Task, ABC):
                 self._person.move_to_workable_structure(self._build_structure)
             )
             if move_result.has_failed():
-                self._finished()
+                self._finished(False)
                 return 
             self._build: Optional[Construction] = move_result.get_structure()
 

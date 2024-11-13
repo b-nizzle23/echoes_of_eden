@@ -1,4 +1,6 @@
-from typing import List, Optional, Set
+from typing import List, Optional, Set, Dict
+
+import numpy as np
 
 from scheduler.scheduler import Scheduler
 from scheduler.task.task_type import TaskType
@@ -38,10 +40,8 @@ class Person:
         self._scheduler: Scheduler = Scheduler(simulation, self)
         self._max_time: int = 10
 
-        self._visited_buildings: Set[Structure] = set()
-        self._moving_to_building_type: Optional[StructureType] = None
-        self._building: Optional[Structure] = None
-        self._searched_building_count: int = 0
+        self._rewards: Dict[TaskType, int] = {}
+
 
     def get_backpack(self) -> Backpack:
         return self._backpack
@@ -104,13 +104,28 @@ class Person:
             if self._hunger < 50:
                 self._scheduler.add(TaskType.EAT)
 
-        # TODO only try to do WORK if there is space in the backpack
-
-        # TODO: add WORK_MINE or CHOP_TREE task if you find no wood/stone in the barn during a build task?
+        # 4.5 Epsilon-Greedy algorithm to decide what to do
+        self._add_work_tasks()
 
         # 5. If you've got nothing else to do, explore
         if len(self._scheduler.get_tasks()) == 0:
             self._scheduler.add(TaskType.EXPLORE)
+
+    def _add_work_tasks(self) -> None:
+        if not self._backpack.has_capacity():
+            return
+        keys_list = list(self._rewards.keys())
+        epsilon: float = 0.05
+        if np.random.rand() < epsilon:
+            # Exploration: randomly select an action
+            random_index = np.random.randint(0, len(keys_list) - 1)
+            task_type = keys_list[random_index]
+        else:
+            task_type = max(self._rewards, key=self._rewards.get)
+        self._scheduler.add(task_type)
+
+    def update_rewards(self, reward: int, task_type: TaskType) -> None:
+        self._rewards[task_type] += reward
 
     def get_location(self) -> Location:
         return self._location

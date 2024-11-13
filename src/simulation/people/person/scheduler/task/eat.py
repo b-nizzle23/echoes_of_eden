@@ -55,7 +55,7 @@ class Eat(Task):
         if not self._barn:
             move_result: MoveResult = self._person.move_to_workable_structure(StructureType.BARN, "food")
             if move_result.has_failed():
-                self._finished()
+                self._finished(False)
                 return 
             self._barn = move_result.get_structure()
 
@@ -71,7 +71,7 @@ class Eat(Task):
                 StructureType.BARN, "food"
             )
             if move_result.has_failed():
-                self._finished()
+                self._finished(False)
                 return 
             self._barn = move_result.get_structure()
 

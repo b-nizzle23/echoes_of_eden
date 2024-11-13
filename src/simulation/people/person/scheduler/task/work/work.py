@@ -39,7 +39,7 @@ class Work(Task, ABC):
                 self._person.move_to_workable_structure(self._work_structure)
             )
             if move_result.has_failed():
-                self._finished()
+                self._finished(False)
                 return
             self._work: Optional[WorkStructure] = move_result.get_structure()
 

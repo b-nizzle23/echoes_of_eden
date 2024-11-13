@@ -16,7 +16,7 @@ class Navigator:
         """Initialize the Navigator with references to Simulation and Person."""
         self._simulation: Simulation = simulation  # Direct reference to Simulation
         self._person: Person = person
-        self._moving_to_building_type: Optional[str] = None
+        self._moving_to_building_type: Optional[StructureType] = None
         self._visited_buildings: Set[Structure] = set()
         self._searched_building_count: int = 0
         self._structure: Optional[Structure] = None

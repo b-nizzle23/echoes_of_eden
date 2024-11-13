@@ -24,7 +24,7 @@ class Transport(Task):
     @override
     def execute(self) -> None:
         if not self._backpack.has_items():
-            self._finished()
+            self._finished(False)
             return
         if self._resource:
             self._what_resource = self._backpack.what_resource()
@@ -41,7 +41,7 @@ class Transport(Task):
                 self._store_structure
             )
             if move_result.has_failed():
-                self._finished()
+                self._finished(False)
                 return
             self._store: Optional[Store] = move_result.get_structure()
 

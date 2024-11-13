@@ -114,7 +114,7 @@ class Person:
     def _add_work_tasks(self) -> None:
         if not self._backpack.has_capacity():
             return
-        keys: Dict[TaskType] = list(self._rewards.keys())
+        keys: list = list(self._rewards.keys())
         epsilon: float = 0.05
         if np.random.rand() < epsilon:
             # Exploration: randomly select an action

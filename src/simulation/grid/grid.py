@@ -39,6 +39,8 @@ class Grid:
         self._height: int = size
         self._grid: List[List[str]] = grid_generator.generate()
         self._structure_factory = StructureFactory(self)
+        
+        # TODO disjoint set with trees for yield groups
         self._buildings: Dict[Location, Structure] = (
             self._find_buildings()
         )  # stores the top left corner of every structure

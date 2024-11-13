@@ -1,4 +1,4 @@
-from typing import List, Optional, Set, Dict
+from typing import List, Optional, Dict
 
 import numpy as np
 import random
@@ -12,7 +12,7 @@ from src.simulation.grid.structure.structure import Structure
 from src.simulation.grid.structure.structure_type import StructureType
 from src.simulation.grid.location import Location
 from src.simulation.people.person.backpack import Backpack
-from src.simulation.people.person.memory import Memory
+from src.simulation.people.person.memories import Memories
 from src.simulation.people.person.movement.move_result import MoveResult
 from src.simulation.people.person.movement.navigator import Navigator
 from src.simulation.simulation import Simulation
@@ -29,7 +29,7 @@ class Person:
         self._location: Location = location
 
         self._backpack = Backpack()
-        self._memory: Memory = Memory()
+        self._memory: Memories = Memories(self)
         self._navigator: Navigator = Navigator(simulation, self)
 
         self._health: int = 100
@@ -43,21 +43,23 @@ class Person:
 
         # preferences per person
         self._hunger_preference: int = random.randint(50, 100)
-        self._spouse_preference: bool = bool(random.getrandombits(1))
-        self._house_preference: bool = bool(random.getrandombits(1))
+        self._spouse_preference: bool = random.choice([True, False])
+        self._house_preference: bool = random.choice([True, False])
 
         # preferences per person
         self._hunger_preference: int = random.randint(50, 100)
-        self._spouse_preference: bool = bool(random.getrandombits(1))
-        self._house_preference: bool = bool(random.getrandombits(1))
+        self._spouse_preference: bool = random.choice([True, False])
+        self._house_preference: bool = random.choice([True, False])
 
         self._rewards: Dict[TaskType, int] = {}
-
+    
+    def get_time(self) -> int:
+        return self._simulation.get_time()
 
     def get_backpack(self) -> Backpack:
         return self._backpack
 
-    def get_memory(self) -> Memory:
+    def get_memory(self) -> Memories:
         return self._memory
 
     def exchange_memories(self, other: "Person") -> None:
@@ -128,12 +130,10 @@ class Person:
             if not self.has_home() and self._house_preference:
                 self._scheduler.add(TaskType.FIND_HOME)
 
-        # 4.5 Epsilon-Greedy algorithm to decide what to do
-        # TODO: get all 3 of work tasks and 4 of construction
-
+        # 6. Epsilon-Greedy algorithm to decide what work to do
         self._add_work_tasks()
 
-        # 5. If you've got nothing else to do, explore
+        # 7. If you've got nothing else to do, explore
         if len(self._scheduler.get_tasks()) == 0:
             self._scheduler.add(TaskType.EXPLORE)
 
@@ -177,7 +177,7 @@ class Person:
         return self._health <= 0 or self._age >= 80
 
     def is_satiated(self) -> bool:
-        return self.get_hunger() >= self.get_hunger_preference
+        return self.get_hunger() >= self.get_hunger_preference()
 
     def eat(self, building: Barn | Home) -> None:
         if isinstance(building, Home):

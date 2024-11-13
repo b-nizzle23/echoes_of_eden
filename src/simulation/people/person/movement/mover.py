@@ -7,7 +7,7 @@ from pathfinding.core.grid import Grid as PathFindingGrid
 from pathfinding.core.node import GridNode as PathFindingGridNode
 from pathfinding.finder.dijkstra import DijkstraFinder
 
-from src.simulation.people.person.memory import Memory
+from src.simulation.people.person.memories import Memories
 from src.simulation.people.person.person import Person
 from vision import Vision
 
@@ -16,7 +16,7 @@ from src.simulation.grid.location import Location
 
 
 class Mover:
-    def __init__(self, grid: Grid, person: Person, memory: Memory, speed: int) -> None:
+    def __init__(self, grid: Grid, person: Person, memory: Memories, speed: int) -> None:
         self._person = person
         self._grid = grid
         self._speed = speed

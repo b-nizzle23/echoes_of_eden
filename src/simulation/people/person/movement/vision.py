@@ -4,7 +4,7 @@ from typing import Callable, Dict
 
 from src.simulation.grid.grid import Grid
 from src.simulation.grid.location import Location
-from src.simulation.people.person.memory import Memory
+from src.simulation.people.person.memories import Memories
 from src.simulation.people.person.person import Person
 
 
@@ -21,8 +21,8 @@ class Vision:
         self._grid = grid
         self._visibility = visibility
 
-    def look_around(self) -> Memory:
-        memory = Memory()
+    def look_around(self) -> Memories:
+        memory = Memories(self._person)
         current_location = copy(self._person.get_location())
         self._search(current_location, self._visibility, memory, set())
         return memory
@@ -31,7 +31,7 @@ class Vision:
         self,
         location: Location,
         visibility: int,
-        memory: Memory,
+        memory: Memories,
         blocked: set[Location],
     ) -> None:
         if visibility <= 0 or location in blocked:
@@ -49,7 +49,7 @@ class Vision:
                     self._search(next_loc, visibility - 1, memory, blocked)
 
     def _process_location(
-        self, memory: Memory, blocked: set[Location], location: Location
+        self, memory: Memories, blocked: set[Location], location: Location
     ) -> None:
         if not self._grid.is_location_in_bounds(
             location
@@ -63,7 +63,7 @@ class Vision:
         else:
             raise Exception(f"Unknown character at: {location}")
 
-    def _is_blocking_object(self, location: Location, memory: Memory) -> bool:
+    def _is_blocking_object(self, location: Location, memory: Memories) -> bool:
         blocking_objects: Dict[str, Callable[[Location], bool]] = {
             "barn": self._grid.is_barn,
             "construction_barn": self._grid.is_construction_barn,

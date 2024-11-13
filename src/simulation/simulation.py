@@ -18,6 +18,13 @@ class Simulation:
         self._people: People = People(self, actions_per_day)
         self._max_days: int = self._years * self._days_per_year
         self._current_day: int = 0
+        self._time: int = 0
+        
+    def increment_time(self) -> None:
+        self._time += 1
+        
+    def get_time(self) -> int:
+        return self._time
 
     def run(self) -> Visualizer:
         visualizer: Visualizer = Visualizer()

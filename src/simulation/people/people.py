@@ -11,6 +11,7 @@ from .people_disaster_generator import PeopleDisasterGenerator
 
 class People:
     def __init__(self, simulation: "Simulation", actions_per_day: int) -> None:
+        self._simulation = simulation
         self._grid: Grid = simulation.get_grid()
         self._actions_per_day: int = actions_per_day
         self._people_generator: PeopleGenerator = PeopleGenerator(simulation)
@@ -19,11 +20,10 @@ class People:
             self
         )
         self._home_manager: HomeManager = HomeManager(self)
-        self._time: int = 0
 
     def take_actions_for_day(self) -> None:
         for action in range(self._actions_per_day):
-            self._time += 1
+            self._simulation.increment_time()
             dead: List[Person] = []
             for person in self._people:
                 if person.is_dead():
@@ -48,7 +48,7 @@ class People:
             person.exchange_memories(person.get_spouse())
 
     def get_time(self) -> int:
-        return self._time
+        return self._simulation.get_time()
     
     def get_people(self) -> List:
         return self._people

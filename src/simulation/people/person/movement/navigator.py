@@ -71,20 +71,20 @@ class Navigator:
         self, structure_type: StructureType, resource_name: Optional[str] = None
     ) -> MoveResult:
         """Move to a building that is workable (e.g., has capacity or resources)."""
-        if self._moving_to_building_type != structure_type:
+        if self._moving_to_building_type != structure_type:     # If I have founda valid working structure
             self._reset_moving_state(structure_type)
 
-        if not self._structure:
+        if not self._structure:     # if I haven't found a work structure yet...
             failed, self._structure = self._find_and_move_to_structure(structure_type)
             if failed:
-                return MoveResult(failed, None)
+                return MoveResult(failed, None)     # class that wraps bool
 
-        if self._is_structure_nearby_and_has_capacity(resource_name):
+        if self._is_structure_nearby_and_has_capacity(resource_name):   # once you have building and it's nearby and it has capacity
             return MoveResult(False, self._structure)
 
         return MoveResult(False, None)
 
-    def _reset_moving_state(self, building_type: Optional[StructureType]) -> None:
+    def _reset_moving_state(self, building_type: Optional[StructureType]) -> None:      # set all barn data back to zero after transporting all of the resources. 
         """Reset the state when moving to a different building type."""
         self._moving_to_building_type = building_type
         self._visited_buildings.clear()
@@ -145,11 +145,11 @@ class Navigator:
     def _is_structure_nearby_and_has_capacity(
         self, resource_name: Optional[str]
     ) -> bool:
-        """Check if the building is nearby and has capacity."""
-        if self._person.get_location().is_one_away(self._structure.get_location()):
+        """Check if the building is nearby and has capacity.""" 
+        if self._person.get_location().is_one_away(self._structure.get_location()):     # check if this structure is a barn. if so, grab some food out of it.
             if resource_name and isinstance(self._structure, Store):
                 return self._structure.get_resource(resource_name) > 0
-            elif self._structure.has_capacity():
+            elif self._structure.has_capacity():        # the decision for what task to do based on personal preferences and gathered data. decide to build a structure or not
                 self._reset_moving_state(None)
                 return True
             else:

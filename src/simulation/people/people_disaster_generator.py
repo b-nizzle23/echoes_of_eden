@@ -87,7 +87,7 @@ class PeopleDisasterGenerator:
         """A person dies."""
         affected_people = self._get_affected_people(severity, 0.1)
         for person in affected_people:
-            person.set_health(-101) # person is dead
+            person.kill() # person is dead
 
     def _forget_tasks(self, severity: int) -> None:
         """Person forgets their tasks."""

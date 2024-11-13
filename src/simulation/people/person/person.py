@@ -1,4 +1,5 @@
 from typing import List, Optional, Set
+import random
 
 from scheduler.scheduler import Scheduler
 from scheduler.task.task_type import TaskType
@@ -38,6 +39,11 @@ class Person:
         self._scheduler: Scheduler = Scheduler(simulation, self)
         self._max_time: int = 10
 
+        # preferences per person
+        self._hunger_preference: int = random.randint(50, 100)
+        self._spouse_preference: bool = bool(random.getrandombits(1))
+        self._house_preference: bool = bool(random.getrandombits(1))
+
         self._visited_buildings: Set[Structure] = set()
         self._moving_to_building_type: Optional[StructureType] = None
         self._building: Optional[Structure] = None
@@ -71,6 +77,15 @@ class Person:
             if structure:
                 structures.append(structure)
         return list(map(lambda s: s.get_location(), structures))
+    
+    def get_hunger_preference(self) -> int:
+        return self._hunger_preference
+    
+    def get_spouse_preference(self) -> bool:
+        return self._spouse_preference
+
+    def get_house_preference(self) -> bool:
+            return self._house_preference
 
     def kill(self):
         self._health = 0
@@ -79,13 +94,13 @@ class Person:
         self._hunger -= 1
         if self._hunger < 20:
             self._health -= 1
-        elif self._hunger > 80:
+        elif self._hunger > 50:
             self._health += 1
 
         self._add_tasks()
         self._scheduler.execute()
 
-    def _add_tasks(self) -> None:
+    def _add_tasks(self) -> None:   # where tasks are added to the scheduler. 
         # 1. Find a home
         if not self._home:
             self._scheduler.add(TaskType.FIND_HOME)
@@ -97,14 +112,20 @@ class Person:
         # Things to check only so often
         if self._simulation.get_people().get_time() % self._max_time == 0:
             # 3. Find a spouse
-            if not self._spouse:
+            if not self._spouse and self._spouse_preference:
                 self._scheduler.add(TaskType.FIND_SPOUSE)
 
             # 4. Eat food
-            if self._hunger < 50:
+            if self._hunger < self._hunger_preference:
                 self._scheduler.add(TaskType.EAT)
+            
+            # 5. Find a home
+            if not self.has_home() and self._house_preference:
+                self._scheduler.add(TaskType.FIND_HOME)
 
         # TODO only try to do WORK if there is space in the backpack
+
+        # TODO: get all 3 of work tasks and 4 of construction
 
         # TODO: add WORK_MINE or CHOP_TREE task if you find no wood/stone in the barn during a build task?
 
@@ -136,7 +157,7 @@ class Person:
         return self._health <= 0 or self._age >= 80
 
     def is_satiated(self) -> bool:
-        return self.get_hunger() >= 90
+        return self.get_hunger() >= self.get_hunger_preference
 
     def eat(self, building: Barn | Home) -> None:
         if isinstance(building, Home):

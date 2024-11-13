@@ -94,6 +94,7 @@ class Structure(ABC):
     @abstractmethod
     def has_capacity(self) -> bool:
         # can someone else be in or use the structure
+        # called by the building type.
         pass
 
     @staticmethod

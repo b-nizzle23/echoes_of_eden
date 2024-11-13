@@ -26,11 +26,11 @@ class Transport(Task):
         if not self._backpack.has_items():
             self._finished()
             return
-        if self._resource:
+        if self._resource:  # resource is in hand. heading toward barn/home
             self._what_resource = self._backpack.what_resource()
             amount = self._backpack.get_resource(self._what_resource)
             self._resource = self._backpack.remove_resource(self._what_resource, amount)
-        if self._store:
+        if self._store:     # I am at the store
             self._store.add_resource(self._what_resource, self._resource)
             self._what_resource = None
             self._resource = None

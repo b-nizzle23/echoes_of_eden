@@ -253,7 +253,7 @@ class Person:
             self._memory.update_farm_rewards(where, reward)
         if structure == 'TREE':
             pass
-            # TODO implement tree grove rewards
+            # TODO implement tree grove rewards based on Nate's PR
 
     def move_to_workable_structure(
         self, building_type: StructureType, resource_name: Optional[str] = None

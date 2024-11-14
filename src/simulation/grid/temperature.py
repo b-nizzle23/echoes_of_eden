@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def get_temperature_for_day(day_of_year, mean_temp_f=70, amplitude_f=18, std_dev_f=5):
+def get_temperature_for_day(day_of_year: int, mean_temp_f: int = 70, amplitude_f: int = 18, std_dev_f: int = 5) -> float:
     """
     Returns the temperature for a given day of the year using a sine wave to model seasonal variations
     and a normal distribution for daily fluctuations (output in Fahrenheit).

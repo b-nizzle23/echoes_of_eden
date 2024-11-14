@@ -21,7 +21,7 @@ class Farm(Work):
         Returns:
         - float: The yield (food) for the given day based on temperature.
         """
-        temp: float = self._grid.get_temp_for_day()
+        temp: float = self._grid.get_temperature_for_day()
 
         # Parameters for temperature-dependent yield curve
         optimal_temp: float = 70  # Optimal temperature for best yield

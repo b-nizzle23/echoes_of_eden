@@ -4,7 +4,10 @@ from typing import List, Dict
 from src.simulation.grid.grid import Grid
 from src.simulation.grid.location import Location
 from src.simulation.grid.structure.store.barn import Barn
+from src.simulation.grid.structure.store.home import Home
 from src.simulation.grid.structure.structure import Structure
+from src.simulation.grid.structure.work.farm import Farm
+from src.simulation.grid.structure.work.mine import Mine
 
 
 class GridDisasterGenerator:
@@ -54,7 +57,7 @@ class GridDisasterGenerator:
     def _rats_eat_home_food(self, severity: int) -> None:
         """Remove food from home storage based on disaster severity."""
         affected_homes_percent = (severity // 2) / 10
-        homes: List[Structure] = self._grid.get_homes()
+        homes: List[Structure] = self._grid.get_structures(Home)
         num_affected = int(len(homes) * affected_homes_percent)
         homes_affected = random.sample(homes, num_affected)
         for home in homes_affected:
@@ -74,14 +77,14 @@ class GridDisasterGenerator:
 
         for building in buildings_to_burn:
             if random.choice([True, False]):
-                self._grid.destroy_building(building)
+                self._grid.remove(building)
             else:
-                self._grid.deconstruct_building(building)
+                self._grid.remove(building, True)
 
     def _decrease_farm_yield(self, severity: int) -> None:
         """Disease infects the farm, reducing resources or crops."""
         farms_diseased_percent = (severity // 2) / 10
-        farms: List[Structure] = self._grid.get_farms()
+        farms: List[Structure] = self._grid.get_structures(Farm)
         num_affected = int(len(farms) * farms_diseased_percent)
         farms_affected = random.sample(farms, num_affected)
         for farm in farms_affected:
@@ -89,7 +92,7 @@ class GridDisasterGenerator:
 
     def _decrease_mine_yield(self, severity: int) -> None:
         percent_affected = (severity // 2) / 10
-        mines: List[Structure] = self._grid.get_mines()
+        mines: List[Structure] = self._grid.get_structures(Mine)
         num_affected = int(len(mines) * percent_affected)
         mines_affected = random.sample(mines, num_affected)
         for mine in mines_affected:
@@ -125,15 +128,16 @@ class GridDisasterGenerator:
                 # Check if there's a tree at the location
                 if self._grid.is_tree(location) and random.random() <= removal_probability:
                     # Generate a random number between 0 and 1 and compare to removal_probability
-                    self._grid.remove_tree(location)
+                    self._grid.remove(self._grid.get_structure(location))
 
     def _steal_barn_resources(self, severity: int) -> None:
         """Theft reduces resources in the barn based on severity."""
         percent_affected = (severity // 2) / 10
-        barns: List[Barn] = self._grid.get_barns()
+        barns: List[Structure] = self._grid.get_structures(Barn)
         num_affected = int(len(barns) * percent_affected)
         barns_affected = random.sample(barns, num_affected)
         for barn in barns_affected:
-            resources: List[str] = barn.get_resource_names()
-            for resource in resources:
-                barn.remove_resource(resource, barn.get_resource(resource))
+            if isinstance(barn, Barn):
+                resources: List[str] = barn.get_resource_names()
+                for resource in resources:
+                    barn.remove_resource(resource, barn.get_resource(resource))

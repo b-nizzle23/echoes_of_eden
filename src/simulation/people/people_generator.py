@@ -3,6 +3,7 @@ from copy import deepcopy
 from typing import List
 
 from src.simulation.grid.location import Location
+from src.simulation.grid.structure.store.home import Home
 from src.simulation.people.person.person import Person
 from src.simulation.simulation import Simulation
 
@@ -10,7 +11,7 @@ from src.simulation.simulation import Simulation
 class PeopleGenerator:
     def __init__(self, simulation: Simulation) -> None:
         self._grid = simulation.get_grid()
-        home_count: int = self._grid.get_home_count()
+        home_count: int = self._grid.get_structure_count(Home)
         # Randomly assign 1 or 2 people per home, then calculate the total number of people
         total_people = sum(random.choice([1, 2]) for _ in range(home_count))
         self._max_pk = total_people

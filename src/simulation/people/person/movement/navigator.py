@@ -53,6 +53,8 @@ class Navigator:
         return (
                 self._structure.get_location().distance_to(self._person.get_location()) // 10
         )
+    def move_to_location_time_estimate(self, location:Location) -> float:
+        return location.distance_to(self._person.get_location()) // 10
 
     def move_to_home(self) -> Optional[Home]:
         """Move towards home, if it's set."""
@@ -80,6 +82,20 @@ class Navigator:
                 return MoveResult(failed, None)
 
         if self._is_structure_nearby_and_has_capacity(resource_name):
+            return MoveResult(False, self._structure)
+
+        return MoveResult(False, None)
+
+    def move_to_chosen_structure(self, structure_location: Location, structure_type: StructureType) -> MoveResult:
+        """Move to the chosen building that is workable."""
+        if self._moving_to_building_type != structure_type:
+            self._reset_moving_state(structure_type)
+
+        if not self._structure:
+            self._structure = self._simulation.get_grid().get_structure(structure_location)
+            self._mover.towards(structure_location)
+
+        if self._is_structure_nearby_and_has_capacity(None):
             return MoveResult(False, self._structure)
 
         return MoveResult(False, None)

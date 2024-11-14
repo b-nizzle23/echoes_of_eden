@@ -1,5 +1,7 @@
 from typing import List, Optional, Set
 
+import numpy as np
+
 from scheduler.scheduler import Scheduler
 from scheduler.task.task_type import TaskType
 from src.simulation.grid.structure.store.barn import Barn
@@ -42,6 +44,7 @@ class Person:
         self._moving_to_building_type: Optional[StructureType] = None
         self._building: Optional[Structure] = None
         self._searched_building_count: int = 0
+        self._epsilon: float = 0.9
 
     def get_backpack(self) -> Backpack:
         return self._backpack
@@ -220,6 +223,38 @@ class Person:
     def get_simulation(self) -> Simulation:
         return self._simulation
 
+    def exploit_more(self):
+        self._epsilon = max(self._epsilon - 0.01, 0)
+
+    def decide_which_location(self, building_type: StructureType) -> Location:
+        work_location: Location
+        building_rewards: dict[Location, float]
+        if building_type == 'MINE':
+            building_rewards = self._memory.get_mine_rewards()
+        if building_type == 'FARM':
+            building_rewards = self._memory.get_farm_rewards()
+        if building_type == 'TREE':
+            pass
+            # TODO implement tree grove rewards
+        if np.random.uniform(0, 1) < self._epsilon:
+            work_location = np.random.choice(list(building_rewards.keys()))
+        else:
+            work_location = max(building_rewards, key=building_rewards.get)
+
+        return work_location
+
+    def move_to_decided_location(self, location: Location, building_type: StructureType) -> MoveResult:
+        return self._navigator.move_to_chosen_structure(location, building_type)
+
+    def update_memory_rewards(self, where: Location, structure: StructureType, reward: float) -> None:
+        if structure == 'MINE':
+            self._memory.update_mine_rewards(where, reward)
+        if structure == 'FARM':
+            self._memory.update_farm_rewards(where, reward)
+        if structure == 'TREE':
+            pass
+            # TODO implement tree grove rewards
+
     def move_to_workable_structure(
         self, building_type: StructureType, resource_name: Optional[str] = None
     ) -> MoveResult:
@@ -228,4 +263,7 @@ class Person:
 
     def move_to_time_estimate(self) -> int:
         """Estimate the time to move to the current building."""
-        return self.move_to_time_estimate()
+        return self._navigator.move_to_time_estimate()
+
+    def move_to_location_estimate(self, location:Location) -> float:
+        return self._navigator.move_to_location_time_estimate(location)

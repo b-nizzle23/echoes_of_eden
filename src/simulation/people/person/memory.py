@@ -1,7 +1,5 @@
 from typing import List, Set
 
-from poetry.console.commands import self
-
 from src.simulation.grid.location import Location
 
 

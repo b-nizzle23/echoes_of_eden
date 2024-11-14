@@ -9,11 +9,10 @@ from src.simulation.grid.structure.work.work import Work
 
 class Farm(Work):
     def __init__(self, grid: Grid, location: Location) -> None:
-        max_worker_count = 3
-        max_work_count = 3
-        super().__init__(grid, location, 5, 5, "F", max_worker_count, max_work_count)
+        max_worker_count: int = 3
+        max_work_count: int = 3
+        super().__init__(grid, location, 5, 5, "F", max_worker_count, max_work_count, self._get_yield)
 
-    @override
     def _get_yield(self) -> float:
         """
         Yield logic for the Farm class, with a temperature-dependent yield curve.

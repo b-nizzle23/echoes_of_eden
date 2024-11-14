@@ -1,6 +1,6 @@
 import itertools
-from abc import ABC, abstractmethod
-from typing import Dict, Optional, List, Tuple
+from abc import ABC
+from typing import Dict, Optional, List, Tuple, Callable
 from src.simulation.grid.grid import Grid
 from src.simulation.grid.location import Location
 from src.simulation.grid.structure.structure import Structure
@@ -17,15 +17,23 @@ class Work(Structure, ABC):
         char: str,
         max_worker_count: int,
         max_work_count: int,
+        yield_func: Callable[[], float],
     ):
         super().__init__(grid, location, width, height, char)
         self._max_worker_count = max_worker_count
         self._max_work_count = max_work_count
         self._workers: Dict[Person, int] = {}
-        self._decrease_yield_count: int = 0  # work iterations of bad yield
+        self._yield_func: Callable[[], float] = yield_func
+        self._decrease_yield_time: int = 0
+    
+    def set_yield_func(self, yield_func: Callable[[], float]):
+        self._yield_func = yield_func
+    
+    def get_yield_func(self) -> Callable[[], float]:
+        return self._yield_func
 
     def decrease_yield(self) -> None:
-        self._decrease_yield_count += 5
+        self._decrease_yield_time = self._grid.get_time()
 
     def has_capacity(self) -> bool:
         """
@@ -51,8 +59,9 @@ class Work(Structure, ABC):
         if self._workers[person] > self._max_work_count:
             self.remove_worker(person)
             y: int = int(self._get_yield())
-            if self._decrease_yield_count > 0:
+            if self._decrease_yield_time != 0 and self._grid.get_time() - self._decrease_yield_time > 50:
                 return y // 2
+            self._decrease_yield_time = 0
             return y
 
         return None
@@ -64,12 +73,11 @@ class Work(Structure, ABC):
         if person in self._workers:
             del self._workers[person]
 
-    @abstractmethod
     def _get_yield(self) -> float:
         """
         Each subclass should define how to generate the yield, if needed.
         """
-        pass
+        return self._yield_func()
 
     def exchange_worker_memories(self):
         workers: List[Person] = list(self._workers.keys())

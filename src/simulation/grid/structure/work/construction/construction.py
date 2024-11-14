@@ -20,14 +20,16 @@ class Construction(Work, ABC):
         max_worker_count: int,  # Max number of workers for this construction type
         finished_completion_level: int,  # Target completion level for this construction
     ):
+        yield_func = lambda: 1
         super().__init__(
             grid,
             location,
             width,
             height,
             char,
-            max_worker_count=max_worker_count,
-            max_work_count=max_work_count,
+            max_worker_count,
+            max_work_count,
+            yield_func
         )
         self._required_wood: int = required_wood  # Total wood required for construction
         self._required_stone: int = (
@@ -98,11 +100,6 @@ class Construction(Work, ABC):
             )  # Return the generated yield amount as an integer.
 
         return None
-
-    @override
-    def _get_yield(self) -> float:
-        # This method could be used to define the actual yield (e.g., the resource value).
-        return 1  # Fake value to show a worker is done working
 
     @override
     def work_time_estimate(self) -> int:

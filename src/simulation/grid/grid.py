@@ -1,11 +1,15 @@
 import random
 from copy import deepcopy
-from typing import Dict, List, Optional, Type
+from typing import Dict, List, Optional, Type, Callable, Tuple
 
+import numpy as np
+
+from src.simulation.grid.disjoint_set import DisjointSet
 from src.simulation.grid.structure.store.barn import Barn
 from src.simulation.grid.structure.store.home import Home
 from src.simulation.grid.structure.work.farm import Farm
 from src.simulation.grid.structure.work.mine import Mine
+from src.simulation.grid.structure.work.tree import Tree
 from src.simulation.grid.structure.work.work import Work
 from src.simulation.grid.temperature import get_temperature_for_day
 from src.simulation.simulation import Simulation
@@ -41,13 +45,16 @@ class Grid:
         self._structure_factory = StructureFactory(self)
         self._disaster_generator = GridDisasterGenerator(self)
 
-        # TODO disjoint set with trees for yield groups
         # stores the top left corner of every structure
         self._structures: Dict[Location, Structure] = {}
         self._find_structures()
+        self._group_tree_yields()
 
         self._day: int = 0
         self._temp: float = 0
+
+    def get_time(self) -> int:
+        return self._simulation.get_time()
 
     def get_temp_for_day(self) -> int:
         other_day = self._simulation.get_day()
@@ -85,6 +92,13 @@ class Grid:
             building
             for building in self._structures.values()
             if isinstance(building, Barn)
+        ]
+    
+    def get_trees(self) -> List[Tree]:
+        return [
+            building
+            for building in self._structures.values()
+            if isinstance(building, Tree)
         ]
 
     def destroy_building(self, building: Structure) -> None:
@@ -185,6 +199,96 @@ class Grid:
                     # TODO make sure we only have the top left location for each structure in the dictionary
                     self._structures[location] = structure
 
+    def _group_tree_yields(self) -> None:
+        trees: List[Tree] = self.get_trees()
+
+        # Create a map from tree location to an index in the disjoint set
+        tree_index: Dict[Location, int] = {}
+        index: int = 0
+
+        for tree in trees:
+            location: Location = tree.get_location()
+            tree_index[location] = index
+            index += 1
+
+        # Create a disjoint set for the number of trees
+        ds: DisjointSet = DisjointSet(len(trees))
+
+        # Directions for neighbors: up, down, left, right, and diagonals
+        directions: List[Tuple[int, int]] = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
+
+        # Traverse the grid and connect trees if they are neighbors
+        for tree in trees:
+            location: Location = tree.get_location()
+            x, y = location.x, location.y
+
+            for dx, dy in directions:
+                nx, ny = x + dx, y + dy
+
+                # Check if the new location is within bounds and contains a tree
+                if 0 <= nx < self._height and 0 <= ny < self._width and self._grid[nx][ny] == "*":
+                    neighbor_location: Location = Location(nx, ny)
+                    if neighbor_location in tree_index:
+                        # Union the current tree with its neighboring tree
+                        ds.union(tree_index[location], tree_index[neighbor_location])
+
+        # Now that we have connected the trees, group them by their root parent
+        grove_groups: Dict[int, List[Tree]] = {}
+
+        for tree in trees:
+            location: Location = tree.get_location()
+            tree_id: int = tree_index[location]
+            root: int = ds.find(tree_id)
+
+            if root not in grove_groups:
+                grove_groups[root] = []
+
+            grove_groups[root].append(tree)
+
+        # At this point, grove_groups contains the groups of connected trees
+        # Each group (grove) is a list of Tree objects
+        groves: List[List[Tree]] = list(grove_groups.values())
+
+        for grove in groves:
+            yield_func: Callable[[], float] = self._generate_random_distribution(10, 50)
+            for tree in grove:
+                tree.set_yield_func(yield_func)
+
+    @staticmethod
+    def _generate_random_distribution(min_val: float, max_val: float) -> Callable[[], float]:
+        # Ensure the min is smaller than the max
+        if min_val >= max_val:
+            raise ValueError("min_val should be less than max_val")
+
+        # Generate random mean (mu) within the range [min_val, max_val]
+        mu: float = random.uniform(min_val, max_val)
+
+        # Generate random standard deviation (sigma), ensuring it is reasonable
+        sigma: float = random.uniform(0, (max_val - min_val) / 2)
+
+        # Return a lambda function that generates a random sample from a normal distribution
+        return lambda: np.random.normal(mu, sigma)
+
+    def grow_trees(self, chance: int = 0.10) -> None:
+        for i in range(len(self._grid)):
+            for j in range(len(self._grid[i])):
+                location: Location = Location(i, j)
+                tree: Structure = self._structures[location]
+                if not isinstance(tree, Tree):
+                    continue
+                neighbors: List[Location] = location.get_neighbors()
+                random.shuffle(neighbors)
+                for neighbor in neighbors:
+                    if not self.is_location_in_bounds(neighbor) or not self.is_empty(neighbor):
+                        continue
+                    if random.random() < chance:
+                        self._grid[neighbor.y][neighbor.x] = "*"  # Place a tree here
+                        neighbor_tree: Structure = self._structure_factory.create_instance(StructureType.TREE, neighbor)
+                        if isinstance(neighbor_tree, Tree):
+                            neighbor_tree.set_yield_func(tree.get_yield_func())
+                            self._structures[neighbor] = neighbor_tree
+                            break
+
     def work_structures_exchange_memories(self):
         work_structures: List[Work] = list(
             filter(lambda b: not isinstance(b, Work), self._structures.values())
@@ -274,23 +378,6 @@ class Grid:
 
     def is_location_in_bounds(self, location: Location) -> bool:
         return 0 <= location.x < self._width and 0 <= location.y < self._height
-
-    def grow_trees(self, chance: int = 0.10) -> None:
-        for i in range(len(self._grid)):
-            for j in range(len(self._grid[i])):
-                location: Location = Location(i, j)
-                if not self.is_tree(location):
-                    continue
-                neighbors = location.get_neighbors()
-                random.shuffle(neighbors)
-                for neighbor in neighbors:
-                    if not self.is_location_in_bounds(neighbor) or not self.is_empty(
-                        neighbor
-                    ):
-                        continue
-                    if random.random() < chance:
-                        self._grid[neighbor.y][neighbor.x] = "*"  # Place a tree here
-                        break
 
     def get_path_finding_matrix(self) -> List[List[int]]:
         path_finding_matrix: List[List[int | str]] = deepcopy(self._grid)

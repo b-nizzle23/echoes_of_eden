@@ -11,6 +11,7 @@ from src.simulation.grid.structure.work.farm import Farm
 from src.simulation.grid.structure.work.mine import Mine
 from src.simulation.grid.structure.work.tree import Tree
 from src.simulation.grid.structure.work.work import Work
+from src.simulation.grid.structure_manager import StructureManager
 from src.simulation.grid.temperature import get_temperature_for_day
 from src.simulation.simulation import Simulation
 from structure.structure import Structure
@@ -23,27 +24,15 @@ from src.simulation.grid.structure.structure_type import StructureType
 from src.simulation.grid.grid_disaster_generator import GridDisasterGenerator
 
 class Grid:
-    _char_to_num: Dict[str, int] = {
-        "h": 10,
-        "H": 0,
-        "b": 10,
-        "B": 0,
-        "f": 3,
-        "F": 5,
-        "m": 0,
-        "M": 0,
-        " ": 1,
-        "*": 10,
-    }
-
     def __init__(self, simulation: Simulation, size: int) -> None:
         self._simulation: Simulation = simulation
-        grid_generator = GridGenerator(size)
         self._width: int = size
         self._height: int = size
+        grid_generator: GridGenerator = GridGenerator(size)
+        self._disaster_generator = GridDisasterGenerator(self)
+
         self._grid: List[List[str]] = grid_generator.generate()
         self._structure_factory = StructureFactory(self)
-        self._disaster_generator = GridDisasterGenerator(self)
 
         # stores the top left corner of every structure
         self._structures: Dict[Location, Structure] = {}
@@ -289,6 +278,11 @@ class Grid:
                             self._structures[neighbor] = neighbor_tree
                             break
 
+    def remove_tree(self, location: Location) -> None:
+        if isinstance(self._structures[location], Tree):
+            self._grid[location.y][location.x] = " "
+            del self._structures[location]
+
     def work_structures_exchange_memories(self):
         work_structures: List[Work] = list(
             filter(lambda b: not isinstance(b, Work), self._structures.values())
@@ -364,9 +358,6 @@ class Grid:
         # If no open spot was found, return None
         return None
 
-    def remove_tree(self, location: Location) -> None:
-        self._grid[location.y][location.x] = " "
-
     def get_home_count(self) -> int:
         # Iterate through the values of the _buildings dictionary and count instances of Home
         return sum(
@@ -380,12 +371,24 @@ class Grid:
         return 0 <= location.x < self._width and 0 <= location.y < self._height
 
     def get_path_finding_matrix(self) -> List[List[int]]:
+        char_to_num: Dict[str, int] = {
+            "h": 10,
+            "H": 0,
+            "b": 10,
+            "B": 0,
+            "f": 3,
+            "F": 5,
+            "m": 0,
+            "M": 0,
+            " ": 1,
+            "*": 10,
+        }
         path_finding_matrix: List[List[int | str]] = deepcopy(self._grid)
         for i in range(len(self._grid)):
             row = self._grid[i]
             for j in range(len(row)):
                 cell = row[j]
-                path_finding_matrix[i][j] = self._char_to_num[cell]
+                path_finding_matrix[i][j] = char_to_num[cell]
         return path_finding_matrix
 
     def is_tree(self, location: Location) -> bool:

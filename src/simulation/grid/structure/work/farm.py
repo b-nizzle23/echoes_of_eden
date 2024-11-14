@@ -12,9 +12,9 @@ class Farm(Work):
     def __init__(self, grid: Grid, location: Location) -> None:
         max_worker_count = 3
         max_work_count = 3
-        yield_variance = np.random.normal(loc = 2, scale = 0.6)
-        super().__init__(grid, location, 5, 5, "F", max_worker_count, max_work_count, yield_variance)
-        self._yield_variance = yield_variance
+        farm_yield_variance = np.random.normal(loc = 0, scale = 4)
+        super().__init__(grid, location, 5, 5, "F", max_worker_count, max_work_count, farm_yield_variance)
+        self._yield_variance = farm_yield_variance
 
     @override
     def _get_yield(self) -> float:
@@ -53,4 +53,4 @@ class Farm(Work):
         # 80	43.7
         # 90	25.1
 
-        return adjusted_yield * self._yield_variance
+        return adjusted_yield + self._yield_variance

@@ -17,7 +17,7 @@ class Work(Structure, ABC):
         char: str,
         max_worker_count: int,
         max_work_count: int,
-        yield_variance: float,
+        work_yield_variance: float,
     ):
         super().__init__(grid, location, width, height, char)
         self._max_worker_count = max_worker_count

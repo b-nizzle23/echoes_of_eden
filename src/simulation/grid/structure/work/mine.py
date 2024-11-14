@@ -11,12 +11,13 @@ class Mine(Work):
     def __init__(self, grid: Grid, location: Location) -> None:
         max_worker_count = 6
         max_work_count = 4
-        super().__init__(grid, location, 3, 3, "M", max_worker_count, max_work_count)
-
+        mine_yield_variance = np.random.normal(loc = 3, scale = 0.9)
+        super().__init__(grid, location, 3, 3, "M", max_worker_count, max_work_count, mine_yield_variance)
+        self._yield_variance = mine_yield_variance
 
     @override
     def _get_yield(self) -> float:
         """
         Yield logic for the Mine class, with a mean of 4 and a standard deviation of 1.
         """
-        return np.random.normal(loc=4, scale=1)
+        return np.random.normal(loc=4, scale=1) + self._yield_variance

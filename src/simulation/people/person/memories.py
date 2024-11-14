@@ -1,4 +1,4 @@
-from typing import List, Set
+from typing import Set
 
 from src.simulation.grid.location import Location
 from src.simulation.people.person.person import Person
@@ -36,6 +36,11 @@ class Memories:
         return self._memories
         
     def _get_locations(self, char: str) -> Set[Location]:
+        current_time = self._person.get_time()
+
+        # Remove expired memories
+        self._memories = {memory for memory in self._memories if current_time - memory.get_when() <= 50}
+    
         return set(map(lambda memory: memory.get_where(), filter(lambda memory: memory.get_what() == char, self._memories)))
 
     def get_barn_locations(self) -> Set[Location]:

@@ -28,7 +28,7 @@ class StartConstruction(Task, ABC):
     @override
     def execute(self) -> None:
         self._search_time += 1
-        if self._search_time >= 20:
+        if self._search_time >= 20:     # todo: I don't wanna put this one in the yaml
             self._finished(False)
             return
         empties: List[Location] = self._person.get_empties()

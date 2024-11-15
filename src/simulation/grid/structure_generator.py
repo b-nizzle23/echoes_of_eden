@@ -3,6 +3,7 @@ from typing import Dict, List, Tuple, Callable
 
 import numpy as np
 
+from src.settings import settings
 from src.simulation.grid.disjoint_set import DisjointSet
 from src.simulation.grid.grid import Grid
 from src.simulation.grid.location import Location
@@ -93,7 +94,7 @@ class StructureGenerator:
                 nx, ny = x + dx, y + dy
     
                 # Check if the new location is within bounds and contains a tree
-                if 0 <= nx < self._grid.get_height() and 0 <= ny < self._grid.get_width() and self._grid.get_grid()[nx][ny] == "*":
+                if 0 <= nx < self._grid.get_height() and 0 <= ny < self._grid.get_width() and self._grid.get_grid()[nx][ny] == settings.get("tree_char", "*"):
                     neighbor_location: Location = Location(nx, ny)
                     if neighbor_location in tree_index:
                         # Union the current tree with its neighboring tree

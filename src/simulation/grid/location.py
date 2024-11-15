@@ -1,5 +1,7 @@
 from typing import List
 
+from src.settings import settings
+
 
 class Location:
     def __init__(self, x: int, y: int) -> None:
@@ -33,7 +35,7 @@ class Location:
 
         return neighbors
 
-    def is_near(self, location: "Location", distance: int = 5) -> bool:
+    def is_near(self, location: "Location", distance: int = settings.get("near", 5)) -> bool:
         return self.distance_to(location) < distance
 
     def __copy__(self) -> "Location":

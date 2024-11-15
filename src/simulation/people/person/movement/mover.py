@@ -7,6 +7,7 @@ from pathfinding.core.grid import Grid as PathFindingGrid
 from pathfinding.core.node import GridNode as PathFindingGridNode
 from pathfinding.finder.dijkstra import DijkstraFinder
 
+from src.settings import settings
 from src.simulation.people.person.memories import Memories
 from src.simulation.people.person.person import Person
 from vision import Vision
@@ -21,7 +22,7 @@ class Mover:
         self._grid = grid
         self._speed = speed
         self._memory = memory
-        self._vision = Vision(person, grid, 30)
+        self._vision = Vision(person, grid, settings.get("visibility", 30))
 
     def explore(self) -> None:
         random_location = self._get_random_location()

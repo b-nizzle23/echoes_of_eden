@@ -2,6 +2,7 @@ from typing import Optional, List, Dict, Callable, Set, Tuple
 import numpy as np
 from collections import defaultdict
 
+from src.settings import settings
 from src.simulation.grid.location import Location
 from src.simulation.grid.structure.store.home import Home
 from src.simulation.grid.structure.store.store import Store
@@ -22,7 +23,7 @@ class Navigator:
         self._visited_structures: Set[Structure] = set()
         self._searched_structure_count: int = 0
         self._structure: Optional[Structure] = None
-        self._mover: Mover = Mover(simulation.get_grid(), person, person.get_memories(), 10)
+        self._mover: Mover = Mover(simulation.get_grid(), person, person.get_memories(), settings.get("speed", 10))
         self._turn_count: int = 0
         actions_per_year = simulation.actions_per_year()
         self._epsilon_reset = int(np.random.uniform(50, actions_per_year))
@@ -40,7 +41,7 @@ class Navigator:
         """Estimate the time to move to the current building."""
         if not self._structure:
             return 5  # Default estimate if no building is set
-        return self._structure.get_location().distance_to(self._person.get_location()) // 10
+        return self._structure.get_location().distance_to(self._person.get_location()) // settings.get("speed", 10)
 
     def move_to_location(self, location: Location):
         """Move directly to the specified location."""

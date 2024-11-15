@@ -47,7 +47,9 @@ class StructureGenerator:
                     structure_type = StructureType.CONSTRUCTION_MINE
                 else:
                     raise Exception("I see a char you didnt tell me about")
-    
+
+                self._grid.find_top_left_corner(location)
+
                 # Create a new structure instance and associate it with the first location
                 # (we could use the top-left corner as the "representative" location for each structure)
                 if location not in structures:
@@ -56,7 +58,7 @@ class StructureGenerator:
                     )
                     if not structure:
                         continue
-                    # TODO make sure we only have the top left location for each structure in the dictionary
+
                     structures[location] = structure
         self._group_tree_yields(list(structures.values()))
         return structures

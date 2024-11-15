@@ -83,6 +83,7 @@ Stay organized and on track with your assignments and tasks!
 | 2024-11-11 | 5     | Brighton  | work on disasters ticket and begin walk-through of People think differently ticket. |
 | 2024-11-12 | 5.5   | Ann Marie | worked on epsilon greedy for work, went to group meeting                            |
 | 2024-11-12 | 5     | Madi      | started epsilon greedy for deciding which location to work, group meeting           |
+| 2024-11-12 | 3.5   | Brighton  | finished people think differently ticket, began building recognition ticket         |
 | 2024-11-13 | 5     | Nate      | complete spawn people, memories tickets                                             |
 | 2024-11-14 | 3     | Nate      | Groves of trees have the same yeild ticket                                          |
 | 2024-11-15 |       |           |                                                                                     |

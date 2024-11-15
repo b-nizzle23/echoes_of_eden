@@ -29,7 +29,7 @@ class Person:
         self._location: Location = location
 
         self._backpack = Backpack()
-        self._memory: Memories = Memories(self)
+        self._memory: Memories = Memories(simulation.get_grid())
         self._navigator: Navigator = Navigator(simulation, self)
 
         self._health: int = 100

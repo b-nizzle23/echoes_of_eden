@@ -17,7 +17,7 @@ class Home(Store):
         return self._owner is not None
 
     def assign_owner(self, person: Person) -> None:
-       self._owner = person
+        self._owner = person
 
     def remove_owner(self) -> None:
         self._owner.remove_home()

@@ -1,7 +1,7 @@
 from typing import Set
 
+from src.simulation.grid.grid import Grid
 from src.simulation.grid.location import Location
-from src.simulation.people.person.person import Person
 
 class Memory:
     def __init__(self, what: str, where: Location, when: int):
@@ -27,8 +27,8 @@ class Memory:
         return False
 
 class Memories:
-    def __init__(self, person: Person) -> None:
-        self._person: Person = person
+    def __init__(self, grid: Grid) -> None:
+        self._grid: Grid = grid
         
         self._memories: Set[Memory] = set()
         
@@ -36,7 +36,7 @@ class Memories:
         return self._memories
         
     def _get_locations(self, char: str) -> Set[Location]:
-        current_time = self._person.get_time()
+        current_time = self._grid.get_time()
 
         # Remove expired memories
         self._memories = {memory for memory in self._memories if current_time - memory.get_when() <= 50}
@@ -76,7 +76,6 @@ class Memories:
     def get_building_locations(self) -> Set[Location]:
         return self.get_barn_locations() | self.get_farm_locations() | self.get_mine_locations() | self.get_home_locations()
 
-    # TODO filter locations for building locations (top left corner)
     def combine(self, other: "Memories") -> None:
         # Merge the memories from both 'self' and 'other', keeping the newest memory for each location
         for memory in other.get_memories():
@@ -85,17 +84,19 @@ class Memories:
                 # If an existing memory is found for the same location, compare the timestamps
                 if memory.get_when() > existing_memory.get_when():
                     # Replace the old memory with the newer one
-                    self._remove(memory.get_where())
-                    self._memories.add(memory)
+                    self.add(memory.get_what(), memory.get_where())
             else:
                 # If no memory exists for this location, simply add the new memory
                 self._memories.add(memory)
 
     def add(self, what: str, where: Location) -> None:
+        if not self._grid.is_tree(where) or not self._grid.is_empty(where):
+            self._grid.find_top_left_corner(where)
+
         # Remove any existing memory for the same location
         self._remove(where)
         # Create a new memory and add it to the set
-        new_memory = Memory(what, where, self._person.get_time())
+        new_memory = Memory(what, where, self._grid.get_time())
         self._memories.add(new_memory)
 
     def _remove(self, where: Location) -> None:

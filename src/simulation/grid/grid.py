@@ -81,6 +81,14 @@ class Grid:
             1 for structure in self._structures.values() if isinstance(structure, structure_type)
         )
 
+    def find_top_left_corner(self, where: Location) -> None:
+        while not self.is_empty(where):
+            where.x -= 1
+        where.x += 1
+        while not self.is_empty(where):
+            where.y -= 1
+        where.y += 1
+
     def remove(self, structure: Structure, deconstruct: bool = False) -> None:
         del self._structures[structure.get_location()]
         if isinstance(structure, Home):

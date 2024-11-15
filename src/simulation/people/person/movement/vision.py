@@ -22,7 +22,7 @@ class Vision:
         self._visibility = visibility
 
     def look_around(self) -> Memories:
-        memory = Memories(self._person)
+        memory = Memories(self._grid)
         current_location = copy(self._person.get_location())
         self._search(current_location, self._visibility, memory, set())
         return memory

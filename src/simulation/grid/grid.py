@@ -2,6 +2,7 @@ import random
 from copy import deepcopy
 from typing import Dict, List, Optional, Type
 
+from src.settings import settings
 from src.simulation.grid.structure.store.barn import Barn
 from src.simulation.grid.structure.store.home import Home
 from src.simulation.grid.structure.work.farm import Farm
@@ -49,7 +50,7 @@ class Grid:
             self._temp = get_temperature_for_day(self._day)
         return self._temp
 
-    def generate_disasters(self, chance: float = 0.50) -> None:
+    def generate_disasters(self, chance: float = settings.get("disaster_chance", 0.50)) -> None:
         self._disaster_generator.generate(chance)
 
     def get_grid(self) -> List[List[str]]:
@@ -116,6 +117,16 @@ class Grid:
         rows = len(self._grid)
         cols = len(self._grid[0])
         empty_spots = []
+        building_types = "".join([
+            settings.get("home_construction_char", "h"),
+            settings.get("home_char", "H"),
+            settings.get("barn_construction_char", "b"),
+            settings.get("barn_char", "B"),
+            settings.get("farm_construction_char", "f"),
+            settings.get("farm_char", "F"),
+            settings.get("mine_construction_char", "m"),
+            settings.get("mine_char", "M"),
+        ])
 
         # List of possible directions: (up, down, left, right, and 4 diagonal directions)
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
@@ -123,7 +134,7 @@ class Grid:
         for i in range(rows):
             for j in range(cols):
                 # Check if the current cell is a building (or under construction)
-                if self._grid[i][j] in "MFHBFmhfb":
+                if self._grid[i][j] in building_types:
                     # Check all 8 directions around the current building location
                     for dx, dy in directions:
                         ni, nj = i + dx, j + dy
@@ -135,7 +146,7 @@ class Grid:
                                 is_adjacent_to_tree = False
                                 for ddx, ddy in directions:
                                     nn_i, nn_j = ni + ddx, nj + ddy
-                                    if 0 <= nn_i < rows and 0 <= nn_j < cols and self._grid[nn_i][nn_j] == "*":
+                                    if 0 <= nn_i < rows and 0 <= nn_j < cols and self._grid[nn_i][nn_j] == settings.get("tree_char", "*"):
                                         is_adjacent_to_tree = True
                                         break
 
@@ -158,7 +169,7 @@ class Grid:
                     if not self.is_location_in_bounds(neighbor) or not self.is_empty(neighbor):
                         continue
                     if random.random() < chance:
-                        self._grid[neighbor.y][neighbor.x] = "*"  # Place a tree here
+                        self._grid[neighbor.y][neighbor.x] = settings.get("tree_char", "*")  # Place a tree here
                         neighbor_tree: Structure = self._structure_factory.create_instance(StructureType.TREE, neighbor)
                         if isinstance(neighbor_tree, Tree):
                             neighbor_tree.set_yield_func(tree.get_yield_func())
@@ -228,16 +239,26 @@ class Grid:
 
     def get_path_finding_matrix(self) -> List[List[int]]:
         char_to_num: Dict[str, int] = {
-            "h": 10,
-            "H": 0,
-            "b": 10,
-            "B": 0,
-            "f": 3,
-            "F": 5,
-            "m": 0,
-            "M": 0,
-            " ": 1,
-            "*": 10,
+            settings.get("home_construction_char", "h"):
+                settings.get("home_construction_obstacle_rating", 10),
+            settings.get("home_char", "H"):
+                settings.get("home_obstacle_rating", 0),
+            settings.get("barn_construction_char", "b"):
+                settings.get("barn_construction_obstacle_rating", 10),
+            settings.get("barn_char", "B"):
+                settings.get("barn_obstacle_rating", 0),
+            settings.get("farm_construction_char", "f"):
+                settings.get("farm_construction_obstacle_rating", 3),
+            settings.get("farm_char", "F"):
+                settings.get("farm_obstacle_rating", 5),
+            settings.get("mine_construction_char", "m"):
+                settings.get("mine_construction_obstacle_rating", 0),
+            settings.get("mine_char", "M"):
+                settings.get("mine_obstacle_rating", 0),
+            settings.get("empty_char", " "):
+                settings.get("empty_obstacle_rating", 1),
+            settings.get("tree_char", "*"):
+                settings.get("tree_obstacle_rating", 10),
         }
         path_finding_matrix: List[List[int | str]] = deepcopy(self._grid)
         for i in range(len(self._grid)):
@@ -248,34 +269,34 @@ class Grid:
         return path_finding_matrix
 
     def is_tree(self, location: Location) -> bool:
-        return self._is_item(location, "*")
+        return self._is_item(location, settings.get("tree_char", "*"))
 
     def is_barn(self, location: Location) -> bool:
-        return self._is_item(location, "B")
+        return self._is_item(location, settings.get("barn_char", "B"))
 
     def is_construction_barn(self, location: Location) -> bool:
-        return self._is_item(location, "b")
+        return self._is_item(location, settings.get("barn_construction_char", "b"))
 
     def is_home(self, location: Location) -> bool:
-        return self._is_item(location, "H")
+        return self._is_item(location, settings.get("home_char", "H"))
 
     def is_construction_home(self, location: Location) -> bool:
-        return self._is_item(location, "h")
+        return self._is_item(location, settings.get("home_construction_char", "h"))
 
     def is_farm(self, location: Location) -> bool:
-        return self._is_item(location, "F")
+        return self._is_item(location, settings.get("farm_char", "F"))
 
     def is_construction_farm(self, location: Location) -> bool:
-        return self._is_item(location, "f")
+        return self._is_item(location, settings.get("farm_construction_char", "f"))
 
     def is_mine(self, location: Location) -> bool:
-        return self._is_item(location, "M")
+        return self._is_item(location, settings.get("mine_char", "M"))
 
     def is_construction_mine(self, location: Location) -> bool:
-        return self._is_item(location, "m")
+        return self._is_item(location, settings.get("mine_construction_char", "m"))
 
     def is_empty(self, location: Location) -> bool:
-        return self._is_item(location, " ")
+        return self._is_item(location, settings.get("empty_char", " "))
 
     def _is_item(self, location: Location, char: str) -> bool:
         return self._grid[location.y][location.x] == char

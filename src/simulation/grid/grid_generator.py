@@ -1,33 +1,59 @@
 import random
 from typing import List, Tuple
 
+from src.settings import settings
+
 
 class GridGenerator:
     def __init__(
         self,
         size: int,
-        tree_density: float = 0.4,
-        ca_iterations: int = 40,
-        town_clearance_radius: int = 15,
-        building_buffer: int = 1,
+        tree_density: float = settings.get("tree_density", 0.4),
+        ca_iterations: int = settings.get("ca_iterations", 40),
+        town_clearance_radius: int = settings.get("town_clearance_radius", 15),
+        building_buffer: int = settings.get("building_buffer", 1),
     ) -> None:
         self._grid: List[List[str]] = []
         self._width: int = size
         self._height: int = size
         self._tree_density: float = tree_density
         self._ca_iterations: int = ca_iterations
-        self._tree_char: str = "*"
+        self._tree_char: str = settings.get("tree_char", "*")
 
-        self._num_houses: int = random.randint(3, 8)
-        self._num_farms: int = random.randint(1, 3)
-        self._num_barns: int = random.randint(1, 2)
-        self._num_mines: int = random.randint(1, 2)
+        self._num_houses: int = random.randint(
+            settings.get("num_house_min", 3),
+            settings.get("num_house_max", 8)
+        )
+        self._num_farms: int = random.randint(
+            settings.get("num_farm_min", 1),
+            settings.get("num_farm_max", 3)
+        )
+        self._num_barns: int = random.randint(
+            settings.get("num_barn_min", 1),
+            settings.get("num_barn_max", 2)
+        )
+        self._num_mines: int = random.randint(
+            settings.get("num_mines_min", 1),
+            settings.get("num_mines_max", 2)
+        )
 
         self._building_sizes: dict[str, Tuple[int, int]] = {
-            "H": (2, 2),
-            "F": (5, 5),
-            "B": (3, 3),
-            "M": (3, 3),
+            settings.get("home_char", "H"): (
+                settings.get("home_size", 2),
+                settings.get("home_size", 2)
+            ),
+            settings.get("farm_char", "F"): (
+                settings.get("farm_size", 5),
+                settings.get("farm_size", 5)
+            ),
+            settings.get("barn_char", "B"): (
+                settings.get("barn_size", 3),
+                settings.get("barn_size", 3)
+            ),
+            settings.get("mine_char", "M"): (
+                settings.get("mine_size", 3),
+                settings.get("mine_size", 3)
+            ),
         }
 
         self._town_clearance_radius: int = town_clearance_radius
@@ -48,10 +74,26 @@ class GridGenerator:
         self._clear_town_area(center_x, center_y)
 
         buildings = [
-            ("H", self._num_houses, 0.8),
-            ("F", self._num_farms, 0.8),
-            ("B", self._num_barns, 0.8),
-            ("M", self._num_mines, 0.8),
+            (
+                settings.get("home_char", "H"),
+                self._num_houses,
+                settings.get("home_completion_prob",0.8)
+            ),
+            (
+                settings.get("farm_char", "F"),
+                self._num_farms,
+                settings.get("farm_completion_prob", 0.8)
+            ),
+            (
+                settings.get("barn_char", "B"),
+                self._num_barns,
+                settings.get("barn_completion_prob", 0.8)
+            ),
+            (
+                settings.get("mine_char", "M"),
+                self._num_mines,
+                settings.get("mine_completion_prob", 0.8)
+            )
         ]
 
         for building_type, count, completion_prob in buildings:

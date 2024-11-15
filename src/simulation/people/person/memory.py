@@ -17,10 +17,7 @@ class Memory:
         self._empties: Set[Location] = set()
         self._people: Set[Location] = set()
         self._items: List[str] = list(vars(self).keys())
-        self._mine_rewards = {mine: 0 for mine in self._mines}
-        self._farm_rewards = {farm: 0 for farm in self._farms}
-        self._mine_action_counts = {mine:0 for mine in self._mines}
-        self._farm_action_counts = {farm: 0 for farm in self._farms}
+
 
     def get_barn_locations(self) -> Set[Location]:
         return self._barns

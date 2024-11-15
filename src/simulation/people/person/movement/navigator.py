@@ -23,6 +23,10 @@ class Navigator:
         self._mover: Mover = Mover(
             simulation.get_grid(), person, self._person.get_memory(), 10
         )
+        self._mine_rewards = {mine: 0 for mine in self._person.get_memories().get_mine_locations()}
+        self._farm_rewards = {farm: 0 for farm in self._person.get_memories().get_farm_locations()}
+        self._mine_action_counts = {mine: 0 for mine in self._person.get_memories().get_mine_locations()}
+        self._farm_action_counts = {farm: 0 for farm in self._person.get_memories().get_farm_locations()}
 
     def is_stuck(self) -> bool:
         """Determine if the person is stuck and can't move."""

@@ -13,12 +13,16 @@ class Simulation:
         grid_size = settings.get("grid_size", 100)
         
         self._days_per_year: int = days_per_year
+        self._actions_per_day: int = actions_per_day
         self._years: int = years
         self._grid: Grid = Grid(self, grid_size)
         self._people: People = People(self, actions_per_day)
         self._max_days: int = self._years * self._days_per_year
-        self._current_day: int = 0
+        self._day: int = 0
         self._time: int = 0
+        
+    def actions_per_year(self) -> int:
+        return self._days_per_year * self._actions_per_day
         
     def increment_time(self) -> None:
         self._time += 1
@@ -29,7 +33,7 @@ class Simulation:
     def run(self) -> Visualizer:
         visualizer: Visualizer = Visualizer()
         for day in range(self._max_days):
-            self._current_day += 1
+            self._day += 1
             if len(self._people) == 0: # all the people dead
                 break
             self._people.take_actions_for_day()
@@ -50,7 +54,7 @@ class Simulation:
         return visualizer
 
     def get_day(self) -> int:
-        return self._current_day
+        return self._day
 
     def _create_disasters(self):
         self._people.generate_disasters()
@@ -61,9 +65,6 @@ class Simulation:
 
     def _get_year(self, day: int) -> int:
         return day // self._days_per_year
-
-    def get_current_time(self) -> int:
-        return self._people.get_time()
 
     def get_grid(self) -> Grid:
         return self._grid

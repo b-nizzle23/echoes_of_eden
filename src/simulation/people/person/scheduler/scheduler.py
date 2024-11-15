@@ -41,7 +41,7 @@ class Scheduler:
             if unique:
                 self._all_tasks.append(task)
                 heapq.heappush(self._tasks, task)
-                self._last_added_time = self._get_current_time()
+                self._last_added_time = self._get_time()
 
     def _add(self, task: Optional[Task]) -> None:
         if task:
@@ -50,15 +50,15 @@ class Scheduler:
     def _pop(self) -> Optional[Task]:
         return heapq.heappop(self._tasks) if self._tasks else None
 
-    def _get_current_time(self) -> int:
-        return self._simulation.get_current_time()
+    def _get_time(self) -> int:
+        return self._simulation.get_time()
 
     def _calculate_dynamic_threshold(self) -> int:
         # Calculate dynamic interruption threshold based on the current state
         base_threshold = max(1, len(self._tasks) // 2)
 
         task_addition_rate_factor = (
-            1 if self._get_current_time() - self._last_added_time > 1 else 2
+            1 if self._get_time() - self._last_added_time > 1 else 2
         )
 
         if self._current_task:

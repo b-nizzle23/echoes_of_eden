@@ -38,7 +38,7 @@ class Task(ABC):
                 reward = 1
             else:
                 reward = -1
-            self._person.update_rewards(reward, self._task_type)
+            self._person.update_scheduler_rewards(reward, self._task_type)
 
     def is_finished(self) -> bool:
         return self._is_finished

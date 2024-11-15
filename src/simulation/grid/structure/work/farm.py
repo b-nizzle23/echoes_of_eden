@@ -11,7 +11,8 @@ class Farm(Work):
     def __init__(self, grid: Grid, location: Location) -> None:
         max_worker_count: int = 3
         max_work_count: int = 3
-        super().__init__(grid, location, 5, 5, "F", max_worker_count, max_work_count, self._get_yield)
+        yield_variance = np.random.normal(loc = 0, scale = 4)
+        super().__init__(grid, location, 5, 5, "F", max_worker_count, max_work_count, self._get_yield, yield_variance)
 
     def _get_yield(self) -> float:
         """

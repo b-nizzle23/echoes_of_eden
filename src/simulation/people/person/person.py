@@ -150,8 +150,11 @@ class Person:
             task_type: TaskType = max(self._rewards, key=self._rewards.get)
         self._scheduler.add(task_type)
 
-    def update_rewards(self, reward: int, task_type: TaskType) -> None:
+    def update_scheduler_rewards(self, reward: int, task_type: TaskType) -> None:
         self._rewards[task_type] += reward
+
+    def update_navigator_rewards(self, y: float):
+        self._navigator.update_reward(y)
 
     def get_location(self) -> Location:
         return self._location

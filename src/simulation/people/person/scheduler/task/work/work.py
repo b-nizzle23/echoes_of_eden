@@ -31,8 +31,10 @@ class Work(Task, ABC):
     def execute(self) -> None:
         if self._work:
             resource: Optional[int] = self._work.work(self._person)
+
             if resource:
                 self._person.get_backpack().add_resource(self._resource_name, resource)
+                self._person.update_navigator_rewards(resource)
                 self._finished()
         else:
             move_result: MoveResult = (

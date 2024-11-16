@@ -1,9 +1,13 @@
-from typing import Optional
+from __future__ import annotations
 
-from src.simulation.grid.grid import Grid
-from src.simulation.grid.location import Location
+from typing import Optional, TYPE_CHECKING
+
 from src.simulation.grid.structure.store.store import Store
-from src.simulation.people.person.person import Person
+
+if TYPE_CHECKING:
+    from src.simulation.grid.grid import Grid
+    from src.simulation.grid.location import Location
+    from src.simulation.people.person.person import Person
 
 from src.settings import settings
 

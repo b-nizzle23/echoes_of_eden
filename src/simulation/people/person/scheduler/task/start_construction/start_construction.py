@@ -1,12 +1,16 @@
+from __future__ import annotations
+
 from abc import ABC
-from typing import override, List, Optional
+from typing import TYPE_CHECKING, override, List, Optional
 
 from src.simulation.grid.location import Location
-from src.simulation.grid.structure.structure import Structure
 from src.simulation.grid.structure.structure_type import StructureType
-from src.simulation.people.person.person import Person
 from src.simulation.people.person.scheduler.task.task import Task
-from src.simulation.simulation import Simulation
+
+if TYPE_CHECKING:
+    from src.simulation.simulation import Simulation
+    from src.simulation.people.person.person import Person
+    from src.simulation.grid.structure.structure import Structure
 
 
 class StartConstruction(Task, ABC):

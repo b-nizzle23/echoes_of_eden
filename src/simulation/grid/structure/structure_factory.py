@@ -1,11 +1,11 @@
-from typing import Dict, Type
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Dict, Type
 
 from src.simulation.grid.structure.store.barn import Barn
 from src.simulation.grid.structure.store.home import Home
 from src.simulation.grid.structure.structure import Structure
 from src.simulation.grid.structure.structure_type import StructureType
-from src.simulation.grid.grid import Grid
-from src.simulation.grid.location import Location
 from src.simulation.grid.structure.work.construction.construction_barn import (
     ConstructionBarn,
 )
@@ -21,6 +21,10 @@ from src.simulation.grid.structure.work.construction.construction_mine import (
 from src.simulation.grid.structure.work.farm import Farm
 from src.simulation.grid.structure.work.mine import Mine
 from src.simulation.grid.structure.work.tree import Tree
+
+if TYPE_CHECKING:
+    from src.simulation.grid.grid import Grid
+    from src.simulation.grid.location import Location
 
 
 class StructureFactory:

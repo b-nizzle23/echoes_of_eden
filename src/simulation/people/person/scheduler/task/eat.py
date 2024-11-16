@@ -1,17 +1,20 @@
-from typing import override, Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, override, Optional
 
 from src.settings import settings
-from src.simulation.grid.structure.store.barn import Barn
-from src.simulation.grid.structure.store.home import Home
-from src.simulation.grid.structure.structure import Structure
 from src.simulation.grid.structure.structure_type import StructureType
-from src.simulation.people.person.movement.move_result import MoveResult
 from src.simulation.people.person.scheduler.task.task_type import TaskType
 
-from task import Task
+from src.simulation.people.person.scheduler.task.task import Task
 
-from src.simulation.people.person.person import Person
-from src.simulation.simulation import Simulation
+if TYPE_CHECKING:
+    from src.simulation.people.person.person import Person
+    from src.simulation.simulation import Simulation
+    from src.simulation.people.person.movement.move_result import MoveResult
+    from src.simulation.grid.structure.store.barn import Barn
+    from src.simulation.grid.structure.store.home import Home
+    from src.simulation.grid.structure.structure import Structure
 
 
 class Eat(Task):

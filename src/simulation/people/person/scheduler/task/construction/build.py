@@ -1,14 +1,18 @@
-from abc import ABC
-from typing import override, Optional
+from __future__ import annotations
 
-from src.simulation.grid.structure.store.store import Store
-from src.simulation.grid.structure.structure import Structure
-from src.simulation.grid.structure.structure_type import StructureType
-from src.simulation.grid.structure.work.construction.construction import Construction
-from src.simulation.people.person.movement.move_result import MoveResult
-from src.simulation.people.person.person import Person
+from abc import ABC
+from typing import TYPE_CHECKING, override, Optional
+
 from src.simulation.people.person.scheduler.task.task import Task
-from src.simulation.simulation import Simulation
+
+if TYPE_CHECKING:
+    from src.simulation.simulation import Simulation
+    from src.simulation.people.person.person import Person
+    from src.simulation.people.person.movement.move_result import MoveResult
+    from src.simulation.grid.structure.work.construction.construction import Construction
+    from src.simulation.grid.structure.structure_type import StructureType
+    from src.simulation.grid.structure.structure import Structure
+    from src.simulation.grid.structure.store.store import Store
 
 
 class Build(Task, ABC):

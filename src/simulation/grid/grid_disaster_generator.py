@@ -1,13 +1,17 @@
-import random
-from typing import List, Dict
+from __future__ import annotations
 
-from src.simulation.grid.grid import Grid
+import random
+from typing import TYPE_CHECKING, List, Dict
+
 from src.simulation.grid.location import Location
 from src.simulation.grid.structure.store.barn import Barn
 from src.simulation.grid.structure.store.home import Home
-from src.simulation.grid.structure.structure import Structure
 from src.simulation.grid.structure.work.farm import Farm
 from src.simulation.grid.structure.work.mine import Mine
+
+if TYPE_CHECKING:
+    from src.simulation.grid.grid import Grid
+    from src.simulation.grid.structure.structure import Structure
 
 
 class GridDisasterGenerator:

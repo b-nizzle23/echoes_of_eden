@@ -1,18 +1,22 @@
-from typing import Optional, List, Dict, Callable, Set, Tuple
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional, List, Dict, Callable, Set, Tuple
 import numpy as np
 from collections import defaultdict
 
 from src.settings import settings
-from src.simulation.grid.location import Location
-from src.simulation.grid.structure.store.home import Home
-from src.simulation.grid.structure.store.store import Store
-from src.simulation.grid.structure.structure import Structure
 from src.simulation.grid.structure.structure_type import StructureType
 from src.simulation.people.person.movement.move_result import MoveResult
 from src.simulation.people.person.movement.mover import Mover
-from src.simulation.people.person.person import Person
 from src.simulation.people.person.scheduler.task.task_type import TaskType
-from src.simulation.simulation import Simulation
+
+if TYPE_CHECKING:
+    from src.simulation.simulation import Simulation
+    from src.simulation.people.person.person import Person
+    from src.simulation.grid.structure.structure import Structure
+    from src.simulation.grid.structure.store.home import Home
+    from src.simulation.grid.structure.store.store import Store
+    from src.simulation.grid.location import Location
 
 
 class Navigator:

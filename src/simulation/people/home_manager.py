@@ -1,8 +1,12 @@
-from typing import Dict, List, Tuple, Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Dict, List, Tuple, Optional
 
 from src.simulation.grid.location import Location
-from src.simulation.people.people import People
-from src.simulation.people.person.person import Person
+
+if TYPE_CHECKING:
+    from src.simulation.people.people import People
+    from src.simulation.people.person.person import Person
 
 
 class HomeManager:

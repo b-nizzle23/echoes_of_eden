@@ -1,12 +1,15 @@
-from typing import override, Optional
+from __future__ import annotations
 
-from src.settings import settings
-from src.simulation.grid.structure.structure import Structure
-from src.simulation.people.person.scheduler.task.task_type import TaskType
-from task import Task
+from typing import TYPE_CHECKING, override, Optional
 
-from src.simulation.people.person.person import Person
-from src.simulation.simulation import Simulation
+from src.simulation.people.person.scheduler.task.task import Task
+
+if TYPE_CHECKING:
+    from src.settings import settings
+    from src.simulation.grid.structure.structure import Structure
+    from src.simulation.people.person.scheduler.task.task_type import TaskType
+    from src.simulation.people.person.person import Person
+    from src.simulation.simulation import Simulation
 
 
 class Explore(Task):

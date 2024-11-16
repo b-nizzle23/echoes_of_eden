@@ -1,7 +1,13 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 
-from src.simulation.grid.grid import Grid
+from typing import TYPE_CHECKING
+
 from src.simulation.grid.location import Location
+
+if TYPE_CHECKING:
+    from src.simulation.grid.grid import Grid
 
 
 class Structure(ABC):

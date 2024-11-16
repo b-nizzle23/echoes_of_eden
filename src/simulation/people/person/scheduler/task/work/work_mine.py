@@ -1,9 +1,15 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from src.settings import settings
 from src.simulation.grid.structure.structure_type import StructureType
 
-from src.simulation.people.person.person import Person
 from src.simulation.people.person.scheduler.task.work.work import Work
-from src.simulation.simulation import Simulation
+
+if TYPE_CHECKING:
+    from src.simulation.people.person.person import Person
+    from src.simulation.simulation import Simulation
 
 
 class WorkMine(Work):

@@ -1,18 +1,12 @@
+from __future__ import annotations
+
 import random
 from copy import deepcopy
-from typing import Dict, List, Optional, Type
-
+from typing import TYPE_CHECKING, Dict, List, Optional, Type
 from src.settings import settings
-from src.simulation.grid.structure.store.barn import Barn
-from src.simulation.grid.structure.store.home import Home
-from src.simulation.grid.structure.work.farm import Farm
-from src.simulation.grid.structure.work.mine import Mine
-from src.simulation.grid.structure.work.tree import Tree
-from src.simulation.grid.structure.work.work import Work
 
 from src.simulation.grid.structure_generator import StructureGenerator
 from src.simulation.grid.temperature import get_temperature_for_day
-from src.simulation.simulation import Simulation
 from src.simulation.grid.structure.structure import Structure
 from src.simulation.grid.grid_generator import GridGenerator
 from src.simulation.grid.location import Location
@@ -21,6 +15,15 @@ from src.logger import logger
 from src.simulation.grid.structure.structure_factory import StructureFactory
 from src.simulation.grid.structure.structure_type import StructureType
 from src.simulation.grid.grid_disaster_generator import GridDisasterGenerator
+
+if TYPE_CHECKING:
+    from src.simulation.simulation import Simulation
+    from src.simulation.grid.structure.store.barn import Barn
+    from src.simulation.grid.structure.store.home import Home
+    from src.simulation.grid.structure.work.farm import Farm
+    from src.simulation.grid.structure.work.mine import Mine
+    from src.simulation.grid.structure.work.tree import Tree
+    from src.simulation.grid.structure.work.work import Work
 
 class Grid:
     def __init__(self, simulation: Simulation, size: int) -> None:
@@ -31,9 +34,9 @@ class Grid:
         grid_generator: GridGenerator = GridGenerator(size)
         self._grid: List[List[str]] = grid_generator.generate()
         
-        self._disaster_generator = GridDisasterGenerator(self)
+        self._disaster_generator: GridDisasterGenerator = GridDisasterGenerator(self)
 
-        self._structure_factory = StructureFactory(self)
+        self._structure_factory: StructureFactory = StructureFactory(self)
         structure_generator: StructureGenerator = StructureGenerator(self, self._structure_factory)
         self._structures: Dict[Location, Structure] = structure_generator.find_structures() # stores the top left corner of every structure
 

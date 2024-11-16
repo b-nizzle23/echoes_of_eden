@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from copy import copy
 from random import randint
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid as PathFindingGrid
@@ -8,12 +10,13 @@ from pathfinding.core.node import GridNode as PathFindingGridNode
 from pathfinding.finder.dijkstra import DijkstraFinder
 
 from src.settings import settings
-from src.simulation.people.person.memories import Memories
-from src.simulation.people.person.person import Person
-from vision import Vision
-
-from src.simulation.grid.grid import Grid
+from src.simulation.people.person.movement.vision import Vision
 from src.simulation.grid.location import Location
+
+if TYPE_CHECKING:
+    from src.simulation.grid.grid import Grid
+    from src.simulation.people.person.person import Person
+    from src.simulation.people.person.memories import Memories
 
 
 class Mover:

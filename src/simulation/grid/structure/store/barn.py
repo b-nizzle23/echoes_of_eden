@@ -1,7 +1,13 @@
-from src.simulation.grid.grid import Grid
-from src.simulation.grid.location import Location
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from src.simulation.grid.structure.store.store import Store
 from src.settings import settings
+
+if TYPE_CHECKING:
+    from src.simulation.grid.grid import Grid
+    from src.simulation.grid.location import Location
 
 
 class Barn(Store):

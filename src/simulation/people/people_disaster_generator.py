@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 import random
-from typing import Dict
+from typing import TYPE_CHECKING, Dict
 
 from src.settings import settings
-from src.simulation.people.people import People
 from src.simulation.grid.location import Location
 from src.simulation.people.person.scheduler.scheduler import Scheduler
+
+if TYPE_CHECKING:
+    from src.simulation.people.people import People
 
 
 class PeopleDisasterGenerator:

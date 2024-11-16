@@ -1,12 +1,16 @@
+from __future__ import annotations
+
 import random
 from copy import deepcopy
-from typing import List
+from typing import TYPE_CHECKING, List
 
 from src.settings import settings
-from src.simulation.grid.location import Location
 from src.simulation.grid.structure.store.home import Home
 from src.simulation.people.person.person import Person
-from src.simulation.simulation import Simulation
+
+if TYPE_CHECKING:
+    from src.simulation.simulation import Simulation
+    from src.simulation.grid.location import Location
 
 
 class PeopleGenerator:

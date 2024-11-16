@@ -1,22 +1,25 @@
-from typing import List, Optional, Dict
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, List, Optional, Dict
 
 import numpy as np
 import random
 
-from scheduler.scheduler import Scheduler
-from scheduler.task.task_type import TaskType
+from src.simulation.people.person.scheduler.scheduler import Scheduler
+from src.simulation.people.person.scheduler.task.task_type import TaskType
 from src.settings import settings
-from src.simulation.grid.structure.store.barn import Barn
-from src.simulation.grid.structure.store.home import Home
-
-from src.simulation.grid.structure.structure import Structure
-from src.simulation.grid.structure.structure_type import StructureType
-from src.simulation.grid.location import Location
 from src.simulation.people.person.backpack import Backpack
 from src.simulation.people.person.memories import Memories
-from src.simulation.people.person.movement.move_result import MoveResult
 from src.simulation.people.person.movement.navigator import Navigator
-from src.simulation.simulation import Simulation
+
+if TYPE_CHECKING:
+    from src.simulation.grid.structure.store.home import Home
+    from src.simulation.simulation import Simulation
+    from src.simulation.people.person.movement.move_result import MoveResult
+    from src.simulation.grid.location import Location
+    from src.simulation.grid.structure.structure import Structure
+    from src.simulation.grid.structure.store.barn import Barn
+    from src.simulation.grid.structure.structure_type import StructureType
 
 
 class Person:
@@ -29,7 +32,7 @@ class Person:
         self._simulation = simulation
         self._location: Location = location
 
-        self._backpack = Backpack()
+        self._backpack: Backpack = Backpack()
         self._memories: Memories = Memories(simulation.get_grid())
         self._navigator: Navigator = Navigator(simulation, self)
 

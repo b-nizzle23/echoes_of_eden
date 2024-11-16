@@ -1,11 +1,15 @@
+from __future__ import annotations
+
 from copy import copy
 from enum import Enum
-from typing import Callable, Dict
+from typing import TYPE_CHECKING, Callable, Dict
 
-from src.simulation.grid.grid import Grid
 from src.simulation.grid.location import Location
 from src.simulation.people.person.memories import Memories
-from src.simulation.people.person.person import Person
+
+if TYPE_CHECKING:
+    from src.simulation.grid.grid import Grid
+    from src.simulation.people.person.person import Person
 
 
 class Direction(Enum):

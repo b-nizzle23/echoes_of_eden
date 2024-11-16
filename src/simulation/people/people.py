@@ -1,17 +1,20 @@
-from typing import List, Iterator, Dict
+from __future__ import annotations
 
-from people_generator import PeopleGenerator
-from person.person import Person
+from typing import TYPE_CHECKING, List, Iterator, Dict
+
+from src.simulation.people.people_generator import PeopleGenerator
 from src.settings import settings
 from src.simulation.people.home_manager import HomeManager
-from src.simulation.grid.grid import Grid
-
-from src.simulation.simulation import Simulation
 from src.simulation.people.people_disaster_generator import PeopleDisasterGenerator
+
+if TYPE_CHECKING:
+    from src.simulation.simulation import Simulation
+    from person.person import Person
+    from src.simulation.grid.grid import Grid
 
 
 class People:
-    def __init__(self, simulation: "Simulation", actions_per_day: int) -> None:
+    def __init__(self, simulation: Simulation, actions_per_day: int) -> None:
         self._simulation = simulation
         self._grid: Grid = simulation.get_grid()
         self._actions_per_day: int = actions_per_day
@@ -120,5 +123,5 @@ class People:
     def get_disaster_counts(self) -> Dict[str, int]:
         return self._disaster_generator.get_disaster_counts()
 
-    def __iter__(self) -> Iterator["Person"]:
+    def __iter__(self) -> Iterator[Person]:
         return iter(self._people)

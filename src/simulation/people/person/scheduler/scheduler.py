@@ -1,11 +1,15 @@
-import heapq
-from typing import List, Optional
+from __future__ import annotations
 
-from src.simulation.people.person.person import Person
-from src.simulation.people.person.scheduler.task.task import Task
+import heapq
+from typing import TYPE_CHECKING, List, Optional
+
 from src.simulation.people.person.scheduler.task.task_factory import TaskFactory
-from src.simulation.people.person.scheduler.task.task_type import TaskType
-from src.simulation.simulation import Simulation
+
+if TYPE_CHECKING:
+    from src.simulation.people.person.person import Person
+    from src.simulation.people.person.scheduler.task.task import Task
+    from src.simulation.people.person.scheduler.task.task_type import TaskType
+    from src.simulation.simulation import Simulation
 
 
 class Scheduler:

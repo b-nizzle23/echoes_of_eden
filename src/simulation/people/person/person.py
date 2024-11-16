@@ -89,7 +89,7 @@ class Person:
         return self._scheduler
 
     def get_work_structures(self) -> List[Location]:
-        logger.info(f"{self._name} is getting all work structures")
+        logger.info(f"getting all structures {self._name} is working on.")
         structures: List[Structure] = []
         for task in self._scheduler.get_all_tasks():
             structure: Structure = task.get_work_structure()

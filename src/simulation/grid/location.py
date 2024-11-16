@@ -8,6 +8,14 @@ class Location:
         self.x = x
         self.y = y
 
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Location):
+            return False
+        return isinstance(other, Location) and self.x == other.x and self.y == other.y
+
+    def __hash__(self) -> int:
+        return hash((self.x, self.y))
+
     def distance_to(self, other: "Location") -> float:
         if not isinstance(other, Location):
             raise ValueError("Argument must be a Location instance")

@@ -30,7 +30,7 @@ class Person:
         self._location: Location = location
 
         self._backpack = Backpack()
-        self._memory: Memories = Memories(simulation.get_grid())
+        self._memories: Memories = Memories(simulation.get_grid())
         self._navigator: Navigator = Navigator(simulation, self)
 
         self._health: int = 100
@@ -63,8 +63,8 @@ class Person:
     def get_backpack(self) -> Backpack:
         return self._backpack
 
-    def get_memory(self) -> Memories:
-        return self._memory
+    def get_memories(self) -> Memories:
+        return self._memories
 
     def get_name(self) -> str:
         return self._name
@@ -72,15 +72,15 @@ class Person:
     def exchange_memories(self, other: "Person") -> None:
         if not other:
             return
-        self._memory.combine(other.get_memory())
-        other.get_memory().combine(self._memory)
+        self._memories.combine(other.get_memories())
+        other.get_memories().combine(self._memories)
         logger.info(f"{self._name} is exchanging memories with {other.get_name}")
 
     def get_empties(self) -> List[Location]:
-        return list(self._memory.get_empty_locations())
+        return list(self._memories.get_empty_locations())
 
     def get_buildings(self) -> List[Location]:
-        return list(self._memory.get_building_locations())
+        return list(self._memories.get_building_locations())
 
     def get_scheduler(self) -> Scheduler:
         return self._scheduler
@@ -178,10 +178,13 @@ class Person:
         self._scheduler.add(task_type)
         logger.info(f"{self._name} added task '{task_type}' to scheduler")
 
-    def update_rewards(self, reward: int, task_type: TaskType) -> None:
+    def update_scheduler_rewards(self, reward: int, task_type: TaskType) -> None:
         old_reward = self._rewards.get(task_type, 0)
         self._rewards[task_type] = old_reward + reward
         logger.debug(f"Updated rewards for {self._name}: '{task_type}' reward changed from {old_reward} to {self._rewards[task_type]}")
+
+    def update_navigator_rewards(self, y: float):
+        self._navigator.update_reward(y)
 
     def get_location(self) -> Location:
         return self._location
@@ -292,13 +295,13 @@ class Person:
         self._age += 1
 
     def get_home_locations(self):
-        return self._memory.get_home_locations()
+        return self._memories.get_home_locations()
 
     def is_stuck(self) -> bool:
         return self._navigator.is_stuck()
 
     def go_to_location(self, location: Location) -> None:
-        self._navigator.go_to_location(location)
+        self._navigator.move_to_location(location)
 
     def explore(self) -> None:
         """Explore the area to search for buildings."""

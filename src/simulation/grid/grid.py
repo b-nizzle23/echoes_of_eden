@@ -12,9 +12,9 @@ from src.simulation.grid.structure.work.work import Work
 from src.simulation.grid.structure_generator import StructureGenerator
 from src.simulation.grid.temperature import get_temperature_for_day
 from src.simulation.simulation import Simulation
-from structure.structure import Structure
-from grid_generator import GridGenerator
-from location import Location
+from src.simulation.grid.structure.structure import Structure
+from src.simulation.grid.grid_generator import GridGenerator
+from src.simulation.grid.location import Location
 from src.logger import logger
 
 from src.simulation.grid.structure.structure_factory import StructureFactory

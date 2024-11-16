@@ -18,12 +18,14 @@ class Work(Structure, ABC):
         max_worker_count: int,
         max_work_count: int,
         yield_func: Callable[[], float],
+        yield_variance: float
     ):
         super().__init__(grid, location, width, height, char)
         self._max_worker_count = max_worker_count
         self._max_work_count = max_work_count
         self._workers: Dict[Person, int] = {}
         self._yield_func: Callable[[], float] = yield_func
+        self._yield_variance: float = yield_variance
         self._decrease_yield_time: int = 0
     
     def set_yield_func(self, yield_func: Callable[[], float]):
@@ -77,7 +79,7 @@ class Work(Structure, ABC):
         """
         Each subclass should define how to generate the yield, if needed.
         """
-        return self._yield_func()
+        return self._yield_func() + self._yield_variance
 
     def exchange_worker_memories(self):
         workers: List[Person] = list(self._workers.keys())

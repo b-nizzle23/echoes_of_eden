@@ -2,11 +2,11 @@ from typing import List, Iterator, Dict
 
 from people_generator import PeopleGenerator
 from person.person import Person
-from .home_manager import HomeManager
-from ..grid.grid import Grid
+from src.simulation.people.home_manager import HomeManager
+from src.simulation.grid.grid import Grid
 
-from ..simulation import Simulation
-from .people_disaster_generator import PeopleDisasterGenerator
+from src.simulation.simulation import Simulation
+from src.simulation.people.people_disaster_generator import PeopleDisasterGenerator
 
 
 class People:

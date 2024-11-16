@@ -12,4 +12,5 @@ class Tree(Work):
         max_worker_count: int = 1
         max_work_count: int = 2
         yield_func: Callable[[], float] = lambda: np.random.normal(loc=3, scale=1)
-        super().__init__(grid, location, 1, 1, "*", max_worker_count, max_work_count, yield_func)
+        yield_variance = np.random.normal(loc = 3, scale = 0.9)
+        super().__init__(grid, location, 1, 1, "*", max_worker_count, max_work_count, yield_func, yield_variance)

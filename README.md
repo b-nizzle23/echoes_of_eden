@@ -17,6 +17,4 @@
    - `poetry run isort src/**/*.py`
    - `poetry run autoflake --in-place --remove-unused-variables src/**/*.py`
 
-## Libraries to look into
-
-rich - colors to the terminal
+## Licence

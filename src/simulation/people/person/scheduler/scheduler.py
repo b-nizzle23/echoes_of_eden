@@ -17,9 +17,7 @@ class Scheduler:
         self._last_added_time = 0  # Timestamp for when the last task was added
         self._interruption_threshold = 3  # Initial threshold for interruptions
         self._max_interruption_threshold = 10  # Maximum interruption threshold
-        self._simulation = (
-            simulation  # Store the simulation reference to access the time
-        )
+        self._simulation = simulation
 
     def get_all_tasks(self):
         return self._all_tasks
@@ -41,7 +39,7 @@ class Scheduler:
             if unique:
                 self._all_tasks.append(task)
                 heapq.heappush(self._tasks, task)
-                self._last_added_time = self._get_current_time()
+                self._last_added_time = self._get_time()
 
     def _add(self, task: Optional[Task]) -> None:
         if task:
@@ -50,15 +48,15 @@ class Scheduler:
     def _pop(self) -> Optional[Task]:
         return heapq.heappop(self._tasks) if self._tasks else None
 
-    def _get_current_time(self) -> int:
-        return self._simulation.get_current_time()
+    def _get_time(self) -> int:
+        return self._simulation.get_time()
 
     def _calculate_dynamic_threshold(self) -> int:
         # Calculate dynamic interruption threshold based on the current state
         base_threshold = max(1, len(self._tasks) // 2)
 
         task_addition_rate_factor = (
-            1 if self._get_current_time() - self._last_added_time > 1 else 2
+            1 if self._get_time() - self._last_added_time > 1 else 2
         )
 
         if self._current_task:

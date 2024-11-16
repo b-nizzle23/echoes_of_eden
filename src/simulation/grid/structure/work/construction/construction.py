@@ -21,6 +21,7 @@ class Construction(Work, ABC):
         finished_completion_level: int,  # Target completion level for this construction
     ):
         yield_func = lambda: 1
+        yield_variance = 0
         super().__init__(
             grid,
             location,
@@ -29,7 +30,8 @@ class Construction(Work, ABC):
             char,
             max_worker_count,
             max_work_count,
-            yield_func
+            yield_func,
+            yield_variance
         )
         self._required_wood: int = required_wood  # Total wood required for construction
         self._required_stone: int = (

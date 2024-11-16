@@ -1,5 +1,7 @@
+from src.settings import settings
 from src.simulation.grid.structure.store.home import Home
 from src.simulation.grid.structure.structure import Structure
+from src.simulation.people.person.scheduler.task.task_type import TaskType
 from task import Task
 from typing import override, Optional
 
@@ -9,7 +11,10 @@ from src.simulation.simulation import Simulation
 
 class FindHome(Task):
     def __init__(self, simulation: Simulation, person: Person) -> None:
-        super().__init__(simulation, person, 5)
+        super().__init__(simulation,
+                         person,
+                         settings.get("find_home_priority", 5),
+                         TaskType.FIND_HOME)
 
     @override
     def execute(self) -> None:

@@ -2,6 +2,7 @@ import random
 from copy import deepcopy
 from typing import List
 
+from src.settings import settings
 from src.simulation.grid.location import Location
 from src.simulation.grid.structure.store.home import Home
 from src.simulation.people.person.person import Person
@@ -30,7 +31,9 @@ class PeopleGenerator:
         for pk in range(self._max_pk):
             name: str = random.choice(names)
             location: Location = deepcopy(random.choice(empty_spots_near_town))
-            age: int = random.randint(20, 30)
+            age: int = random.randint(
+                settings.get("inital_spawn_age_min", 20),
+                settings.get("inital_spawn_age_max", 30))
             person: Person = Person(self._simulation, name, pk, location, age)
             people.append(person)
         return people

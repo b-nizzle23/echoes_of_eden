@@ -10,7 +10,7 @@ from src.settings import settings
 class Home(Store):
     def __init__(self, grid: Grid, location: Location) -> None:
         # Home only stores food, with a maximum of 36
-        allowed_resources = {"food": settings.get("home_store_food", 36)}  # Only food can be stored
+        allowed_resources = {"food": settings.get("home_food_store", 36)}  # Only food can be stored
         super().__init__(grid, location,
                          settings.get("home_size", 2),
                          settings.get("home_size", 2),

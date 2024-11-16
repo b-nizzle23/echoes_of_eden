@@ -2,6 +2,7 @@ from typing import List, Iterator, Dict
 
 from people_generator import PeopleGenerator
 from person.person import Person
+from src.settings import settings
 from src.simulation.people.home_manager import HomeManager
 from src.simulation.grid.grid import Grid
 
@@ -58,7 +59,7 @@ class People:
         for person in self._people:
             person.get_scheduler().flush()
 
-    def generate_disasters(self, chance: float = 0.50) -> None:
+    def generate_disasters(self, chance: float = settings.get("disaster_chance", 0.50)) -> None:
         self._disaster_generator.generate(chance)
 
     def print(self) -> None:
@@ -89,10 +90,10 @@ class People:
     def make_babies(self) -> None:
         for person in self.get_married_people():
             if (
-                (person.get_age() >= 18)
-                and (person.get_age() <= 50)
-                and (person.get_spouse().get_age() >= 18)
-                and (person.get_spouse().get_age() <= 50)
+                (person.get_age() >= settings.get("adult_age", 18))
+                and (person.get_age() <= settings.get("infertile_age", 50))
+                and (person.get_spouse().get_age() >= settings.get("adult_age", 18))
+                and (person.get_spouse().get_age() <= settings.get("infertile_age", 50))
             ):
                 # create a baby next to the person's house
                 baby = self._people_generator.make_baby(

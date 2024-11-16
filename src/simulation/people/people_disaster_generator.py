@@ -1,6 +1,7 @@
 import random
 from typing import Dict
 
+from src.settings import settings
 from src.simulation.people.people import People
 from src.simulation.grid.location import Location
 from src.simulation.people.person.scheduler.scheduler import Scheduler
@@ -75,13 +76,13 @@ class PeopleDisasterGenerator:
         """Person gets sick, losing health."""
         affected_people = self._get_affected_people(severity, 0.1)
         for person in affected_people:
-            person.set_health(-30) # arbitrary decrement value
+            person.set_health(settings.get("sick_health_decr", -30)) # arbitrary decrement value
 
     def _craving(self, severity: int) -> None:
         """Craving causes hunger to increase."""
         affected_people = self._get_affected_people(severity, 0.1)
         for person in affected_people:
-            person.set_hunger(-30) # arbitrary decrement value
+            person.set_hunger(settings.get("sick_hunger_decr", -30)) # arbitrary decrement value
 
     def _death(self, severity: int) -> None:
         """A person dies."""

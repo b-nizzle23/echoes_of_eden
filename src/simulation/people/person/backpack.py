@@ -1,12 +1,17 @@
 from typing import Dict, Optional
 
+from src.settings import settings
+
 
 class Backpack:
     def __init__(self):
         allowed_resources: Dict[str, int] = {
-            "food": 100,
-            "stone": 50,
-            "wood": 50,
+            settings.get("food", "food"):
+                settings.get("backpack_food_store", 100),
+            settings.get("stone", "stone"):
+                settings.get("backpack_stone_store", 50),
+            settings.get("wood", "wood"):
+                settings.get("backpack_wood_store", 50),
         }  # Resources and their max capacities
         # Initialize the resources dictionary with allowed resources
         self.resources = {resource: 0 for resource in allowed_resources}

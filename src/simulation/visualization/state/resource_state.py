@@ -1,5 +1,6 @@
 from typing import List
 
+from src.settings import settings
 from src.simulation.grid.grid import Grid
 from src.simulation.grid.structure.store.barn import Barn
 from src.simulation.visualization.state.state import State
@@ -20,19 +21,19 @@ class ResourceState(State):
     def _get_total_food(self) -> int:
         total_food = 0
         for barn in self._barns:
-            total_food += barn.get_resource("food")
+            total_food += barn.get_resource(settings.get("food", "food"))
         return total_food
 
     def _get_total_stone(self) -> int:
         total_stone = 0
         for barn in self._barns:
-            total_stone += barn.get_resource("stone")
+            total_stone += barn.get_resource(settings.get("stone", "stone"))
         return total_stone
 
     def _get_total_wood(self) -> int:
         total_wood = 0
         for barn in self._barns:
-            total_wood += barn.get_resource("wood")
+            total_wood += barn.get_resource(settings.get("wood", "wood"))
         return total_wood
 
     def _get_total_barn_capacity(self) -> int:

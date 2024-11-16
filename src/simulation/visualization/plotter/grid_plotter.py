@@ -7,6 +7,8 @@ import seaborn as sns
 from matplotlib import colors
 from tqdm import tqdm
 
+from src.settings import settings
+
 
 class GridPlotter:
     def __init__(self):
@@ -28,7 +30,9 @@ class GridPlotter:
         return self._color_map[char]
 
     def add(self, year: int, grid: List[List[str]]) -> None:
-        fig, ax = plt.subplots(figsize=(8, 8))  # Adjust size as needed
+        fig, ax = plt.subplots(figsize=(
+            settings.get("fig_size", 8),
+            settings.get("fig_size", 8)))  # Adjust size as needed
         ax.set_title("Grid Snapshot")
         ax.set_xlabel("X Axis (Column index)")
         ax.set_ylabel("Y Axis (Row index)")
@@ -102,11 +106,23 @@ if __name__ == "__main__":
     plotter = GridPlotter()
 
     # Set grid size dynamically
-    grid_size = 100  # You can change this value
-    num_grids = 3
+    grid_size = settings.get("grid_size", 100)  # You can change this value
+    num_grids = settings.get("num_grids", 3)
 
     # Dynamically generate terrain types (characters 'a', 'b', 'c', etc.)
-    terrain_chars = [i for i in ["b", "B", "f", "F", "m", "M", "h", "H", " ", "*"]]
+    terrain_types = [
+        settings.get("home_construction_char", "h"),
+        settings.get("home_char", "H"),
+        settings.get("barn_construction_char", "b"),
+        settings.get("barn_char", "B"),
+        settings.get("farm_construction_char", "f"),
+        settings.get("farm_char", "F"),
+        settings.get("mine_construction_char", "m"),
+        settings.get("mine_char", "M"),
+        settings.get("empty_char", " "),
+        settings.get("tree_char", "*"),
+    ]
+    terrain_chars = [i for i in terrain_types]
 
     print(f"Generating {num_grids} test grids of size {grid_size}x{grid_size}...")
     test_grids = [
@@ -116,7 +132,7 @@ if __name__ == "__main__":
 
     print("Adding grids to plotter...")
     for test_grid in tqdm(test_grids, desc="Adding Grids to Plotter", ncols=100):
-        plotter.add(test_grid)
+        plotter.add(years, test_grid) # todo needs a years value for this method.
 
     print("Displaying slideshow...")
     plotter.show_slide_show(pause_time=2.0)

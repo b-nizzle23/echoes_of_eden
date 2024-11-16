@@ -1,5 +1,6 @@
 from typing import Set
 
+from src.settings import settings
 from src.simulation.grid.grid import Grid
 from src.simulation.grid.location import Location
 
@@ -39,39 +40,39 @@ class Memories:
         current_time = self._grid.get_time()
 
         # Remove expired memories
-        self._memories = {memory for memory in self._memories if current_time - memory.get_when() <= 50}
+        self._memories = {memory for memory in self._memories if current_time - memory.get_when() <= settings.get("memory_expire", 50)}
     
         return set(map(lambda memory: memory.get_where(), filter(lambda memory: memory.get_what() == char, self._memories)))
 
     def get_barn_locations(self) -> Set[Location]:
-        return self._get_locations("B")
+        return self._get_locations(settings.get("barn_char", "B"))
 
     def get_barn_construction_locations(self) -> Set[Location]:
-        return self._get_locations("b")
+        return self._get_locations(settings.get("barn_construction_char", "b"))
 
     def get_farm_locations(self) -> Set[Location]:
-        return self._get_locations("F")
+        return self._get_locations(settings.get("farm_char", "F"))
 
     def get_farm_construction_locations(self) -> Set[Location]:
-        return self._get_locations("f")
+        return self._get_locations(settings.get("farm_construction_char", "f"))
 
     def get_mine_locations(self) -> Set[Location]:
-        return self._get_locations("M")
+        return self._get_locations(settings.get("mine_char", "M"))
 
     def get_mine_construction_locations(self) -> Set[Location]:
-        return self._get_locations("m")
+        return self._get_locations(settings.get("mine_construction_char", "m"))
 
     def get_home_locations(self) -> Set[Location]:
-        return self._get_locations("H")
+        return self._get_locations(settings.get("home_char", "H"))
 
     def get_home_construction_locations(self) -> Set[Location]:
-        return self._get_locations("h")
+        return self._get_locations(settings.get("home_construction_char", "h"))
 
     def get_tree_locations(self) -> Set[Location]:
-        return self._get_locations("*")
+        return self._get_locations(settings.get("tree_char", "*"))
 
     def get_empty_locations(self) -> Set[Location]:
-        return self._get_locations(" ")
+        return self._get_locations(settings.get("empty_char", " "))
 
     def get_building_locations(self) -> Set[Location]:
         return self.get_barn_locations() | self.get_farm_locations() | self.get_mine_locations() | self.get_home_locations()

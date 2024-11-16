@@ -1,10 +1,12 @@
 from typing import override, Optional
 
+from src.settings import settings
 from src.simulation.grid.structure.store.barn import Barn
 from src.simulation.grid.structure.store.home import Home
 from src.simulation.grid.structure.structure import Structure
 from src.simulation.grid.structure.structure_type import StructureType
 from src.simulation.people.person.movement.move_result import MoveResult
+from src.simulation.people.person.scheduler.task.task_type import TaskType
 
 from task import Task
 
@@ -14,7 +16,10 @@ from src.simulation.simulation import Simulation
 
 class Eat(Task):
     def __init__(self, simulation: Simulation, person: Person) -> None:
-        super().__init__(simulation, person, 5)
+        super().__init__(simulation,
+                         person,
+                         settings.get("eat_priority", 5),
+                         TaskType.EAT)
 
         self._home: Optional[Home] = None
         self._barn: Optional[Barn] = None
@@ -44,7 +49,8 @@ class Eat(Task):
 
     def _deposit_food_at_home(self) -> None:
         self._person.move_to_home()
-        self._home.add_resource("food", self._food)
+        self._home.add_resource(settings.get("food", "food"),
+                                self._food)
         self._food = 0
 
     def _eat_at_home(self) -> None:
@@ -53,14 +59,16 @@ class Eat(Task):
 
     def _acquire_food_from_barn(self) -> None:
         if not self._barn:
-            move_result: MoveResult = self._person.move_to_workable_structure(StructureType.BARN, "food")
+            move_result: MoveResult = self._person.move_to_workable_structure(StructureType.BARN,
+                                                                              settings.get("food", "food"))
             if move_result.has_failed():
                 self._finished(False)
                 return 
             self._barn = move_result.get_structure()
 
         if self._barn:
-            self._food = self._barn.remove_resource("food", self._home.get_capacity())
+            self._food = self._barn.remove_resource(settings.get("food", "food"),
+                                                    self._home.get_capacity())
             # if the barn has no food, start working a farm to get food
             if self._food <= 0:
                 self._person.work_farm()
@@ -68,7 +76,7 @@ class Eat(Task):
     def _handle_barn_food_logic(self) -> None:
         if not self._barn:
             move_result: MoveResult = self._person.move_to_workable_structure(
-                StructureType.BARN, "food"
+                StructureType.BARN, settings.get("food", "food")
             )
             if move_result.has_failed():
                 self._finished(False)
@@ -77,7 +85,7 @@ class Eat(Task):
 
         if self._barn:
             # if the barn is out of food, go work the farm to get some food
-            if self._barn.get_resource("food") <= 0:
+            if self._barn.get_resource(settings.get("food", "food")) <= 0:
                 self._person.work_farm()
             else:
                 self._person.eat(self._barn)

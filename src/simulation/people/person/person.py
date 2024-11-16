@@ -5,6 +5,7 @@ import random
 
 from scheduler.scheduler import Scheduler
 from scheduler.task.task_type import TaskType
+from src.settings import settings
 from src.simulation.grid.structure.store.barn import Barn
 from src.simulation.grid.structure.store.home import Home
 
@@ -32,22 +33,20 @@ class Person:
         self._memories: Memories = Memories(simulation.get_grid())
         self._navigator: Navigator = Navigator(simulation, self)
 
-        self._health: int = 100
+        self._health: int = settings.get("person_health_cap", 100)
         self._hunger: int = (
-            100  # when your hunger gets below 25, health starts going down; when it gets above 75, health starts going up
+            settings.get("person_hunger_cap", 100)  # when your hunger gets below 25, health starts going down; when it gets above 75, health starts going up
         )
         self._home: Optional[Home] = None
         self._spouse: Optional[Person] = None
         self._scheduler: Scheduler = Scheduler(simulation, self)
-        self._max_time: int = 10
+        self._max_time: int = settings.get("person_max_time", 10)
 
         # preferences per person
-        self._hunger_preference: int = random.randint(50, 100)
-        self._spouse_preference: bool = random.choice([True, False])
-        self._house_preference: bool = random.choice([True, False])
-
-        # preferences per person
-        self._hunger_preference: int = random.randint(50, 100)
+        self._hunger_preference: int = random.randint(
+            settings.get("hunger_pref_min", 50),
+            settings.get("hunger_pref_max", 100)
+        )
         self._spouse_preference: bool = random.choice([True, False])
         self._house_preference: bool = random.choice([True, False])
 
@@ -99,9 +98,9 @@ class Person:
 
     def take_action(self) -> None:
         self._hunger -= 1
-        if self._hunger < 20:
+        if self._hunger < settings.get("hunger_damage_threshold", 20):
             self._health -= 1
-        elif self._hunger > 50:
+        elif self._hunger > settings.get("hunger_regen_threshold", 50):
             self._health += 1
 
         self._add_tasks()
@@ -141,7 +140,7 @@ class Person:
         if not self._backpack.has_capacity():
             return
         keys: list = list(self._rewards.keys())
-        epsilon: float = 0.05
+        epsilon: float = settings.get("person_epsilon", 0.05)
         if np.random.rand() < epsilon:
             # Exploration: randomly select an action
             random_index: int = np.random.randint(0, len(keys) - 1)
@@ -177,24 +176,24 @@ class Person:
         self._location = other
 
     def is_dead(self) -> bool:
-        return self._health <= 0 or self._age >= 80
+        return self._health <= 0 or self._age >= settings.get("person_age_max", 80)
 
     def is_satiated(self) -> bool:
         return self.get_hunger() >= self.get_hunger_preference()
 
     def eat(self, building: Barn | Home) -> None:
         if isinstance(building, Home):
-            self._hunger = min(self._hunger + 10, 100)
+            self._hunger = min(self._hunger + settings.get("home_eat_satiate", 10), 100)      # todo is this a reiteration of set_hunger() logic??????
         else:
             self._hunger = min(
-                self._hunger + 5, 100
+                self._hunger + settings.get("barn_eat_satiate", 5), 100
             )  # eating in a barn is less effective
-        building.remove_resource("food", 3)
+        building.remove_resource(settings.get("food", "food"), 3)
 
     def set_hunger(self, hunger: int) -> None:
         self._hunger += hunger
         self._hunger = max(self._hunger, 0)
-        self._hunger = min(self._hunger, 100)
+        self._hunger = min(self._hunger, settings.get("person_hunger_cap", 100))
 
     def assign_spouse(self, spouse: "Person") -> None:
         self._spouse = spouse
@@ -227,7 +226,7 @@ class Person:
     def set_health(self, health: int) -> None:
         self._health += health
         self._health = max(self._health, 0)
-        self._health = min(self._health, 100)
+        self._health = min(self._health, settings.get("person_health_cap", 100))
 
     def has_home(self) -> bool:
         return self._home is not None

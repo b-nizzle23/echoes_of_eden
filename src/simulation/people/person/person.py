@@ -77,7 +77,7 @@ class Person:
             return
         self._memories.combine(other.get_memories())
         other.get_memories().combine(self._memories)
-        logger.info(f"{self._name} is exchanging memories with {other.get_name}")
+        logger.info(f"{self._name} is exchanging memories with {other.get_name()}")
 
     def get_empties(self) -> List[Location]:
         return list(self._memories.get_empty_locations())

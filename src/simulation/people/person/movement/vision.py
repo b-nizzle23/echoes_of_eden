@@ -55,9 +55,9 @@ class Vision:
     def _process_location(
         self, memory: Memories, blocked: set[Location], location: Location
     ) -> None:
-        if not self._grid.is_location_in_bounds(
+        if not self._grid.is_in_bounds(
             location
-        ) or not self._grid.is_valid_location_for_person(location):
+        ) or not self._grid.is_empty(location):
             return
 
         if self._is_blocking_object(location, memory):

@@ -31,6 +31,7 @@ class StructureGenerator:
                 # Skip empty spaces or trees
                 if self._grid.is_empty(location):
                     continue
+
                 if self._grid.is_tree(location):
                     structure_type = StructureType.TREE
                 elif self._grid.is_barn(location):
@@ -52,7 +53,8 @@ class StructureGenerator:
                 else:
                     raise Exception("I see a char you didnt tell me about")
 
-                self._grid.find_top_left_corner(location)
+                if structure_type != StructureType.TREE:
+                    self._grid.find_top_left_corner(location)
 
                 # Create a new structure instance and associate it with the first location
                 # (we could use the top-left corner as the "representative" location for each structure)
@@ -62,25 +64,25 @@ class StructureGenerator:
                     )
                     if not structure:
                         continue
-
                     structures[location] = structure
+
         self._group_tree_yields(list(structures.values()))
+
         return structures
         
     def _group_tree_yields(self, structures: List[Structure]) -> None:
         trees: List[Tree] = []
-        for structure in structures:
-            if isinstance(structure, Tree):
-                trees.append(structure)
-    
+
         # Create a map from tree location to an index in the disjoint set
         tree_index: Dict[Location, int] = {}
         index: int = 0
-    
-        for tree in trees:
-            location: Location = tree.get_location()
-            tree_index[location] = index
-            index += 1
+
+        for structure in structures:
+            if isinstance(structure, Tree):
+                location: Location = structure.get_location()
+                tree_index[location] = index
+                index += 1
+                trees.append(structure)
     
         # Create a disjoint set for the number of trees
         ds: DisjointSet = DisjointSet(len(trees))

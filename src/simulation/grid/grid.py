@@ -137,39 +137,44 @@ class Grid:
         for i in range(rows):
             for j in range(cols):
                 # Check if the current cell is a building (or under construction)
-                if self._grid[i][j] in building_types:
-                    # Check all 8 directions around the current building location
-                    for dx, dy in directions:
-                        ni, nj = i + dx, j + dy
-                        # Ensure the new position is within bounds
-                        if 0 <= ni < rows and 0 <= nj < cols:
-                            # If it's an empty space, we add it as a candidate
-                            if self._grid[ni][nj] == " ":
-                                # Now, check if this empty space is adjacent to a tree ('*')
-                                is_adjacent_to_tree = False
-                                for ddx, ddy in directions:
-                                    nn_i, nn_j = ni + ddx, nj + ddy
-                                    if 0 <= nn_i < rows and 0 <= nn_j < cols and self._grid[nn_i][nn_j] == settings.get("tree_char", "*"):
-                                        is_adjacent_to_tree = True
-                                        break
+                if self._grid[i][j] not in building_types:
+                    continue
+                # Check all 8 directions around the current building location
+                for dx, dy in directions:
+                    ni, nj = i + dx, j + dy
+                    # If it's an empty space, we add it as a candidate
+                    location: Location = Location(nj, ni)
+                    if not self.is_in_bounds(location):
+                        continue
+                    if not self.is_empty(location):
+                        continue
 
-                                # Add the empty space if it's not adjacent to a tree
-                                if not is_adjacent_to_tree:
-                                    empty_spots.append(Location(ni, nj))
+                    # Now, check if this empty space is adjacent to a tree ('*')
+                    is_adjacent_to_tree = False
+                    for ddx, ddy in directions:
+                        nn_i, nn_j = ni + ddx, nj + ddy
+                        neighbor: Location = Location(nn_j, nn_i)
+                        if 0 <= nn_i < rows and 0 <= nn_j < cols and self.is_tree(neighbor):
+                            is_adjacent_to_tree = True
+                            break
+
+                    # Add the empty space if it's not adjacent to a tree
+                    if not is_adjacent_to_tree:
+                        empty_spots.append(location)
 
         return empty_spots
 
     def grow_trees(self, chance: int = 0.10) -> None:
         for i in range(len(self._grid)):
             for j in range(len(self._grid[i])):
-                location: Location = Location(i, j)
+                location: Location = Location(j, i)
                 tree: Structure = self._structures[location]
                 if not isinstance(tree, Tree):
                     continue
                 neighbors: List[Location] = location.get_neighbors()
                 random.shuffle(neighbors)
                 for neighbor in neighbors:
-                    if not self.is_location_in_bounds(neighbor) or not self.is_empty(neighbor):
+                    if not self.is_in_bounds(neighbor) or not self.is_empty(neighbor):
                         continue
                     if random.random() < chance:
                         self._grid[neighbor.y][neighbor.x] = settings.get("tree_char", "*")  # Place a tree here
@@ -228,16 +233,13 @@ class Grid:
                 neighbor = Location(location.x + dx, location.y + dy)
 
                 # Check if the neighbor is within bounds and is empty
-                if self.is_location_in_bounds(neighbor) and self.is_empty(neighbor):
+                if self.is_in_bounds(neighbor) and self.is_empty(neighbor):
                     return neighbor
 
         # If no open spot was found, return None
         return None
 
-    def is_valid_location_for_person(self, location: Location) -> bool:
-        return self.is_empty(location)
-
-    def is_location_in_bounds(self, location: Location) -> bool:
+    def is_in_bounds(self, location: Location) -> bool:
         return 0 <= location.x < self._width and 0 <= location.y < self._height
 
     def get_path_finding_matrix(self) -> List[List[int]]:
@@ -272,36 +274,36 @@ class Grid:
         return path_finding_matrix
 
     def is_tree(self, location: Location) -> bool:
-        return self._is_item(location, settings.get("tree_char", "*"))
+        return self.is_char(location, settings.get("tree_char", "*"))
 
     def is_barn(self, location: Location) -> bool:
-        return self._is_item(location, settings.get("barn_char", "B"))
+        return self.is_char(location, settings.get("barn_char", "B"))
 
     def is_construction_barn(self, location: Location) -> bool:
-        return self._is_item(location, settings.get("barn_construction_char", "b"))
+        return self.is_char(location, settings.get("barn_construction_char", "b"))
 
     def is_home(self, location: Location) -> bool:
-        return self._is_item(location, settings.get("home_char", "H"))
+        return self.is_char(location, settings.get("home_char", "H"))
 
     def is_construction_home(self, location: Location) -> bool:
-        return self._is_item(location, settings.get("home_construction_char", "h"))
+        return self.is_char(location, settings.get("home_construction_char", "h"))
 
     def is_farm(self, location: Location) -> bool:
-        return self._is_item(location, settings.get("farm_char", "F"))
+        return self.is_char(location, settings.get("farm_char", "F"))
 
     def is_construction_farm(self, location: Location) -> bool:
-        return self._is_item(location, settings.get("farm_construction_char", "f"))
+        return self.is_char(location, settings.get("farm_construction_char", "f"))
 
     def is_mine(self, location: Location) -> bool:
-        return self._is_item(location, settings.get("mine_char", "M"))
+        return self.is_char(location, settings.get("mine_char", "M"))
 
     def is_construction_mine(self, location: Location) -> bool:
-        return self._is_item(location, settings.get("mine_construction_char", "m"))
+        return self.is_char(location, settings.get("mine_construction_char", "m"))
 
     def is_empty(self, location: Location) -> bool:
-        return self._is_item(location, settings.get("empty_char", " "))
+        return self.is_char(location, settings.get("empty_char", " "))
 
-    def _is_item(self, location: Location, char: str) -> bool:
+    def is_char(self, location: Location, char: str) -> bool:
         return self._grid[location.y][location.x] == char
 
     def get_width(self) -> int:

@@ -32,9 +32,9 @@ class Mover:
         self.towards(random_location)
 
     def towards(self, target: Location) -> None:
-        if not self._grid.is_location_in_bounds(
+        if not self._grid.is_in_bounds(
             target
-        ) or not self._grid.is_valid_location_for_person(target):
+        ) or not self._grid.is_empty(target):
             return
 
         for _ in range(self._speed):
@@ -83,9 +83,9 @@ class Mover:
         current_location = copy(self._person.get_location())
         if not current_location.is_one_away(location):
             raise ValueError(f"Location is not one away: {location}")
-        if not self._grid.is_location_in_bounds(
+        if not self._grid.is_in_bounds(
             location
-        ) or not self._grid.is_valid_location_for_person(location):
+        ) or not self._grid.is_empty(location):
             raise ValueError(f"Location is not valid: {location}")
         self._person.set_location(location)
 
@@ -94,9 +94,9 @@ class Mover:
             x = randint(0, self._grid.get_width() - 1)
             y = randint(0, self._grid.get_height() - 1)
             location = Location(x, y)
-            if self._grid.is_location_in_bounds(
+            if self._grid.is_in_bounds(
                 location
-            ) and self._grid.is_valid_location_for_person(location):
+            ) and self._grid.is_empty(location):
                 return location
 
     def _get_path(
@@ -105,9 +105,9 @@ class Mover:
         path_finding_grid: PathFindingGrid,
         target: Location,
     ) -> List[PathFindingGridNode]:
-        if not self._grid.is_location_in_bounds(
+        if not self._grid.is_in_bounds(
             current_location
-        ) or not self._grid.is_valid_location_for_person(current_location):
+        ) or not self._grid.is_empty(current_location):
             raise ValueError("Person out of bounds")
 
         start_node = path_finding_grid.node(current_location.y, current_location.x)

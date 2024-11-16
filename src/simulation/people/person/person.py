@@ -37,9 +37,10 @@ class Person:
         self._navigator: Navigator = Navigator(simulation, self)
 
         self._health: int = settings.get("person_health_cap", 100)
-        self._hunger: int = (
-            settings.get("person_hunger_cap", 100)  # when your hunger gets below 25, health starts going down; when it gets above 75, health starts going up
-        )
+
+        # when your hunger gets below 25, health starts going down; when it gets above 75, health starts going up
+        self._hunger: int = settings.get("person_hunger_cap", 100)
+
         self._home: Optional[Home] = None
         self._spouse: Optional[Person] = None
         self._scheduler: Scheduler = Scheduler(simulation, self)
@@ -50,8 +51,8 @@ class Person:
             settings.get("hunger_pref_min", 50),
             settings.get("hunger_pref_max", 100)
         )
-        self._spouse_preference: bool = random.choice([True, False])
-        self._house_preference: bool = random.choice([True, False])
+        self._spouse_preference: bool = random.choices([True, False], weights=[95, 5])[0]
+        self._house_preference: bool = random.choices([True, False], weights=[95, 5])[0]
 
         self._rewards: Dict[TaskType, int] = {}
     
@@ -174,7 +175,7 @@ class Person:
         return self._age
 
     def set_location(self, other: Location) -> None:
-        if not self._simulation.get_grid().is_location_in_bounds(other):
+        if not self._simulation.get_grid().is_in_bounds(other):
             raise Exception("You tried to put a person outside of the map")
         self._location = other
 

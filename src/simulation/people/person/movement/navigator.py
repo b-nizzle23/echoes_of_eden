@@ -29,6 +29,8 @@ class Navigator:
         self._structure: Optional[Structure] = None
         self._mover: Mover = Mover(simulation.get_grid(), person, person.get_memories(), settings.get("speed", 10))
         self._turn_count: int = 0
+
+        # when to start looking for new place of work
         actions_per_year = simulation.actions_per_year()
         self._epsilon_reset = int(np.random.uniform(50, actions_per_year))
 

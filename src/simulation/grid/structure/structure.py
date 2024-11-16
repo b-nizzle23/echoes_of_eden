@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 
 from typing import TYPE_CHECKING
 
+from src.settings import settings
 from src.simulation.grid.location import Location
 
 if TYPE_CHECKING:
@@ -24,7 +25,8 @@ class Structure(ABC):
         self._width: int = width
         self._height: int = height
         self._char: str = char
-        self._add_structure_on_grid()
+        if not self._grid.is_char(location, char): # this is important for the first pass on the grid
+            self._add_structure_on_grid()
 
     def _validate_structure_area(self, is_adding: bool) -> None:
         """
@@ -39,7 +41,7 @@ class Structure(ABC):
                 location = Location(self._location.x + dx, self._location.y + dy)
     
                 # Check if the location is within bounds
-                if not self._grid.is_location_in_bounds(location):
+                if not self._grid.is_in_bounds(location):
                     raise ValueError(f"Location {location} is out of bounds")
     
                 # Check if adding: location must be empty or contain a tree
@@ -57,6 +59,8 @@ class Structure(ABC):
         and ensuring no overlap with existing structures or trees.
         Construction can only start once all required resources are delivered.
         """
+        if self._char == settings.get("tree_char", "*"):
+            return
         # Validate the area before placing the structure
         self._validate_structure_area(is_adding=True)
     
@@ -83,7 +87,7 @@ class Structure(ABC):
             for dx in range(self._width):
                 location = Location(self._location.x + dx, self._location.y + dy)
                 # Clear the cell (remove the structure)
-                self._grid.get_grid()[location.y][location.x] = " "
+                self._grid.get_grid()[location.y][location.x] = settings.get("empty_char", " ")
 
     def get_location(self):
         return self._location

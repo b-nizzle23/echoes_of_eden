@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import TYPE_CHECKING, List, Iterator, Dict
 
 from src.simulation.people.people_generator import PeopleGenerator
@@ -20,9 +21,7 @@ class People:
         self._actions_per_day: int = actions_per_day
         self._people_generator: PeopleGenerator = PeopleGenerator(simulation)
         self._people: List[Person] = self._people_generator.generate()
-        self._disaster_generator: PeopleDisasterGenerator = PeopleDisasterGenerator(
-            self
-        )
+        self._disaster_generator: PeopleDisasterGenerator = PeopleDisasterGenerator(self)
         self._home_manager: HomeManager = HomeManager(self)
 
     def take_actions_for_day(self) -> None:
@@ -100,7 +99,7 @@ class People:
             ):
                 # create a baby next to the person's house
                 baby = self._people_generator.make_baby(
-                    person.get_home().get_location()
+                    deepcopy(person.get_location())
                 )
                 self._people.append(baby)
 

@@ -105,9 +105,7 @@ class Mover:
         path_finding_grid: PathFindingGrid,
         target: Location,
     ) -> List[PathFindingGridNode]:
-        if not self._grid.is_in_bounds(
-            current_location
-        ) or not self._grid.is_empty(current_location):
+        if not self._grid.is_in_bounds(current_location) or not self._grid.is_empty(current_location):
             raise ValueError("Person out of bounds")
 
         start_node = path_finding_grid.node(current_location.y, current_location.x)

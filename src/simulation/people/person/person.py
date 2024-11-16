@@ -66,11 +66,15 @@ class Person:
     def get_memory(self) -> Memories:
         return self._memory
 
+    def get_name(self) -> str:
+        return self._name
+
     def exchange_memories(self, other: "Person") -> None:
         if not other:
             return
         self._memory.combine(other.get_memory())
         other.get_memory().combine(self._memory)
+        logger.info(f"{self._name} is exchanging memories with {other.get_name}")
 
     def get_empties(self) -> List[Location]:
         return list(self._memory.get_empty_locations())
@@ -82,6 +86,7 @@ class Person:
         return self._scheduler
 
     def get_work_structures(self) -> List[Location]:
+        logger.info(f"{self._name} is getting all work structures")
         structures: List[Structure] = []
         for task in self._scheduler.get_all_tasks():
             structure: Structure = task.get_work_structure()
@@ -207,12 +212,15 @@ class Person:
         return self.get_hunger() >= self.get_hunger_preference()
 
     def eat(self, building: Barn | Home) -> None:
+        logger.info(f"{self._name} is about to eat with hunger {self._hunger}")
         if isinstance(building, Home):
             self._hunger = min(self._hunger + 10, 100)
+            logger.debug(f"{self._name} ate at home and their hunger is now {self._hunger}")
         else:
             self._hunger = min(
                 self._hunger + 5, 100
             )  # eating in a barn is less effective
+            logger.debug(f"{self._name} ate in a barn and their hunger is now {self._hunger}")
         building.remove_resource("food", 3)
 
     def set_hunger(self, hunger: int) -> None:
@@ -227,9 +235,10 @@ class Person:
         if not self._spouse:
             logger.warning(f"{self._name} has no spouse to divorce")
             return
+        old_spouse: Person = self._spouse
         self.get_spouse().leave_spouse()
         self._spouse = None
-        logger.info(f"{self._name} has divorced their spouse")
+        logger.info(f"{self._name} has divorced their spouse {old_spouse}")
 
     def leave_spouse(self) -> None:
         self._home = None
@@ -263,7 +272,7 @@ class Person:
     def set_health(self, health: int) -> None:
         old_health = self._health
         self._health = max(0, min(self._health + health, 100))
-        logger.debug(f"{self._name}'s health adjusted from {old_health} to {self._health}")
+        logger.info(f"{self._name}'s health adjusted from {old_health} to {self._health}")
 
     def has_home(self) -> bool:
         return self._home is not None

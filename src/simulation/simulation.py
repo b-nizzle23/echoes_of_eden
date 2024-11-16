@@ -1,6 +1,6 @@
-from grid.grid import Grid
-from people.people import People
-from visualization.visualizer import Visualizer
+from src.simulation.grid.grid import Grid
+from src.simulation.people.people import People
+from src.simulation.visualization.visualizer import Visualizer
 from src.settings import settings
 
 class Simulation:

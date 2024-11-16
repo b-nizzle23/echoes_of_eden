@@ -1,5 +1,3 @@
-from typing import override
-
 import numpy as np
 
 from src.simulation.grid.grid import Grid

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from ..grid import Grid
-from ..location import Location
+from src.simulation.grid.grid import Grid
+from src.simulation.grid.location import Location
 
 
 class Structure(ABC):

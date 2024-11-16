@@ -17,9 +17,7 @@ class Scheduler:
         self._last_added_time = 0  # Timestamp for when the last task was added
         self._interruption_threshold = 3  # Initial threshold for interruptions
         self._max_interruption_threshold = 10  # Maximum interruption threshold
-        self._simulation = (
-            simulation  # Store the simulation reference to access the time
-        )
+        self._simulation = simulation
 
     def get_all_tasks(self):
         return self._all_tasks

@@ -86,10 +86,12 @@ Stay organized and on track with your assignments and tasks!
 | 2024-11-12 | 3.5   | Brighton  | finished people think differently ticket, began building recognition ticket         |
 | 2024-11-13 | 5     | Nate      | complete spawn people, memories tickets                                             |
 | 2024-11-13 | 2     | Madi      | continue epsilon greedy for work tasks                                              |
+| 2024-11-13 | 1.16  | Ann Marie | people build before starting new construction                                       |
 | 2024-11-14 | 5     | Nate      | Groves of trees have the same yeild ticket, meet with brighton                      |
 | 2024-11-14 | 2.5   | Madi      | continue epsilon greedy for work tasks                                              |
 | 2024-11-14 | 2.5   | Madi      | Fix epsilon greedy for work tasks with Nate                                         |
 | 2024-11-14 | 8     | Nate      | Groves of trees have the same yield ticket, meet with brighton, meet with madi      |
+| 2024-11-14 | 1     | Ann Marie | implemented logger in person.py                                                     |
 | 2024-11-15 | 0.5   | Nate      | Clean up code                                                                       |
 | 2024-11-16 |       |           |                                                                                     |
 | 2024-11-17 |       |           |                                                                                     |

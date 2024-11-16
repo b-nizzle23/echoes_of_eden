@@ -1,10 +1,14 @@
-from abc import ABC, abstractmethod
-from typing import Optional
+from __future__ import annotations
 
-from src.simulation.grid.structure.structure import Structure
-from src.simulation.people.person.person import Person
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Optional
+
 from src.simulation.people.person.scheduler.task.task_type import TaskType
-from src.simulation.simulation import Simulation
+
+if TYPE_CHECKING:
+    from src.simulation.simulation import Simulation
+    from src.simulation.people.person.person import Person
+    from src.simulation.grid.structure.structure import Structure
 
 
 class Task(ABC):
@@ -17,7 +21,7 @@ class Task(ABC):
         self._is_completed: bool = False
         self._task_type: TaskType = task_type
 
-    def __lt__(self, other: "Task") -> bool:
+    def __lt__(self, other: Task) -> bool:
         return self.get_priority() < other.get_priority()
 
     def get_interruptions(self) -> int:

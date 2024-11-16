@@ -1,10 +1,20 @@
 from typing import List
 
+from src.settings import settings
+
 
 class Location:
     def __init__(self, x: int, y: int) -> None:
         self.x = x
         self.y = y
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Location):
+            return False
+        return isinstance(other, Location) and self.x == other.x and self.y == other.y
+
+    def __hash__(self) -> int:
+        return hash((self.x, self.y))
 
     def distance_to(self, other: "Location") -> float:
         if not isinstance(other, Location):
@@ -33,7 +43,7 @@ class Location:
 
         return neighbors
 
-    def is_near(self, location: "Location", distance: int = 5) -> bool:
+    def is_near(self, location: "Location", distance: int = settings.get("near", 5)) -> bool:
         return self.distance_to(location) < distance
 
     def __copy__(self) -> "Location":

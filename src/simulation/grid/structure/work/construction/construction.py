@@ -1,9 +1,14 @@
+from __future__ import annotations
+
 from abc import ABC
-from typing import Optional, override
-from src.simulation.grid.grid import Grid
-from src.simulation.grid.location import Location
+from typing import TYPE_CHECKING, Optional, override
+
 from src.simulation.grid.structure.work.work import Work
-from src.simulation.people.person.person import Person
+
+if TYPE_CHECKING:
+    from src.simulation.grid.grid import Grid
+    from src.simulation.grid.location import Location
+    from src.simulation.people.person.person import Person
 
 
 class Construction(Work, ABC):

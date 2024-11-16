@@ -1,17 +1,12 @@
+from __future__ import annotations
+
 import random
 from copy import deepcopy
-from typing import Dict, List, Optional, Type
-
-from src.simulation.grid.structure.store.barn import Barn
-from src.simulation.grid.structure.store.home import Home
-from src.simulation.grid.structure.work.farm import Farm
-from src.simulation.grid.structure.work.mine import Mine
-from src.simulation.grid.structure.work.tree import Tree
-from src.simulation.grid.structure.work.work import Work
+from typing import TYPE_CHECKING, Dict, List, Optional, Type
+from src.settings import settings
 
 from src.simulation.grid.structure_generator import StructureGenerator
 from src.simulation.grid.temperature import get_temperature_for_day
-from src.simulation.simulation import Simulation
 from src.simulation.grid.structure.structure import Structure
 from src.simulation.grid.grid_generator import GridGenerator
 from src.simulation.grid.location import Location
@@ -20,6 +15,15 @@ from src.logger import logger
 from src.simulation.grid.structure.structure_factory import StructureFactory
 from src.simulation.grid.structure.structure_type import StructureType
 from src.simulation.grid.grid_disaster_generator import GridDisasterGenerator
+
+if TYPE_CHECKING:
+    from src.simulation.simulation import Simulation
+    from src.simulation.grid.structure.store.barn import Barn
+    from src.simulation.grid.structure.store.home import Home
+    from src.simulation.grid.structure.work.farm import Farm
+    from src.simulation.grid.structure.work.mine import Mine
+    from src.simulation.grid.structure.work.tree import Tree
+    from src.simulation.grid.structure.work.work import Work
 
 class Grid:
     def __init__(self, simulation: Simulation, size: int) -> None:
@@ -30,9 +34,9 @@ class Grid:
         grid_generator: GridGenerator = GridGenerator(size)
         self._grid: List[List[str]] = grid_generator.generate()
         
-        self._disaster_generator = GridDisasterGenerator(self)
+        self._disaster_generator: GridDisasterGenerator = GridDisasterGenerator(self)
 
-        self._structure_factory = StructureFactory(self)
+        self._structure_factory: StructureFactory = StructureFactory(self)
         structure_generator: StructureGenerator = StructureGenerator(self, self._structure_factory)
         self._structures: Dict[Location, Structure] = structure_generator.find_structures() # stores the top left corner of every structure
 
@@ -49,7 +53,7 @@ class Grid:
             self._temp = get_temperature_for_day(self._day)
         return self._temp
 
-    def generate_disasters(self, chance: float = 0.50) -> None:
+    def generate_disasters(self, chance: float = settings.get("disaster_chance", 0.50)) -> None:
         self._disaster_generator.generate(chance)
 
     def get_grid(self) -> List[List[str]]:
@@ -116,6 +120,16 @@ class Grid:
         rows = len(self._grid)
         cols = len(self._grid[0])
         empty_spots = []
+        building_types = "".join([
+            settings.get("home_construction_char", "h"),
+            settings.get("home_char", "H"),
+            settings.get("barn_construction_char", "b"),
+            settings.get("barn_char", "B"),
+            settings.get("farm_construction_char", "f"),
+            settings.get("farm_char", "F"),
+            settings.get("mine_construction_char", "m"),
+            settings.get("mine_char", "M"),
+        ])
 
         # List of possible directions: (up, down, left, right, and 4 diagonal directions)
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
@@ -123,42 +137,47 @@ class Grid:
         for i in range(rows):
             for j in range(cols):
                 # Check if the current cell is a building (or under construction)
-                if self._grid[i][j] in "MFHBFmhfb":
-                    # Check all 8 directions around the current building location
-                    for dx, dy in directions:
-                        ni, nj = i + dx, j + dy
-                        # Ensure the new position is within bounds
-                        if 0 <= ni < rows and 0 <= nj < cols:
-                            # If it's an empty space, we add it as a candidate
-                            if self._grid[ni][nj] == " ":
-                                # Now, check if this empty space is adjacent to a tree ('*')
-                                is_adjacent_to_tree = False
-                                for ddx, ddy in directions:
-                                    nn_i, nn_j = ni + ddx, nj + ddy
-                                    if 0 <= nn_i < rows and 0 <= nn_j < cols and self._grid[nn_i][nn_j] == "*":
-                                        is_adjacent_to_tree = True
-                                        break
+                if self._grid[i][j] not in building_types:
+                    continue
+                # Check all 8 directions around the current building location
+                for dx, dy in directions:
+                    ni, nj = i + dx, j + dy
+                    # If it's an empty space, we add it as a candidate
+                    location: Location = Location(nj, ni)
+                    if not self.is_in_bounds(location):
+                        continue
+                    if not self.is_empty(location):
+                        continue
 
-                                # Add the empty space if it's not adjacent to a tree
-                                if not is_adjacent_to_tree:
-                                    empty_spots.append(Location(ni, nj))
+                    # Now, check if this empty space is adjacent to a tree ('*')
+                    is_adjacent_to_tree = False
+                    for ddx, ddy in directions:
+                        nn_i, nn_j = ni + ddx, nj + ddy
+                        neighbor: Location = Location(nn_j, nn_i)
+                        if 0 <= nn_i < rows and 0 <= nn_j < cols and self.is_tree(neighbor):
+                            is_adjacent_to_tree = True
+                            break
+
+                    # Add the empty space if it's not adjacent to a tree
+                    if not is_adjacent_to_tree:
+                        empty_spots.append(location)
 
         return empty_spots
 
     def grow_trees(self, chance: int = 0.10) -> None:
         for i in range(len(self._grid)):
             for j in range(len(self._grid[i])):
-                location: Location = Location(i, j)
+                location: Location = Location(j, i)
                 tree: Structure = self._structures[location]
                 if not isinstance(tree, Tree):
                     continue
                 neighbors: List[Location] = location.get_neighbors()
                 random.shuffle(neighbors)
                 for neighbor in neighbors:
-                    if not self.is_location_in_bounds(neighbor) or not self.is_empty(neighbor):
+                    if not self.is_in_bounds(neighbor) or not self.is_empty(neighbor):
                         continue
                     if random.random() < chance:
-                        self._grid[neighbor.y][neighbor.x] = "*"  # Place a tree here
+                        self._grid[neighbor.y][neighbor.x] = settings.get("tree_char", "*")  # Place a tree here
                         neighbor_tree: Structure = self._structure_factory.create_instance(StructureType.TREE, neighbor)
                         if isinstance(neighbor_tree, Tree):
                             neighbor_tree.set_yield_func(tree.get_yield_func())
@@ -214,30 +233,37 @@ class Grid:
                 neighbor = Location(location.x + dx, location.y + dy)
 
                 # Check if the neighbor is within bounds and is empty
-                if self.is_location_in_bounds(neighbor) and self.is_empty(neighbor):
+                if self.is_in_bounds(neighbor) and self.is_empty(neighbor):
                     return neighbor
 
         # If no open spot was found, return None
         return None
 
-    def is_valid_location_for_person(self, location: Location) -> bool:
-        return self.is_empty(location)
-
-    def is_location_in_bounds(self, location: Location) -> bool:
+    def is_in_bounds(self, location: Location) -> bool:
         return 0 <= location.x < self._width and 0 <= location.y < self._height
 
     def get_path_finding_matrix(self) -> List[List[int]]:
         char_to_num: Dict[str, int] = {
-            "h": 10,
-            "H": 0,
-            "b": 10,
-            "B": 0,
-            "f": 3,
-            "F": 5,
-            "m": 0,
-            "M": 0,
-            " ": 1,
-            "*": 10,
+            settings.get("home_construction_char", "h"):
+                settings.get("home_construction_obstacle_rating", 10),
+            settings.get("home_char", "H"):
+                settings.get("home_obstacle_rating", 0),
+            settings.get("barn_construction_char", "b"):
+                settings.get("barn_construction_obstacle_rating", 10),
+            settings.get("barn_char", "B"):
+                settings.get("barn_obstacle_rating", 0),
+            settings.get("farm_construction_char", "f"):
+                settings.get("farm_construction_obstacle_rating", 3),
+            settings.get("farm_char", "F"):
+                settings.get("farm_obstacle_rating", 5),
+            settings.get("mine_construction_char", "m"):
+                settings.get("mine_construction_obstacle_rating", 0),
+            settings.get("mine_char", "M"):
+                settings.get("mine_obstacle_rating", 0),
+            settings.get("empty_char", " "):
+                settings.get("empty_obstacle_rating", 1),
+            settings.get("tree_char", "*"):
+                settings.get("tree_obstacle_rating", 10),
         }
         path_finding_matrix: List[List[int | str]] = deepcopy(self._grid)
         for i in range(len(self._grid)):
@@ -248,36 +274,36 @@ class Grid:
         return path_finding_matrix
 
     def is_tree(self, location: Location) -> bool:
-        return self._is_item(location, "*")
+        return self.is_char(location, settings.get("tree_char", "*"))
 
     def is_barn(self, location: Location) -> bool:
-        return self._is_item(location, "B")
+        return self.is_char(location, settings.get("barn_char", "B"))
 
     def is_construction_barn(self, location: Location) -> bool:
-        return self._is_item(location, "b")
+        return self.is_char(location, settings.get("barn_construction_char", "b"))
 
     def is_home(self, location: Location) -> bool:
-        return self._is_item(location, "H")
+        return self.is_char(location, settings.get("home_char", "H"))
 
     def is_construction_home(self, location: Location) -> bool:
-        return self._is_item(location, "h")
+        return self.is_char(location, settings.get("home_construction_char", "h"))
 
     def is_farm(self, location: Location) -> bool:
-        return self._is_item(location, "F")
+        return self.is_char(location, settings.get("farm_char", "F"))
 
     def is_construction_farm(self, location: Location) -> bool:
-        return self._is_item(location, "f")
+        return self.is_char(location, settings.get("farm_construction_char", "f"))
 
     def is_mine(self, location: Location) -> bool:
-        return self._is_item(location, "M")
+        return self.is_char(location, settings.get("mine_char", "M"))
 
     def is_construction_mine(self, location: Location) -> bool:
-        return self._is_item(location, "m")
+        return self.is_char(location, settings.get("mine_construction_char", "m"))
 
     def is_empty(self, location: Location) -> bool:
-        return self._is_item(location, " ")
+        return self.is_char(location, settings.get("empty_char", " "))
 
-    def _is_item(self, location: Location, char: str) -> bool:
+    def is_char(self, location: Location, char: str) -> bool:
         return self._grid[location.y][location.x] == char
 
     def get_width(self) -> int:

@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 import itertools
 from abc import ABC
-from typing import Dict, Optional, List, Tuple, Callable
-from src.simulation.grid.grid import Grid
-from src.simulation.grid.location import Location
+from typing import TYPE_CHECKING, Dict, Optional, List, Tuple, Callable
 from src.simulation.grid.structure.structure import Structure
-from src.simulation.people.person.person import Person
+
+if TYPE_CHECKING:
+    from src.simulation.grid.grid import Grid
+    from src.simulation.grid.location import Location
+    from src.simulation.people.person.person import Person
 
 
 class Work(Structure, ABC):

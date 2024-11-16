@@ -1,11 +1,15 @@
+from __future__ import annotations
+
 from copy import copy
 from enum import Enum
-from typing import Callable, Dict
+from typing import TYPE_CHECKING, Callable, Dict
 
-from src.simulation.grid.grid import Grid
 from src.simulation.grid.location import Location
 from src.simulation.people.person.memories import Memories
-from src.simulation.people.person.person import Person
+
+if TYPE_CHECKING:
+    from src.simulation.grid.grid import Grid
+    from src.simulation.people.person.person import Person
 
 
 class Direction(Enum):
@@ -51,9 +55,9 @@ class Vision:
     def _process_location(
         self, memory: Memories, blocked: set[Location], location: Location
     ) -> None:
-        if not self._grid.is_location_in_bounds(
+        if not self._grid.is_in_bounds(
             location
-        ) or not self._grid.is_valid_location_for_person(location):
+        ) or not self._grid.is_empty(location):
             return
 
         if self._is_blocking_object(location, memory):

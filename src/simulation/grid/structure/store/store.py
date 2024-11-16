@@ -1,10 +1,13 @@
-from abc import ABC
-from typing import Dict, override, List
+from __future__ import annotations
 
-from src.simulation.grid.grid import Grid
-from src.simulation.grid.location import Location
+from abc import ABC
+from typing import TYPE_CHECKING, Dict, override, List
+
 from src.simulation.grid.structure.structure import Structure
 
+if TYPE_CHECKING:
+    from src.simulation.grid.grid import Grid
+    from src.simulation.grid.location import Location
 
 class Store(Structure, ABC):
     def __init__(

@@ -1,41 +1,29 @@
-from typing import Dict, Optional, Type
+from __future__ import annotations
 
-from src.simulation.people.person.person import Person
-from src.simulation.people.person.scheduler.task.construction.build_barn import (
-    BuildBarn,
-)
-from src.simulation.people.person.scheduler.task.construction.build_farm import (
-    BuildFarm,
-)
-from src.simulation.people.person.scheduler.task.construction.build_home import (
-    BuildHome,
-)
-from src.simulation.people.person.scheduler.task.construction.build_mine import (
-    BuildMine,
-)
+from typing import TYPE_CHECKING, Dict, Optional, Type
+
+from src.simulation.people.person.scheduler.task.construction.build_barn import BuildBarn
+from src.simulation.people.person.scheduler.task.construction.build_farm import BuildFarm
+from src.simulation.people.person.scheduler.task.construction.build_home import BuildHome
+from src.simulation.people.person.scheduler.task.construction.build_mine import BuildMine
 from src.simulation.people.person.scheduler.task.eat import Eat
 from src.simulation.people.person.scheduler.task.explore import Explore
 from src.simulation.people.person.scheduler.task.find_home import FindHome
 from src.simulation.people.person.scheduler.task.find_spouse import FindSpouse
-from src.simulation.people.person.scheduler.task.start_construction.start_barn_construction import (
-    StartBarnConstruction,
-)
-from src.simulation.people.person.scheduler.task.start_construction.start_farm_construction import (
-    StartFarmConstruction,
-)
-from src.simulation.people.person.scheduler.task.start_construction.start_home_construction import (
-    StartHomeConstruction,
-)
-from src.simulation.people.person.scheduler.task.start_construction.start_mine_construction import (
-    StartMineConstruction,
-)
-from src.simulation.people.person.scheduler.task.task import Task
+from src.simulation.people.person.scheduler.task.start_construction.start_barn_construction import StartBarnConstruction
+from src.simulation.people.person.scheduler.task.start_construction.start_farm_construction import StartFarmConstruction
+from src.simulation.people.person.scheduler.task.start_construction.start_home_construction import StartHomeConstruction
+from src.simulation.people.person.scheduler.task.start_construction.start_mine_construction import StartMineConstruction
 from src.simulation.people.person.scheduler.task.task_type import TaskType
 from src.simulation.people.person.scheduler.task.transport import Transport
 from src.simulation.people.person.scheduler.task.work.chop_tree import ChopTree
 from src.simulation.people.person.scheduler.task.work.work_farm import WorkFarm
 from src.simulation.people.person.scheduler.task.work.work_mine import WorkMine
-from src.simulation.simulation import Simulation
+
+if TYPE_CHECKING:
+    from src.simulation.simulation import Simulation
+    from src.simulation.people.person.person import Person
+    from src.simulation.people.person.scheduler.task.task import Task
 
 
 class TaskFactory:

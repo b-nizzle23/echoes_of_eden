@@ -1,5 +1,176 @@
+# simulation.py
 max_simulations: 1
 actions_per_day: 10
 days_per_year: 100
 years: 5
 grid_size: 100
+
+# resources
+wood: "wood"
+stone: "stone"
+food: "food"
+
+# Structure details
+barn_size: 3
+barn_char: "B"
+mine_size: 3
+mine_char: "M"
+home_size: 2
+home_char: "H"
+farm_size: 5
+farm_char: "F"
+tree_size: 1
+tree_char: "*"
+empty_size: 1
+empty_char: " "
+
+# Construction Details
+barn_construction_char: "b"
+barn_req_wood: 60
+barn_req_stone: 30
+barn_max_construction_work_count: 3
+barn_max_construction_worker_count: 3
+barn_finished_completion_level: 5
+
+mine_construction_char: "m"
+mine_req_wood: 40
+mine_req_stone: 40
+mine_max_construction_work_count: 5
+mine_max_construction_worker_count: 3
+mine_finished_completion_level: 5
+
+home_construction_char: "h"
+home_req_wood: 20
+home_req_stone: 10
+home_max_construction_work_count: 2
+home_max_construction_worker_count: 2
+home_finished_completion_level: 3
+
+farm_construction_char: "f"
+farm_req_wood: 30
+farm_req_stone: 0
+farm_max_construction_work_count: 2
+farm_max_construction_worker_count: 3
+farm_finished_completion_level: 3
+
+# storing
+barn_food_store: 500
+barn_stone_store: 100
+barn_wood_store: 200
+home_food_store: 36
+backpack_food_store: 100
+backpack_stone_store: 50
+backpack_wood_store: 50
+
+# working
+farm_yield_var_loc: 0
+farm_yield_var_scale: 4
+farm_min_yield: 25
+farm_max_yield: 50
+farm_max_worker_count: 3
+farm_max_work_count: 3
+work_farm_priority: 5
+
+mine_yield_func_loc: 3
+mine_yield_func_scale: 1
+mine_yield_var_loc: 3
+mine_yield_var_scale: 0.9
+mine_min_yield: 25
+mine_max_yield: 50
+mine_max_worker_count: 6
+mine_max_work_count: 4
+work_mine_priority: 5
+
+tree_yield_func_loc: 3
+tree_yield_func_scale: 1
+tree_yield_var_loc: 3
+tree_yield_var_scale: .9
+tree_min_yield: 25
+tree_max_yield: 50
+tree_max_worker_count: 1
+tree_max_work_count: 2
+chop_tree_priority: 5
+
+# obstacle ratings (0-10) where 0 is easily passable and 10 is completely impassible
+home_construction_obstacle_rating: 10
+home_obstacle_rating: 0
+barn_construction_obstacle_rating: 10
+barn_obstacle_rating: 0
+farm_construction_obstacle_rating: 3
+farm_obstacle_rating: 5
+mine_construction_obstacle_rating: 0
+mine_obstacle_rating: 0
+empty_obstacle_rating: 1
+tree_obstacle_rating: 10
+
+# grid_generator.py
+tree_density: 0.4
+ca_iterations: 40
+town_clearance_radius: 15
+building_buffer: 1
+
+num_house_min: 3
+num_house_max: 8
+num_farm_min: 1
+num_farm_max: 3
+num_barn_min: 1
+num_barn_max: 2
+num_mines_min: 1
+num_mines_max: 2
+
+home_completion_prob: 0.8
+farm_completion_prob: 0.8
+barn_completion_prob: 0.8
+mine_completion_prob: 0.8
+
+# build_structure
+build_barn_priority: 5
+build_farm_priority: 5
+build_home_priority: 5
+build_mine_priority: 5
+
+start_barn_priority: 5
+start_farm_priority: 5
+start_home_priority: 5
+start_mine_priority: 5
+
+# task priorities
+eat_priority: 5
+find_home_priority: 5
+explore_priority: 5
+find_spouse_priority: 5
+transport_priority: 5
+
+# Person values
+person_health_cap: 100
+person_hunger_cap: 100
+person_max_time: 10
+hunger_pref_min: 50
+hunger_pref_max: 100
+hunger_damage_threshold: 20
+hunger_regen_threshold: 50
+person_epsilon: 0.05
+person_age_max: 80
+home_eat_satiate: 10
+barn_eat_satiate: 5
+adult_age: 18
+infertile_age: 50
+initial_spawn_age_min: 20
+initial_spawn_age_max: 30
+
+# disaster values
+disaster_chance: 0.50
+sick_health_decr: -30
+craving_hunger_decr: -30
+
+# plotter values
+fig_size: 8
+num_grids: 3
+
+# misc
+near: 5
+days_in_year: 365
+mean_temp_f: 70
+visibility: 30
+speed: 10
+memory_expire: 50

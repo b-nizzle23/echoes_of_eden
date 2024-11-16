@@ -1,11 +1,17 @@
+from __future__ import annotations
+
 import random
 from copy import deepcopy
-from typing import List
+from typing import TYPE_CHECKING, List
 
-from src.simulation.grid.location import Location
+from src.logger import logger
+from src.settings import settings
 from src.simulation.grid.structure.store.home import Home
 from src.simulation.people.person.person import Person
-from src.simulation.simulation import Simulation
+
+if TYPE_CHECKING:
+    from src.simulation.simulation import Simulation
+    from src.simulation.grid.location import Location
 
 
 class PeopleGenerator:
@@ -19,18 +25,25 @@ class PeopleGenerator:
 
     @staticmethod
     def _get_names() -> List[str]:
-        with open("../../../../data/first_names.txt", "r") as file:
-            names: List[str] = [line.strip() for line in file if line.strip()]
+        try:
+            with open("../../../data/first_names.txt", "r") as file:
+                names: List[str] = [line.strip() for line in file if line.strip()]
+        except FileNotFoundError:
+            logger.error("Could not find names file. Using default names.")
+            names: List[str] = ['James', 'John', 'Robert', 'Michael', 'William', 'David', 'Joseph', 'Charles', 'Thomas', 'Daniel',
+                   'Emma', 'Olivia', 'Sophia', 'Isabella', 'Ava', 'Mia', 'Amelia', 'Harper', 'Evelyn', 'Abigail']
         return names
 
     def generate(self) -> List[Person]:
         people: List[Person] = []
-        names = self._get_names()
+        names: List[str] = self._get_names()
         empty_spots_near_town: List[Location] = self._grid.get_empty_spots_near_town()
         for pk in range(self._max_pk):
             name: str = random.choice(names)
             location: Location = deepcopy(random.choice(empty_spots_near_town))
-            age: int = random.randint(20, 30)
+            age: int = random.randint(
+                settings.get("inital_spawn_age_min", 20),
+                settings.get("inital_spawn_age_max", 30))
             person: Person = Person(self._simulation, name, pk, location, age)
             people.append(person)
         return people

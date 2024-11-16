@@ -1,22 +1,26 @@
-from typing import List, Optional, Dict
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, List, Optional, Dict
 
 import numpy as np
 import random
 
-from scheduler.scheduler import Scheduler
-from scheduler.task.task_type import TaskType
-from src.simulation.grid.structure.store.barn import Barn
-from src.simulation.grid.structure.store.home import Home
-
-from src.simulation.grid.structure.structure import Structure
-from src.simulation.grid.structure.structure_type import StructureType
-from src.simulation.grid.location import Location
+from src.simulation.people.person.scheduler.scheduler import Scheduler
+from src.simulation.people.person.scheduler.task.task_type import TaskType
+from src.settings import settings
 from src.simulation.people.person.backpack import Backpack
 from src.simulation.people.person.memories import Memories
-from src.simulation.people.person.movement.move_result import MoveResult
 from src.simulation.people.person.movement.navigator import Navigator
-from src.simulation.simulation import Simulation
 from src.logger import logger
+
+if TYPE_CHECKING:
+    from src.simulation.grid.structure.store.home import Home
+    from src.simulation.simulation import Simulation
+    from src.simulation.people.person.movement.move_result import MoveResult
+    from src.simulation.grid.location import Location
+    from src.simulation.grid.structure.structure import Structure
+    from src.simulation.grid.structure.store.barn import Barn
+    from src.simulation.grid.structure.structure_type import StructureType
 
 
 class Person:
@@ -29,28 +33,27 @@ class Person:
         self._simulation = simulation
         self._location: Location = location
 
-        self._backpack = Backpack()
+        self._backpack: Backpack = Backpack()
         self._memories: Memories = Memories(simulation.get_grid())
         self._navigator: Navigator = Navigator(simulation, self)
 
-        self._health: int = 100
-        self._hunger: int = (
-            100  # when your hunger gets below 25, health starts going down; when it gets above 75, health starts going up
-        )
+        self._health: int = settings.get("person_health_cap", 100)
+
+        # when your hunger gets below 25, health starts going down; when it gets above 75, health starts going up
+        self._hunger: int = settings.get("person_hunger_cap", 100)
+
         self._home: Optional[Home] = None
         self._spouse: Optional[Person] = None
         self._scheduler: Scheduler = Scheduler(simulation, self)
-        self._max_time: int = 10
+        self._max_time: int = settings.get("person_max_time", 10)
 
         # preferences per person
-        self._hunger_preference: int = random.randint(50, 100)
-        self._spouse_preference: bool = random.choice([True, False])
-        self._house_preference: bool = random.choice([True, False])
-
-        # preferences per person
-        self._hunger_preference: int = random.randint(50, 100)
-        self._spouse_preference: bool = random.choice([True, False])
-        self._house_preference: bool = random.choice([True, False])
+        self._hunger_preference: int = random.randint(
+            settings.get("hunger_pref_min", 50),
+            settings.get("hunger_pref_max", 100)
+        )
+        self._spouse_preference: bool = random.choices([True, False], weights=[95, 5])[0]
+        self._house_preference: bool = random.choices([True, False], weights=[95, 5])[0]
 
         self._rewards: Dict[TaskType, int] = {}
 
@@ -111,12 +114,12 @@ class Person:
         self._hunger -= 1
         logger.debug(f"{self._name}'s hunger decreased by 1 to {self._hunger}")
 
-        if self._hunger < 20:
+        if self._hunger < settings.get("hunger_damage_threshold", 20)::
             self._health -= 1
             logger.debug(f"{self._name}'s health decreased due to being hungry (Health: {self._health})")
 
-        elif self._hunger > 50:
-            self._health += 1
+        elif self._hunger > settings.get("hunger_regen_threshold", 50):
+            self._health -= 1
             logger.debug(f"{self._name}'s health increased due to being full (Health: {self._health})")
 
         self._add_tasks()
@@ -165,7 +168,7 @@ class Person:
             logger.debug(f"{self._name}'s backpack is full; no work task added")
             return
         keys: list = list(self._rewards.keys())
-        epsilon: float = 0.05
+        epsilon: float = settings.get("person_epsilon", 0.05)
         if np.random.rand() < epsilon:
             # Exploration: randomly select an action
             random_index: int = np.random.randint(0, len(keys) - 1)
@@ -202,14 +205,15 @@ class Person:
         return self._age
 
     def set_location(self, other: Location) -> None:
-        if not self._simulation.get_grid().is_location_in_bounds(other):
+        if not self._simulation.get_grid().is_in_bounds(other):
             logger.error(f"{self._name} tried to move outside map bounds to {other}")
-            raise Exception("You tried to put a person outside of the map")
+            return
+
         self._location = other
         logger.info(f"{self._name} moved to new location: {self._location}")
 
     def is_dead(self) -> bool:
-        return self._health <= 0 or self._age >= 80
+        return self._health <= 0 or self._age >= settings.get("person_age_max", 80)
 
     def is_satiated(self) -> bool:
         return self.get_hunger() >= self.get_hunger_preference()
@@ -217,18 +221,18 @@ class Person:
     def eat(self, building: Barn | Home) -> None:
         logger.info(f"{self._name} is about to eat with hunger {self._hunger}")
         if isinstance(building, Home):
-            self._hunger = min(self._hunger + 10, 100)
+            self._hunger = min(self._hunger + settings.get("home_eat_satiate", 10), 100)      # todo is this a reiteration of set_hunger() logic??????
             logger.debug(f"{self._name} ate at home and their hunger is now {self._hunger}")
         else:
             self._hunger = min(
-                self._hunger + 5, 100
+                self._hunger + settings.get("barn_eat_satiate", 5), 100
             )  # eating in a barn is less effective
             logger.debug(f"{self._name} ate in a barn and their hunger is now {self._hunger}")
-        building.remove_resource("food", 3)
-
+        building.remove_resource(settings.get("food", "food"), 3)
+        
     def set_hunger(self, hunger: int) -> None:
         old_hunger = self._hunger
-        self._hunger = max(0, min(self._hunger + hunger, 100))
+        self._hunger = max(0, min(self._hunger + hunger, settings.get("person_hunger_cap", 100)))
         logger.debug(f"{self._name}'s hunger adjusted from {old_hunger} to {self._hunger}")
 
     def assign_spouse(self, spouse: "Person") -> None:
@@ -274,7 +278,7 @@ class Person:
 
     def set_health(self, health: int) -> None:
         old_health = self._health
-        self._health = max(0, min(self._health + health, 100))
+        self._health = max(0, min(self._health + health, settings.get("person_health_cap", 100)))
         logger.info(f"{self._name}'s health adjusted from {old_health} to {self._health}")
 
     def has_home(self) -> bool:

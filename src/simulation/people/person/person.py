@@ -241,7 +241,7 @@ class Person:
     
     def assign_home(self, home: Home) -> None:
         if self._home == home:
-            logger.debug(f"{self._name} already assigned to home: {home}")
+            logger.warning(f"{self._name} tried to assign home but is already assigned to home: {home}")
             return
         self._home = home
         home.assign_owner(self)
@@ -252,7 +252,7 @@ class Person:
 
     def remove_home(self):
         if not self._home:
-            logger.debug(f"{self._name} has no home to remove")
+            logger.warning(f"{self._name} tried to remove home but has no home to remove")
             return
         self._home = None
         logger.info(f"{self._name} removed from home")

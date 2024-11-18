@@ -77,27 +77,30 @@ Stay organized and on track with your assignments and tasks!
 - **Goals**:
     - ...
 
-| Date       | Hours | Name      | Notes                                                                               |
-|------------|-------|-----------|-------------------------------------------------------------------------------------|
-| 2024-11-11 | 10    | Nate      | Fix bugs, complete todos, help brighton with disasters ticket, meet with Bellis     |
-| 2024-11-11 | 5     | Brighton  | work on disasters ticket and begin walk-through of People think differently ticket. |
-| 2024-11-12 | 5.5   | Ann Marie | worked on epsilon greedy for work, went to group meeting                            |
-| 2024-11-12 | 5     | Madi      | started epsilon greedy for deciding which location to work, group meeting           |
-| 2024-11-12 | 3.5   | Brighton  | finished people think differently ticket, began building recognition ticket         |
-| 2024-11-13 | 5     | Nate      | complete spawn people, memories tickets                                             |
-| 2024-11-13 | 2     | Madi      | continue epsilon greedy for work tasks                                              |
-| 2024-11-13 | 1.16  | Ann Marie | people build before starting new construction                                       |
-| 2024-11-14 | 5     | Nate      | Groves of trees have the same yeild ticket, meet with brighton                      |
-| 2024-11-14 | 2.5   | Madi      | continue epsilon greedy for work tasks                                              |
-| 2024-11-14 | 2.5   | Madi      | Fix epsilon greedy for work tasks with Nate                                         |
-| 2024-11-14 | 8     | Nate      | Groves of trees have the same yield ticket, meet with brighton, meet with madi      |
-| 2024-11-14 | 1     | Ann Marie | implemented logger in person.py                                                     |
-| 2024-11-15 | 2.5   | Nate      | Clean up code, discover circular dependencies bug                                   |
-| 2024-11-16 | 1     | All       | Team meeting                                                                        |
-| 2024-11-16 | 6     | Nate      | fix circular dependencies bug, debug app, get use upuntil we start executing tasks  |
-| 2024-11-17 | 2     | Nate      | Add logging the grid directory, redo the logger.py file, debug                      |
-| 2024-11-18 | 1     | Nate      | fix bugs                                                                            |
-| 2024-11-19 |       |           |                                                                                     |
+| Date       | Hours | Name      | Notes                                                                                           |
+|------------|-------|-----------|-------------------------------------------------------------------------------------------------|
+| 2024-11-11 | 10    | Nate      | Fix bugs, complete todos, help brighton with disasters ticket, meet with Bellis                 |
+| 2024-11-11 | 5     | Brighton  | work on disasters ticket and begin walk-through of People think differently ticket.             |
+| 2024-11-12 | 5.5   | Ann Marie | worked on epsilon greedy for work, went to group meeting                                        |
+| 2024-11-12 | 5     | Madi      | started epsilon greedy for deciding which location to work, group meeting                       |
+| 2024-11-12 | 3.5   | Brighton  | finished people think differently ticket, began building recognition ticket                     |
+| 2024-11-13 | 5     | Nate      | complete spawn people, memories tickets                                                         |
+| 2024-11-13 | 2     | Madi      | continue epsilon greedy for work tasks                                                          |
+| 2024-11-13 | 1.16  | Ann Marie | people build before starting new construction                                                   |
+| 2024-11-14 | 5     | Nate      | Groves of trees have the same yeild ticket, meet with brighton                                  |
+| 2024-11-14 | 2.5   | Madi      | continue epsilon greedy for work tasks                                                          |
+| 2024-11-14 | 2.5   | Madi      | Fix epsilon greedy for work tasks with Nate                                                     |
+| 2024-11-14 | 8     | Nate      | Groves of trees have the same yield ticket, meet with brighton, meet with madi                  |
+| 2024-11-14 | 1     | Ann Marie | implemented logger in person.py                                                                 |
+| 2024-11-15 | 2.5   | Nate      | Clean up code, discover circular dependencies bug                                               |
+| 2024-11-15 | 5.5   | Brighton  | Filtering memory location by seen buildings and started yaml variable assignment                |
+| 2024-11-16 | 5     | Brighton  | Code Reviews, finished yaml variable assignment                                                 |
+| 2024-11-16 | 1     | All       | Team meeting                                                                                    |
+| 2024-11-16 | 6     | Nate      | fix circular dependencies bug, debug app, get use up until we start executing tasks             |
+| 2024-11-17 | 2     | Nate      | Add logging the grid directory, redo the logger.py file, debug                                  |
+| 2024-11-18 | 1     | Nate      | fix bugs                                                                                        |
+| 2024-11-18 | 3     | Brighton  | checking/validating all occurrences of Location Object calls to ensure proper variable passing. |
+| 2024-11-19 |       |           |                                                                                                 |
 
 ## Sprint 4
 

@@ -10,28 +10,35 @@ from src.simulation.grid.disjoint_set import DisjointSet
 from src.simulation.grid.location import Location
 from src.simulation.grid.structure.structure_type import StructureType
 from src.simulation.grid.structure.work.tree import Tree
+from src.logger import logger
 
 if TYPE_CHECKING:
     from src.simulation.grid.grid import Grid
     from src.simulation.grid.structure.structure import Structure
     from src.simulation.grid.structure.structure_factory import StructureFactory
 
+
 class StructureGenerator:
     def __init__(self, grid: Grid, structure_factory: StructureFactory):
+        logger.debug("Initializing StructureGenerator with grid and structure_factory.")
         self._grid = grid
         self._structure_factory = structure_factory
 
     def find_structures(self) -> Dict[Location, Structure]:
+        logger.debug("Finding structures in the grid.")
         structures: Dict[Location, Structure] = {}
-        # Iterate over the grid and check each location
+
         for y in range(self._grid.get_height()):
             for x in range(self._grid.get_width()):
                 location: Location = Location(x, y)
-    
-                # Skip empty spaces or trees
+
                 if self._grid.is_empty(location):
+                    logger.debug(f"Location {location} is empty. Skipping.")
                     continue
 
+                logger.debug(f"Processing location {location}.")
+
+                # Determine the structure type
                 if self._grid.is_tree(location):
                     structure_type = StructureType.TREE
                 elif self._grid.is_barn(location):
@@ -51,29 +58,31 @@ class StructureGenerator:
                 elif self._grid.is_construction_mine(location):
                     structure_type = StructureType.CONSTRUCTION_MINE
                 else:
+                    logger.error(f"Unknown structure at location {location}.")
                     raise Exception("I see a char you didnt tell me about")
 
                 if structure_type != StructureType.TREE:
                     self._grid.find_top_left_corner(location)
 
-                # Create a new structure instance and associate it with the first location
-                # (we could use the top-left corner as the "representative" location for each structure)
+                # Create and store structure
                 if location not in structures:
+                    logger.debug(f"Creating structure of type {structure_type} at location {location}.")
                     structure = self._structure_factory.create_instance(
                         structure_type, location
                     )
-                    if not structure:
-                        continue
-                    structures[location] = structure
+                    if structure:
+                        structures[location] = structure
+                    else:
+                        logger.warning(f"Failed to create structure at location {location}.")
 
         self._group_tree_yields(list(structures.values()))
 
+        logger.debug(f"Found {len(structures)} structures.")
         return structures
-        
-    def _group_tree_yields(self, structures: List[Structure]) -> None:
-        trees: List[Tree] = []
 
-        # Create a map from tree location to an index in the disjoint set
+    def _group_tree_yields(self, structures: List[Structure]) -> None:
+        logger.debug(f"Grouping trees and generating yields for {len(structures)} structures.")
+        trees: List[Tree] = []
         tree_index: Dict[Location, int] = {}
         index: int = 0
 
@@ -83,61 +92,54 @@ class StructureGenerator:
                 tree_index[location] = index
                 index += 1
                 trees.append(structure)
-    
-        # Create a disjoint set for the number of trees
+
+        logger.debug(f"Found {len(trees)} trees.")
+
         ds: DisjointSet = DisjointSet(len(trees))
-    
-        # Directions for neighbors: up, down, left, right, and diagonals
         directions: List[Tuple[int, int]] = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
-    
-        # Traverse the grid and connect trees if they are neighbors
+
         for tree in trees:
             location: Location = tree.get_location()
             x, y = location.x, location.y
-    
+
             for dx, dy in directions:
                 nx, ny = x + dx, y + dy
-    
-                # Check if the new location is within bounds and contains a tree
-                if 0 <= nx < self._grid.get_height() and 0 <= ny < self._grid.get_width() and self._grid.get_grid()[nx][ny] == settings.get("tree_char", "*"):
+
+                if 0 <= nx < self._grid.get_height() and 0 <= ny < self._grid.get_width() and self._grid.get_grid()[nx][
+                    ny] == settings.get("tree_char", "*"):
                     neighbor_location: Location = Location(nx, ny)
                     if neighbor_location in tree_index:
-                        # Union the current tree with its neighboring tree
+                        logger.debug(f"Connecting tree at {location} with neighbor {neighbor_location}.")
                         ds.union(tree_index[location], tree_index[neighbor_location])
-    
-        # Now that we have connected the trees, group them by their root parent
+
         grove_groups: Dict[int, List[Tree]] = {}
-    
+
         for tree in trees:
             location: Location = tree.get_location()
             tree_id: int = tree_index[location]
             root: int = ds.find(tree_id)
-    
+
             if root not in grove_groups:
                 grove_groups[root] = []
-    
+
             grove_groups[root].append(tree)
-    
-        # At this point, grove_groups contains the groups of connected trees
-        # Each group (grove) is a list of Tree objects
+
         groves: List[List[Tree]] = list(grove_groups.values())
-    
+
+        logger.debug(f"Generated {len(groves)} groves.")
         for grove in groves:
             yield_func: Callable[[], float] = self._generate_random_distribution(10, 50)
             for tree in grove:
                 tree.set_yield_func(yield_func)
-    
+
     @staticmethod
     def _generate_random_distribution(min_val: float, max_val: float) -> Callable[[], float]:
-        # Ensure the min is smaller than the max
+        logger.debug(f"Generating random distribution with min={min_val} and max={max_val}.")
         if min_val >= max_val:
+            logger.error("min_val should be less than max_val")
             raise ValueError("min_val should be less than max_val")
-    
-        # Generate random mean (mu) within the range [min_val, max_val]
+
         mu: float = random.uniform(min_val, max_val)
-    
-        # Generate random standard deviation (sigma), ensuring it is reasonable
         sigma: float = random.uniform(0, (max_val - min_val) / 2)
-    
-        # Return a lambda function that generates a random sample from a normal distribution
+
         return lambda: np.random.normal(mu, sigma)

@@ -1,31 +1,54 @@
 from typing import List
-
 from src.settings import settings
+from src.logger import logger
 
 
 class Location:
     def __init__(self, x: int, y: int) -> None:
+        logger.debug(f"Initializing Location with x={x}, y={y}")
         self.x = x
         self.y = y
 
     def __eq__(self, other) -> bool:
+        logger.debug(f"Comparing Location({self.x}, {self.y}) to {other}")
         if not isinstance(other, Location):
+            logger.debug("Other is not a Location instance, returning False.")
             return False
-        return isinstance(other, Location) and self.x == other.x and self.y == other.y
+        result = self.x == other.x and self.y == other.y
+        logger.debug(f"Equality result: {result}")
+        return result
 
     def __hash__(self) -> int:
+        logger.debug(f"Hashing Location({self.x}, {self.y})")
         return hash((self.x, self.y))
 
+    def __copy__(self) -> "Location":
+        logger.debug(f"Copying Location({self.x}, {self.y})")
+        return Location(self.x, self.y)
+
+    def __str__(self) -> str:
+        location_str = f"Location(x={self.x}, y={self.y})"
+        logger.debug(f"String representation: {location_str}")
+        return location_str
+
+
     def distance_to(self, other: "Location") -> float:
+        logger.debug(f"Calculating distance from Location({self.x}, {self.y}) to {other}")
         if not isinstance(other, Location):
+            logger.error("Argument must be a Location instance")
             raise ValueError("Argument must be a Location instance")
-        return ((self.x - other.x) ** 2 + (self.y - other.y) ** 2) ** 0.5
+        distance = ((self.x - other.x) ** 2 + (self.y - other.y) ** 2) ** 0.5
+        logger.debug(f"Calculated distance: {distance}")
+        return distance
 
     def is_one_away(self, other: "Location") -> bool:
-        return abs(self.x - other.x) <= 1 and abs(self.y - other.y) <= 1
+        logger.debug(f"Checking if Location({self.x}, {self.y}) is one step away from {other}")
+        result = abs(self.x - other.x) <= 1 and abs(self.y - other.y) <= 1
+        logger.debug(f"One step away: {result}")
+        return result
 
     def get_neighbors(self) -> List["Location"]:
-        # List of relative offsets for all 8 possible neighbors
+        logger.debug(f"Getting neighbors for Location({self.x}, {self.y})")
         neighbor_offsets = [
             (-1, -1),
             (0, -1),
@@ -39,20 +62,15 @@ class Location:
 
         neighbors = []
         for dx, dy in neighbor_offsets:
-            neighbors.append(Location(self.x + dx, self.y + dy))
+            new_location = Location(self.x + dx, self.y + dy)
+            logger.debug(f"Adding neighbor: {new_location}")
+            neighbors.append(new_location)
 
+        logger.debug(f"Total neighbors found: {len(neighbors)}")
         return neighbors
 
     def is_near(self, location: "Location", distance: int = settings.get("near", 5)) -> bool:
-        return self.distance_to(location) < distance
-
-    def __copy__(self) -> "Location":
-        return Location(self.x, self.y)
-
-    def __str__(self) -> str:
-        return f"Location(x={self.x}, y={self.y})"
-
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, Location):
-            return False
-        return self.x == other.x and self.y == other.y
+        logger.debug(f"Checking if Location({self.x}, {self.y}) is near {location} within distance {distance}")
+        result = self.distance_to(location) < distance
+        logger.debug(f"Is near result: {result}")
+        return result

@@ -5,8 +5,6 @@ from typing import TYPE_CHECKING, List, Optional, Dict
 import numpy as np
 import random
 
-from black.trans import defaultdict
-
 from src.simulation.people.person.scheduler.scheduler import Scheduler
 from src.simulation.people.person.scheduler.task.task_type import TaskType
 from src.settings import settings
@@ -155,7 +153,7 @@ class Person:
         if not self._backpack.has_capacity():
             logger.debug(f"{self._name}'s backpack is full; no work task added")
             return
-        keys: list = list(self._rewards.keys())
+        keys: List[TaskType] = list(self._rewards.keys())
         epsilon: float = settings.get("person_epsilon", 0.05)
         if np.random.rand() < epsilon:
             # Exploration: randomly select an action

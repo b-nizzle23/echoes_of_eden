@@ -6,6 +6,8 @@ import numpy as np
 
 from src.simulation.grid.structure.work.work import Work
 from src.settings import settings
+from src.logger import logger
+
 if TYPE_CHECKING:
     from src.simulation.grid.grid import Grid
     from src.simulation.grid.location import Location
@@ -13,6 +15,8 @@ if TYPE_CHECKING:
 
 class Tree(Work):
     def __init__(self, grid: Grid, location: Location) -> None:
+        logger.debug(f"Initializing Tree at location {location}")
+
         max_worker_count: int = settings.get("tree_max_worker_count", 1)
         max_work_count: int = settings.get("tree_max_work_count", 2)
         yield_func: Callable[[], float] = lambda: np.random.normal(loc=settings.get("tree_yield_func_loc", 3),
@@ -30,3 +34,8 @@ class Tree(Work):
                          max_work_count,
                          yield_func,
                          yield_variance)
+
+        logger.info(f"Tree initialized with max workers: {max_worker_count}, "
+                    f"max work count: {max_work_count}, "
+                    f"yield variance: {yield_variance:.2f}, "
+                    f"size: {settings.get('tree_size', 1)}")

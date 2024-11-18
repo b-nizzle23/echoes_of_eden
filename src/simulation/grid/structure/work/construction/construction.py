@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC
 from typing import TYPE_CHECKING, Optional, override
+from src.logger import logger
 
 from src.simulation.grid.structure.work.work import Work
 
@@ -38,62 +39,50 @@ class Construction(Work, ABC):
             yield_func,
             yield_variance
         )
-        self._required_wood: int = required_wood  # Total wood required for construction
-        self._required_stone: int = (
-            required_stone  # Total stone required for construction
-        )
-        self._delivered_wood: int = 0  # Total wood delivered so far
-        self._delivered_stone: int = 0  # Total stone delivered so far
-        self._current_completion_level: int = (
-            0  # Tracks the current completion progress
-        )
-        self._finished_completion_level: int = (
-            finished_completion_level  # Completion level when construction is finished
-        )
+        self._required_wood: int = required_wood
+        self._required_stone: int = required_stone
+        self._delivered_wood: int = 0
+        self._delivered_stone: int = 0
+        self._current_completion_level: int = 0
+        self._finished_completion_level: int = finished_completion_level
         self._max_worker_count: int = max_worker_count
-        self._max_work_count: int = (
-            max_work_count  # Total work needed to complete the construction
-        )
+        self._max_work_count: int = max_work_count
+        logger.debug(f"Construction initialized with required wood: {required_wood}, required stone: {required_stone}, max work count: {max_work_count}")
 
     def deliver_wood(self, amount: int) -> None:
-        """
-        This method allows the delivery of wood to the construction site.
-        The delivery of wood increases the amount of wood on the site.
-        """
         self._delivered_wood += amount
         if self._delivered_wood > self._required_wood:
-            self._delivered_wood = (
-                self._required_wood
-            )  # Cap the delivery at the required amount
+            self._delivered_wood = self._required_wood
+        logger.info(f"Delivered {amount} wood. Total wood delivered: {self._delivered_wood}/{self._required_wood}")
 
     def deliver_stone(self, amount: int) -> None:
-        """
-        This method allows the delivery of stone to the construction site.
-        The delivery of stone increases the amount of stone on the site.
-        """
         self._delivered_stone += amount
         if self._delivered_stone > self._required_stone:
-            self._delivered_stone = (
-                self._required_stone
-            )  # Cap the delivery at the required amount
+            self._delivered_stone = self._required_stone
+        logger.info(f"Delivered {amount} stone. Total stone delivered: {self._delivered_stone}/{self._required_stone}")
 
     def needs_stone(self) -> bool:
-        return self._delivered_stone < self._required_stone
+        needs = self._delivered_stone < self._required_stone
+        logger.debug(f"Needs stone: {needs}")
+        return needs
 
     def needs_wood(self) -> bool:
-        return self._delivered_wood < self._required_wood
+        needs = self._delivered_wood < self._required_wood
+        logger.debug(f"Needs wood: {needs}")
+        return needs
 
     def how_much_stone(self) -> int:
-        return self._required_stone - self._delivered_stone
+        remaining_stone = self._required_stone - self._delivered_stone
+        logger.debug(f"How much stone needed: {remaining_stone}")
+        return remaining_stone
 
     def how_much_wood(self) -> int:
-        return self._required_wood - self._delivered_wood
+        remaining_wood = self._required_wood - self._delivered_wood
+        logger.debug(f"How much wood needed: {remaining_wood}")
+        return remaining_wood
 
     @override
     def work(self, person: Person) -> Optional[int]:
-        """
-        Assign a worker to the work, track work progress, and return the yield if max work count is reached.
-        """
         if person in self._workers:
             self._workers[person] += 1
         elif len(self._workers) < self._max_worker_count:
@@ -102,20 +91,20 @@ class Construction(Work, ABC):
         if self._workers[person] > self._max_work_count:
             self.remove_worker(person)
             self._current_completion_level += 1
-            return int(
-                self._get_yield()
-            )  # Return the generated yield amount as an integer.
+            logger.info(f"Worker {person} finished work. Current completion level: {self._current_completion_level}/{self._finished_completion_level}")
+            return int(self._get_yield())
 
+        logger.debug(f"Worker {person} assigned. Current completion level: {self._current_completion_level}/{self._finished_completion_level}")
         return None
 
     @override
     def work_time_estimate(self) -> int:
-        # Estimate time left based on the remaining work to be done
-        return (
-            self._finished_completion_level - self._current_completion_level
-        ) * self._max_work_count
+        time_left = (self._finished_completion_level - self._current_completion_level) * self._max_work_count
+        logger.debug(f"Work time estimate: {time_left}")
+        return time_left
 
     @override
     def has_capacity(self) -> bool:
-        # Construction is "full" when there is no remaining work to be done
-        return self._current_completion_level < self._finished_completion_level
+        capacity = self._current_completion_level < self._finished_completion_level
+        logger.debug(f"Has capacity: {capacity}")
+        return capacity

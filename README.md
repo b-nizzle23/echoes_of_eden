@@ -66,14 +66,14 @@ src
     * `people_disaster_generator.py`: 
     * `people_generator.py`: 
     * person
-      * `backpack.py`: 
-      * `memories.py`: 
-      * `person.py`: 
+      * `backpack.py`: handles all logic for a person's inventory
+      * `memories.py`: handles all logic for a person's memory
+      * `person.py`: handles all logic for a single person, including traits and actions
       * movement
-        * `move_result.py`: 
-        * `mover.py`: 
-        * `navigator.py`: 
-        * `vision.py`: 
+        * `move_result.py`: defines class MoveResult for storing if a call to move_to succeeded and resulted in a structure 
+        * `mover.py`: handles all lower-level logic for moving a person around the grid
+        * `navigator.py`: handles all higher-level logic for moving a person around the grid
+        * `vision.py`: handles all logic for what a person can see around them as they move around the grid
       * scheduler
         * `scheduler.py`: 
         * task

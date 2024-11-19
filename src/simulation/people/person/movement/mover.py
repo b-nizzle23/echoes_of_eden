@@ -28,6 +28,7 @@ class Mover:
         self._speed = speed
         self._memories = memories
         self._vision = Vision(person, grid, settings.get("visibility", 15))
+        self._path_finding_grid = self._get_path_finding_grid()
         logger.debug("Mover initialized with grid: %s, person: %s, speed: %d.", grid, person, speed)
 
     def explore(self) -> None:
@@ -46,11 +47,13 @@ class Mover:
             logger.debug("Target location %s is invalid, adjusting target.", target)
             target = self._adjust_target(target)
 
-        for step in range(self._speed):
-            logger.debug("Step %d: Combining vision with current memories.", step)
-            self._memories.combine(self._vision.look_around())
-            path = self._get_path(target)
+        vision = Vision(self._person, self._grid, settings.get("visibility", 10))
 
+        for _ in range(self._speed):
+            logger.debug("Step %d: Combining vision with current memories.", _)
+            self._memories.combine(vision.look_around())
+            path = self._get_path(target)
+            
             if path and len(path) >= 2:
                 next_node = path[1]
                 new_location = Location(next_node.y, next_node.x)  # Convert to Location
@@ -71,7 +74,8 @@ class Mover:
         found: bool = False
         for neighbor in neighbors:
             logger.debug("Checking if neighbor location %s is valid.", neighbor)
-            if not self._invalid(neighbor) and self.can_get_to_location(neighbor):
+            
+            if not self._invalid(neighbor) and self.can_get_to(neighbor):
                 target = neighbor
                 found = True
                 logger.debug("New valid target found: %s.", target)
@@ -93,11 +97,12 @@ class Mover:
         logger.debug("Closest location found: %s.", closest_location)
         return closest_location
 
-    def can_get_to_location(self, target: Location) -> bool:
+    def can_get_to(self, target: Location) -> bool:
         logger.debug("Checking if a path exists to target location %s.", target)
         path_exists = bool(self._get_path(target))
         logger.debug("Path to target %s exists: %s", target, path_exists)
         return path_exists
+
 
     def _place(self, location: Location) -> None:
         logger.info("Placing person at location %s.", location)
@@ -109,8 +114,8 @@ class Mover:
 
         if not self._grid.is_in_bounds(location) or self._invalid(location):
             logger.error("Attempted to place person at invalid location %s.", location)
-            raise ValueError(f"Location is not valid: {location}")
-
+            raise ValueError(f"Location is not valid: {location} {self._grid.get_grid()[location.y][location.x]}")
+        
         self._person.set_location(location)
         logger.debug("Person successfully placed at location %s.", location)
 
@@ -121,7 +126,8 @@ class Mover:
             x = randint(0, self._grid.get_width() - 1)
             y = randint(0, self._grid.get_height() - 1)
             location = Location(x, y)
-            if self._grid.is_in_bounds(location) and not self._invalid(location) and self.can_get_to_location(location):
+
+            if self._grid.is_in_bounds(location) and not self._invalid(location) and self.can_get_to(location):
                 logger.debug("Random location found: %s.", location)
                 return location
 
@@ -133,20 +139,19 @@ class Mover:
     ) -> List[PathFindingGridNode]:
         logger.info("Finding path to target location %s.", target)
         start: Location = deepcopy(self._person.get_location())
-        path_finding_grid = self._get_path_finding_grid()
 
         if not self._grid.is_in_bounds(start) or self._invalid(start):
             logger.error("Start location %s is out of bounds or invalid. Raising exception.", start)
             raise ValueError("Person out of bounds")
 
-        start_node = path_finding_grid.node(start.y, start.x)
-        end_node = path_finding_grid.node(target.y, target.x)
+        start_node = self._path_finding_grid.node(start.y, start.x)
+        end_node = self._path_finding_grid.node(target.y, target.x)
 
         logger.debug("Start node: %s, End node: %s", start_node, end_node)
 
         finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
-        path, _ = finder.find_path(start_node, end_node, path_finding_grid)
 
+        path, _ = finder.find_path(start_node, end_node, self._path_finding_grid)
         logger.debug("Path found: %s", path)
         return path
 
@@ -165,15 +170,15 @@ class Mover:
 
         grid = self._grid.get_grid()
         person_location = self._person.get_location()
-
+    
         # Extract y (row) and x (column) from the Location object for the person
         person_y = person_location.y  # row
         person_x = person_location.x  # column
-
+    
         # Extract y (row) and x (column) from the Location object for the target
         target_y = target.y  # row
         target_x = target.x  # column
-
+    
         # Convert path from nodes (e.g., tuples) to Location objects
         path_locations = [Location(y, x) for y, x in path]
 
@@ -182,11 +187,11 @@ class Mover:
         logger.debug("Target position: (%d, %d)", target_y, target_x)
 
         # Top border: Adjusted to account for spaces between characters
-        border = "+" + "-" * ((len(grid[0]) - 1) * 2 + 1) + "+"
+        border = "+" + "-" * len(grid[0]) + "+"
         print(border)
         logger.debug("Top border printed.")
-
-        # Print each row with spaces between characters
+    
+        # Print each row with characters joined by an empty string
         for y_idx, row in enumerate(grid):
             row_display = []
             for x_idx, cell in enumerate(row):
@@ -205,7 +210,7 @@ class Mover:
             # Log each row before printing for debugging purposes
             logger.debug("Row %d: %s", y_idx, " ".join(row_display))
 
-            # Print the row with spaces between characters
+            # Print the row with no spaces between characters (join with an empty string)
             print("|" + " ".join(row_display) + "|")
 
         # Bottom border: Same as top border

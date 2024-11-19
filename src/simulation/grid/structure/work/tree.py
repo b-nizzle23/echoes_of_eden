@@ -37,7 +37,7 @@ class Tree(Work):
             yield_variance,
         )
 
-        logger.info(
+        logger.debug(
             f"Tree initialized with max workers: {max_worker_count}, "
             f"max work count: {max_work_count}, "
             f"yield variance: {yield_variance:.2f}, "

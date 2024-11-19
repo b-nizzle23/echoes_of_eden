@@ -124,7 +124,7 @@ class Person:
         logger.info(f"Adding tasks for {self._name}")
 
         # explore when you are born just to collect data
-        if self._personal_time < settings.get("explore_time", 10):
+        if self._personal_time <= settings.get("explore_time", 1):
             self._scheduler.add(TaskType.EXPLORE)
             logger.debug(f"{self._name} added EXPLORE task")
             return

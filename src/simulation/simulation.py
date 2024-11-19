@@ -49,10 +49,13 @@ class Simulation:
                 self._grid.grow_trees()
                 self._create_disasters()
                 visualizer.add(self._get_year(day), self._grid, self._people)
-                self._people.flush()
-                self._grid.flush()
+                self.flush()
 
         return visualizer
+
+    def flush(self):
+        self._people.flush()
+        self._grid.flush()
 
     def get_day(self) -> int:
         return self._day

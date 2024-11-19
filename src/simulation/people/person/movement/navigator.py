@@ -47,7 +47,8 @@ class Navigator:
     def is_stuck(self) -> bool:
         logger.info("Checking if navigator is stuck.")
         location = self._simulation.get_grid().get_open_spot_next_to_town()
-        stuck = not location or not self._mover.can_get_to_location(location)
+
+        stuck = not location or not self._mover.can_get_to(location)
         if stuck:
             logger.warning("Navigator is stuck, no reachable location found.")
         return stuck

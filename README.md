@@ -20,7 +20,8 @@ decision-making algorithms are at keeping the village alive and thriving.
 ## How to Run
 
 This program uses poetry to manage dependencies. Before running the program, install dependencies using 
-`poetry shell` and `poetry install`. Then to run the simulation, run 'main.py'.
+`poetry shell` and `poetry install`. Then, to run the simulation, run `python3 src/main.py`. The simulation will take some time to complete. 
+You will get the simulation results plotted as output of the program.
 
 ## Code Structure
 
@@ -34,7 +35,7 @@ src
 * simulation
   * `simulation.py`: the actual simulation: stores people, iterations, and grid, and contains methods for creating disasters and running the simulation
   * grid
-    * `disjoint_set.py`: 
+    * `disjoint_set.py`: used to group work structures to ensure they have the same yield function, i.e., groves of trees have the same wood yield.
     * `grid.py`: a 2D array for mapping the simulation spatially, including locations of structures and people
     * `grid_disaster_generator.py`: generates grid-related disasters like mine disaster, stolen resources, or forest fire
     * `grid_generator.py`: generates a unique grid each time, with a small starting village and surrounding forest
@@ -42,24 +43,24 @@ src
     * `structure_generator.py`: generates structures within the grid
     * `temperature.py`: manages the temperature for every day of the year; temperature is taken from a normal distribution, using a mean from a sin wave that spans the year
     * structure
-      * `structure.py`: structure class, handles location/placement of structure on grid
-      * `structure_factory.py`: 
-      * `structure_type.py`: 
+      * `structure.py`: an abstract class, handles location/placement of structure on grid
+      * `structure_factory.py`: manages the creation of structures
+      * `structure_type.py`: an enum used in the code to identify structure types
       * store
-        * `barn.py`: 
-        * `home.py`: 
-        * `store.py`: 
+        * `barn.py`: storage for food, wood and stone
+        * `home.py`: storage for a person's food
+        * `store.py`: an abstract class, handles the implementation for all storage types
       * work
-        * `farm.py`: 
-        * `mine.py`: 
-        * `tree.py`: 
-        * `work.py`: 
+        * `farm.py`: yields food
+        * `mine.py`: yields stone
+        * `tree.py`: yields wood
+        * `work.py`: an abstract class, handles the implementation for all work types
         * construction
-          * `construction.py`:
-          * `construction_barn.py`: 
-          * `construction_farm.py`: 
-          * `construction_home.py`: 
-          * `construction_mine.py`: 
+          * `construction.py`: an abstract class, handles the implementation for all construction types
+          * `construction_barn.py`: when completed a `barn` will take its place
+          * `construction_farm.py`: when completed a `farm` will take its place
+          * `construction_home.py`: when completed a `home` will take its place
+          * `construction_mine.py`: when completed a `mine` will take its place
   * people
     * `home_manager.py`: 
     * `people.py`: 

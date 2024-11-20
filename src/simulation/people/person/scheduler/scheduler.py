@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import heapq
+from asyncio import current_task
 from typing import TYPE_CHECKING, List, Optional
 
+from src.simulation.grid.structure.structure_factory import logger
 from src.simulation.people.person.scheduler.task.task_factory import \
     TaskFactory
 
@@ -35,11 +37,13 @@ class Scheduler:
     def add(self, what: TaskType) -> None:
         task: Task = self._task_factory.create_instance(what)
         if not task:
+            logger.warning(f"Tried to add invalid task: {what}")
             return
         task_types = {type(task) for task in self._tasks}
         if type(task) not in task_types:
             self._add(task)
             self._this_years_tasks.append(task)
+            logger.debug(f"Task {task} should be added to list of tasks")
 
     def _add(self, task: Optional[Task]) -> None:
         if task:
@@ -58,13 +62,16 @@ class Scheduler:
 
         # Reward formula: Higher priority, less time remaining, fewer interruptions lead to higher reward
         reward = priority_weight * time_remaining_weight / (1 + interruption_penalty)
+        logger.debug(f"Task {task} should have reward {reward}")
         return reward
 
     def execute(self) -> None:
         if not self._current_task and not self._tasks:
+            logger.warning("Tried to execute task, no tasks to execute")
             return
 
         if not self._current_task and self._tasks:
+            logger.debug(f"No current task, popping task from list of tasks")
             self._current_task = self._pop()
 
         # Calculate the reward for continuing the current task
@@ -76,13 +83,17 @@ class Scheduler:
 
         # Apply the optimal stopping rule: stick to the current task if it has a higher reward
         if current_task_reward < next_task_reward:
+            logger.info(f"Next task {next_task} has higher reward. Switching from {self._current_task} to {next_task}")
             self._current_task.increment_interruptions()
             self._add(self._current_task)
             self._current_task = next_task
         else:
             self._add(next_task)
 
+        logger.debug(f"Should be executing {self._current_task}")
         self._current_task.execute()
 
+
         if self._current_task.is_finished():
+            logger.debug(f"Current task {self._current_task} is finished")
             self._current_task = None

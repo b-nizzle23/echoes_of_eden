@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, override
 
 from src.settings import settings
+from src.simulation.grid.structure.structure_factory import logger
 from src.simulation.people.person.scheduler.task.task import Task
 from src.simulation.people.person.scheduler.task.task_type import TaskType
 
@@ -23,6 +24,7 @@ class Explore(Task):
         self._how_far += 1
         self._person.explore()
         if self._how_far >= self._max_how_far:
+            logger.info(f"{self._person} explored {self._max_how_far} times")
             self._finished()
 
     @override

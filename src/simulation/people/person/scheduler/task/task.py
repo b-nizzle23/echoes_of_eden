@@ -47,6 +47,7 @@ class Task(ABC):
             else:
                 reward = -1
             self._person.update_scheduler_rewards(self._task_type, reward)
+            logger.debug(f"{self._person} should have updated scheduler rewards")
 
     def is_finished(self) -> bool:
         return self._is_finished

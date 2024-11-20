@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, override
 
 from src.settings import settings
+from src.simulation.grid.structure.structure_factory import logger
 from src.simulation.people.person.scheduler.task.task import Task
 from src.simulation.people.person.scheduler.task.task_type import TaskType
 
@@ -23,6 +24,7 @@ class FindSpouse(Task):
                 if not other.has_spouse():
                     self._person.assign_spouse(other)
                     other.assign_spouse(self._person)
+                    logger.info(f"{self._person} and {other} got married!")
 
                     # make sure they have the same house
                     if self._person.has_home():
@@ -30,9 +32,11 @@ class FindSpouse(Task):
                     else:
                         if other.has_home():
                             self._person.assign_home(other.get_home())
+                    logger.debug(f"{self._person} and {other} should have the same house: {self._person.get_home() == other.get_home()}")
                     break
         # if you have a spouse, or there are no options, finish the task
         self._finished()
+        logger.info(f"{self._person} finished finding a spouse.")
 
     @override
     def _clean_up_task(self) -> None:

@@ -4,6 +4,7 @@ from abc import ABC
 from typing import TYPE_CHECKING, List, Optional, override
 
 from src.simulation.grid.location import Location
+from src.simulation.grid.structure.structure_factory import logger
 from src.simulation.grid.structure.structure_type import StructureType
 from src.simulation.people.person.scheduler.task.task import Task
 from src.simulation.people.person.scheduler.task.task_type import TaskType
@@ -36,16 +37,21 @@ class StartConstruction(Task, ABC):
         self._search_time += 1
         if self._search_time >= 20:  # todo: I don't wanna put this one in the yaml
             self._finished(False)
+            logger.warning(f"Could not find place to start construction for {self._building_type} ")
             return
         empties: List[Location] = self._person.get_empties()
         location = self._find_fitting_group(empties)
         if location:
             if self._person.get_location().is_one_away(location):
+                logger.debug(f"{self._person} is at site to start construction for {self._building_type}")
                 self._simulation.get_grid().start_building_construction(self._building_type, location)
                 self._finished()
+                logger.info(f"Started construction for {self._building_type} ")
             else:
+                logger.debug(f"{self._person} is going to site to start construction for {self._building_type}")
                 self._person.go_to_location(location)
         else:
+            logger.debug(f"{self._person} is going to edge of town to start construction for {self._building_type}")
             self._person.go_to_location(self._get_closest_edge_of_town())
 
     def _get_closest_edge_of_town(self) -> Location:
@@ -69,9 +75,11 @@ class StartConstruction(Task, ABC):
 
         # List of all the corners
         corners = [top_left, top_right, bottom_left, bottom_right]
+        logger.debug(f"Edges of town determined to be {corners}")
 
         # Find the closest corner by calculating the distance
         closest_corner = min(corners, key=lambda loc: current_location.distance_to(loc))
+        logger.debug(f"Closest corner {closest_corner}")
 
         return closest_corner
 
@@ -91,11 +99,13 @@ class StartConstruction(Task, ABC):
             # Check if the bounding box fits within the given width and height
             # First orientation (width × height)
             if group_width <= self._width and group_height <= self._height:
+                logger.debug(f"Found location to start construction for {self._building_type}: {Location(min_x, min_y)}")
                 return Location(min_x, min_y)
             # Second orientation (height × width), checking if rotated box fits
             elif group_width <= self._height and group_height <= self._width:
+                logger.debug(f"Found location to start construction for {self._building_type}: {Location(min_x, min_y)}")
                 return Location(min_x, min_y)
-
+        logger.debug(f"Could not find location to start construction for {self._building_type}")
         return None
 
     @staticmethod

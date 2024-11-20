@@ -69,7 +69,7 @@ class Build(Task, ABC):
                         logger.warning("Move result failed")
                         return
                     self._store: Optional[Store] = move_result.get_structure()
-                    logger.debug(f"Store {self._store} assigned to build")
+                    logger.debug(f"Store {self._store} assigned to building {self._build}")
             else:
                 if self._build.work(self._person):
                     self._finished()

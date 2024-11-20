@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, List, Optional, override
 from src.simulation.grid.location import Location
 from src.simulation.grid.structure.structure_type import StructureType
 from src.simulation.people.person.scheduler.task.task import Task
+from src.simulation.people.person.scheduler.task.task_type import TaskType
 
 if TYPE_CHECKING:
     from src.simulation.grid.structure.structure import Structure
@@ -22,8 +23,9 @@ class StartConstruction(Task, ABC):
         width: int,
         height: int,
         building_type: StructureType,
+        task_type: TaskType
     ) -> None:
-        super().__init__(simulation, person, priority)
+        super().__init__(simulation, person, priority, task_type)
         self._width: int = width + 2
         self._height: int = height + 2
         self._building_type: StructureType = building_type

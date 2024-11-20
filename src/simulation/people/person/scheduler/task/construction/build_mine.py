@@ -6,6 +6,7 @@ from src.settings import settings
 from src.simulation.grid.structure.structure_type import StructureType
 from src.simulation.people.person.scheduler.task.construction.build import \
     Build
+from src.simulation.people.person.scheduler.task.task_type import TaskType
 
 if TYPE_CHECKING:
     from src.simulation.people.person.person import Person
@@ -20,4 +21,5 @@ class BuildMine(Build):
             settings.get("build_mine_priority", 5),
             StructureType.CONSTRUCTION_MINE,
             StructureType.BARN,
+            TaskType.BUILD_MINE
         )

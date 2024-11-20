@@ -142,7 +142,7 @@ find_spouse_priority: 5
 transport_priority: 5
 
 # Person values
-explore_time: 10
+explore_time: 1
 person_health_cap: 100
 person_hunger_cap: 100
 hunger_pref_min: 50
@@ -171,6 +171,6 @@ num_grids: 3
 near: 5
 days_in_year: 365
 mean_temp_f: 70
-visibility: 30
+visibility: 10
 speed: 10
 memory_expire: 50

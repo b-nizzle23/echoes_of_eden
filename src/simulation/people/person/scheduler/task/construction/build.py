@@ -4,6 +4,7 @@ from abc import ABC
 from typing import TYPE_CHECKING, Optional, override
 
 from src.simulation.people.person.scheduler.task.task import Task
+from src.simulation.people.person.scheduler.task.task_type import TaskType
 
 if TYPE_CHECKING:
     from src.simulation.grid.structure.store.store import Store
@@ -24,8 +25,9 @@ class Build(Task, ABC):
         priority: int,
         build_structure: StructureType,
         store_structure: StructureType,
+        task_type: TaskType
     ) -> None:
-        super().__init__(simulation, person, priority)
+        super().__init__(simulation, person, priority, task_type)
         self._build_structure: StructureType = build_structure
         self._store_structure: StructureType = store_structure
 

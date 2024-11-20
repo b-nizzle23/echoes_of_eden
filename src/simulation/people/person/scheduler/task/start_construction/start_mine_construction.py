@@ -6,6 +6,7 @@ from src.settings import settings
 from src.simulation.grid.structure.structure_type import StructureType
 from src.simulation.people.person.scheduler.task.start_construction.start_construction import \
     StartConstruction
+from src.simulation.people.person.scheduler.task.task_type import TaskType
 
 if TYPE_CHECKING:
     from src.simulation.people.person.person import Person
@@ -21,4 +22,5 @@ class StartMineConstruction(StartConstruction):
             settings.get("mine_size", 3),
             settings.get("mine_size", 3),
             StructureType.CONSTRUCTION_MINE,
+            TaskType.START_MINE_CONSTRUCTION
         )

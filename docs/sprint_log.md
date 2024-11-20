@@ -98,9 +98,9 @@ Stay organized and on track with your assignments and tasks!
 | 2024-11-16 | 1     | All       | Team meeting                                                                                    |
 | 2024-11-16 | 6     | Nate      | fix circular dependencies bug, debug app, get use up until we start executing tasks             |
 | 2024-11-17 | 2     | Nate      | Add logging the grid directory, redo the logger.py file, debug                                  |
-| 2024-11-18 | 1     | Nate      | fix bugs                                                                                        |
+| 2024-11-18 | 5     | Nate      | fix bugs                                                                                        |
 | 2024-11-18 | 3     | Brighton  | checking/validating all occurrences of Location Object calls to ensure proper variable passing. |
-| 2024-11-19 |       |           |                                                                                                 |
+| 2024-11-19 | 6     | Nate      | Complete my part of the readme and debug                                                        |
 
 ## Sprint 4
 

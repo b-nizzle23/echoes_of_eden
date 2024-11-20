@@ -81,7 +81,7 @@ mine_min_yield: 25
 mine_max_yield: 50
 mine_max_worker_count: 6
 mine_max_work_count: 4
-work_mine_priority: 5
+work_mine_priority: 6
 
 tree_yield_func_loc: 3
 tree_yield_func_scale: 1
@@ -91,7 +91,7 @@ tree_min_yield: 25
 tree_max_yield: 50
 tree_max_worker_count: 1
 tree_max_work_count: 2
-chop_tree_priority: 5
+chop_tree_priority: 6
 
 # obstacle ratings (0-10) where 0 is easily passable and 10 is completely impassible
 home_construction_obstacle_rating: 10
@@ -126,22 +126,22 @@ barn_completion_prob: 0.8
 mine_completion_prob: 0.8
 
 # build_structure
-build_barn_priority: 5
-build_farm_priority: 5
-build_home_priority: 5
-build_mine_priority: 5
+build_barn_priority: 8
+build_farm_priority: 6
+build_home_priority: 7
+build_mine_priority: 8
 
-start_barn_priority: 5
-start_farm_priority: 5
-start_home_priority: 5
-start_mine_priority: 5
+start_barn_priority: 9
+start_farm_priority: 7
+start_home_priority: 8
+start_mine_priority: 9
 
 # task priorities
-eat_priority: 5
-find_home_priority: 5
-explore_priority: 5
-find_spouse_priority: 5
-transport_priority: 5
+eat_priority: 1
+find_home_priority: 3
+explore_priority: 10
+find_spouse_priority: 2
+transport_priority: 4
 
 # Person values
 explore_time: 1

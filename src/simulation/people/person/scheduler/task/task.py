@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Optional
+from src.logger import logger
 
 from src.simulation.people.person.scheduler.task.task_type import TaskType
 

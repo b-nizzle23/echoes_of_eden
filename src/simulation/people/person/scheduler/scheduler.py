@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import heapq
-from asyncio import current_task
 from typing import TYPE_CHECKING, List, Optional
 
 from src.simulation.grid.structure.structure_factory import logger

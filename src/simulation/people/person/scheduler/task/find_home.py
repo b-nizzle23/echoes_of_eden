@@ -6,6 +6,7 @@ from src.settings import settings
 from src.simulation.grid.structure.store.home import Home
 from src.simulation.people.person.scheduler.task.task import Task
 from src.simulation.people.person.scheduler.task.task_type import TaskType
+from src.simulation.grid.structure.structure_factory import logger
 
 if TYPE_CHECKING:
     from src.simulation.grid.structure.structure import Structure

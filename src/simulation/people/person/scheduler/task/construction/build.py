@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional, override
 
 from src.simulation.people.person.scheduler.task.task import Task
 from src.simulation.people.person.scheduler.task.task_type import TaskType
+from src.logger import logger
 
 if TYPE_CHECKING:
     from src.simulation.grid.structure.store.store import Store

@@ -36,7 +36,7 @@ class Work(Structure, ABC):
         self._yield_variance: float = yield_variance
         self._decrease_yield_time: int = 0
 
-        logger.info(
+        logger.debug(
             f"Work initialized with max workers: {max_worker_count}, "
             f"max work count: {max_work_count}, "
             f"yield variance: {yield_variance:.2f}"

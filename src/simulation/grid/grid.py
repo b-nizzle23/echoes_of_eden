@@ -26,6 +26,32 @@ if TYPE_CHECKING:
 
 
 class Grid:
+    _char_to_num: Dict[str, int] = {
+        settings.get("home_construction_char", "h"): settings.get("home_construction_obstacle_rating", 10),
+        settings.get("home_char", "H"): settings.get("home_obstacle_rating", 0),
+        settings.get("barn_construction_char", "b"): settings.get("barn_construction_obstacle_rating", 10),
+        settings.get("barn_char", "B"): settings.get("barn_obstacle_rating", 0),
+        settings.get("farm_construction_char", "f"): settings.get("farm_construction_obstacle_rating", 3),
+        settings.get("farm_char", "F"): settings.get("farm_obstacle_rating", 5),
+        settings.get("mine_construction_char", "m"): settings.get("mine_construction_obstacle_rating", 0),
+        settings.get("mine_char", "M"): settings.get("mine_obstacle_rating", 0),
+        settings.get("empty_char", " "): settings.get("empty_obstacle_rating", 1),
+        settings.get("tree_char", "*"): settings.get("tree_obstacle_rating", 10),
+    }
+
+    _building_types = "".join(
+        [
+            settings.get("home_construction_char", "h"),
+            settings.get("home_char", "H"),
+            settings.get("barn_construction_char", "b"),
+            settings.get("barn_char", "B"),
+            settings.get("farm_construction_char", "f"),
+            settings.get("farm_char", "F"),
+            settings.get("mine_construction_char", "m"),
+            settings.get("mine_char", "M"),
+        ]
+    )
+
     def __init__(self, simulation: Simulation, size: int) -> None:
         logger.debug(f"Initializing simulation with grid size {size}.")
 
@@ -188,26 +214,14 @@ class Grid:
         rows = len(self._grid)
         cols = len(self._grid[0])
         empty_spots = []
-        building_types = "".join(
-            [
-                settings.get("home_construction_char", "h"),
-                settings.get("home_char", "H"),
-                settings.get("barn_construction_char", "b"),
-                settings.get("barn_char", "B"),
-                settings.get("farm_construction_char", "f"),
-                settings.get("farm_char", "F"),
-                settings.get("mine_construction_char", "m"),
-                settings.get("mine_char", "M"),
-            ]
-        )
 
-        logger.debug(f"Building types to check for: {building_types}")
+        logger.debug(f"Building types to check for: {self._building_types}")
 
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
 
         for i in range(rows):
             for j in range(cols):
-                if self._grid[i][j] not in building_types:
+                if self._grid[i][j] not in self._building_types:
                     continue
 
                 location: Location = Location(j, i)
@@ -365,20 +379,7 @@ class Grid:
     def get_path_finding_matrix(self) -> List[List[int]]:
         logger.debug("Generating path finding matrix.")
 
-        char_to_num: Dict[str, int] = {
-            settings.get("home_construction_char", "h"): settings.get("home_construction_obstacle_rating", 10),
-            settings.get("home_char", "H"): settings.get("home_obstacle_rating", 0),
-            settings.get("barn_construction_char", "b"): settings.get("barn_construction_obstacle_rating", 10),
-            settings.get("barn_char", "B"): settings.get("barn_obstacle_rating", 0),
-            settings.get("farm_construction_char", "f"): settings.get("farm_construction_obstacle_rating", 3),
-            settings.get("farm_char", "F"): settings.get("farm_obstacle_rating", 5),
-            settings.get("mine_construction_char", "m"): settings.get("mine_construction_obstacle_rating", 0),
-            settings.get("mine_char", "M"): settings.get("mine_obstacle_rating", 0),
-            settings.get("empty_char", " "): settings.get("empty_obstacle_rating", 1),
-            settings.get("tree_char", "*"): settings.get("tree_obstacle_rating", 10),
-        }
-
-        logger.debug(f"Character to obstacle rating map: {char_to_num}")
+        logger.debug(f"Character to obstacle rating map: {self._char_to_num}")
 
         path_finding_matrix: List[List[int | str]] = deepcopy(self._grid)
 
@@ -390,8 +391,9 @@ class Grid:
             row = self._grid[i]
             for j in range(len(row)):
                 cell = row[j]
-                path_finding_matrix[i][j] = char_to_num[cell]
-                logger.debug(f"Setting path_finding_matrix[{i}][{j}] = {char_to_num[cell]} (cell: {cell})")
+                # invert coordinates for the pathfinding library
+                path_finding_matrix[j][i] = self._char_to_num[cell]  
+                logger.debug(f"Setting path_finding_matrix[{j}][{i}] = {self._char_to_num[cell]} (cell: {cell})")
 
         logger.debug("Path finding matrix generation complete.")
 

@@ -9,6 +9,17 @@ class Location:
         logger.debug(f"Initializing Location with x={x}, y={y}")
         self.x = x
         self.y = y
+        
+        self._neighbor_offsets = [
+            (-1, -1),
+            (0, -1),
+            (1, -1),  # Top-left, Top, Top-right
+            (-1, 0),
+            (1, 0),  # Left,          Right
+            (-1, 1),
+            (0, 1),
+            (1, 1),  # Bottom-left, Bottom, Bottom-right
+        ]
 
     def __eq__(self, other) -> bool:
         logger.debug(f"Comparing Location({self.x}, {self.y}) to {other}")
@@ -43,25 +54,23 @@ class Location:
 
     def is_one_away(self, other: "Location") -> bool:
         logger.debug(f"Checking if Location({self.x}, {self.y}) is one step away from {other}")
-        result = abs(self.x - other.x) <= 1 and abs(self.y - other.y) <= 1
-        logger.debug(f"One step away: {result}")
-        return result
+    
+        # Check if the difference between the current location and the other location
+        # matches any of the offsets in _neighbor_offsets
+        for dx, dy in self._neighbor_offsets:
+            if self.x + dx == other.x and self.y + dy == other.y:
+                logger.debug(f"One step away: True")
+                return True
+    
+        logger.debug(f"One step away: False")
+        return False
+
 
     def get_neighbors(self) -> List["Location"]:
         logger.debug(f"Getting neighbors for Location({self.x}, {self.y})")
-        neighbor_offsets = [
-            (-1, -1),
-            (0, -1),
-            (1, -1),  # Top-left, Top, Top-right
-            (-1, 0),
-            (1, 0),  # Left,          Right
-            (-1, 1),
-            (0, 1),
-            (1, 1),  # Bottom-left, Bottom, Bottom-right
-        ]
-
+        
         neighbors = []
-        for dx, dy in neighbor_offsets:
+        for dx, dy in self._neighbor_offsets:
             new_location = Location(self.x + dx, self.y + dy)
             logger.debug(f"Adding neighbor: {new_location}")
             neighbors.append(new_location)

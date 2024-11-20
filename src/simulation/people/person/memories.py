@@ -39,10 +39,10 @@ class Memories:
         return self._memories
 
     def _get_locations(self, char: str) -> Set[Location]:
-        logger.info("Fetching locations associated with character '%s'.", char)
+        logger.info(f"Fetching locations associated with character '{char}'.")
 
         current_time = self._grid.get_time()
-        logger.debug("Current simulation time is %d.", current_time)
+        logger.debug(f"Current simulation time is {current_time}.")
 
         # Remove expired memories
         expired_count = len(self._memories)
@@ -51,11 +51,11 @@ class Memories:
         }
         expired_count -= len(self._memories)
         if expired_count > 0:
-            logger.debug("%d expired memories removed based on the expiration time.", expired_count)
+            logger.debug(f"{expired_count} expired memories removed based on the expiration time.")
 
         filtered_memories = filter(lambda memory: memory.get_what() == char, self._memories)
         locations = set(map(lambda memory: memory.get_where(), filtered_memories))
-        logger.debug("Found %d locations associated with character '%s'.", len(locations), char)
+        logger.debug(f"Found {len(locations)} locations associated with character '{char}'.")
 
         return locations
 
@@ -101,7 +101,7 @@ class Memories:
         logger.info("Combining memories from another instance into the current one.")
 
         other_memories_count = len(other.get_memories())
-        logger.debug("The other memory instance contains %d memories.", other_memories_count)
+        logger.debug(f"The other memory instance contains {other_memories_count} memories.")
 
         # Merge the memories from both 'self' and 'other', keeping the newest memory for each location
         for memory in other.get_memories():
@@ -109,77 +109,58 @@ class Memories:
             if existing_memory:
                 # If an existing memory is found for the same location, compare the timestamps
                 logger.debug(
-                    "Memory conflict detected for location %s. Existing memory timestamp: %d, incoming memory timestamp: %d.",
-                    memory.get_where(),
-                    existing_memory.get_when(),
-                    memory.get_when()
+                    f"Memory conflict detected for location {memory.get_where()}. "
+                    f"Existing memory timestamp: {existing_memory.get_when()}, "
+                    f"incoming memory timestamp: {memory.get_when()}."
                 )
                 if memory.get_when() > existing_memory.get_when():
                     # Replace the old memory with the newer one
-                    logger.debug(
-                        "Incoming memory for location %s is newer. Updating memory.",
-                        memory.get_where()
-                    )
+                    logger.debug(f"Incoming memory for location {memory.get_where()} is newer. Updating memory.")
                     self.add(memory.get_what(), memory.get_where())
                 else:
-                    logger.debug(
-                        "Existing memory for location %s is newer. No update needed.",
-                        memory.get_where()
-                    )
+                    logger.debug(f"Existing memory for location {memory.get_where()} is newer. No update needed.")
             else:
                 # If no memory exists for this location, simply add the new memory
-                logger.debug("No existing memory found for location %s. Adding new memory.", memory.get_where())
+                logger.debug(f"No existing memory found for location {memory.get_where()}. Adding new memory.")
                 self._memories.add(memory)
 
-        logger.info(
-            "Memory combination complete. Total memories after combination: %d.",
-            len(self._memories)
-        )
+        logger.info(f"Memory combination complete. Total memories after combination: {len(self._memories)}.")
 
     def add(self, what: str, where: Location) -> None:
-        logger.info("Adding a new memory with content '%s' at location %s.", what, where)
+        logger.info(f"Adding a new memory with content '{what}' at location {where}.")
 
         # Validate location and adjust if necessary
         if not self._grid.is_tree(where) or not self._grid.is_empty(where):
-            logger.debug(
-                "Location %s is either not a tree or not empty. Adjusting location to top-left corner.",
-                where
-            )
+            logger.debug(f"Location {where} is either not a tree or not empty. Adjusting location to top-left corner.")
             self._grid.find_top_left_corner(where)
 
         # Remove any existing memory for the same location
-        logger.debug("Removing any existing memory at location %s.", where)
+        logger.debug(f"Removing any existing memory at location {where}.")
         self._remove(where)
 
         # Create a new memory and add it to the set
         current_time = self._grid.get_time()
         new_memory = Memory(what, where, current_time)
         self._memories.add(new_memory)
-        logger.debug(
-            "New memory added: '%s' at location %s with timestamp %d.",
-            what,
-            where,
-            current_time
-        )
-
-        logger.info("Memory successfully added. Total memories: %d.", len(self._memories))
+        logger.debug(f"New memory added: '{what}' at location {where} with timestamp {current_time}.")
+        logger.info(f"Memory successfully added. Total memories: {len(self._memories)}.")
 
     def _remove(self, where: Location) -> None:
-        logger.info("Attempting to remove memory at location %s.", where)
+        logger.info(f"Attempting to remove memory at location {where}.")
 
         # Count memories before removal
         initial_count = len(self._memories)
-        logger.debug("Initial memory count: %d.", initial_count)
+        logger.debug(f"Initial memory count: {initial_count}.")
 
         # Remove memory at the specified location if it exists
         self._memories = {memory for memory in self._memories if memory.get_where() != where}
 
         # Count memories after removal
         final_count = len(self._memories)
-        logger.debug("Final memory count after removal: %d.", final_count)
+        logger.debug(f"Final memory count after removal: {final_count}.")
 
         # Log the result of the removal operation
         if final_count < initial_count:
-            logger.info("Memory at location %s was successfully removed.", where)
+            logger.info(f"Memory at location {where} was successfully removed.")
         else:
-            logger.warning("No memory found at location %s to remove.", where)
+            logger.warning(f"No memory found at location {where} to remove.")

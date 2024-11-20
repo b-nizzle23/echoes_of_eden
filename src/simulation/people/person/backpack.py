@@ -18,11 +18,7 @@ class Backpack:
         self._capacity = sum(
             allowed_resources.values()
         )  # The total capacity is the sum of the allowed resources' capacities
-        logger.debug(
-            "Backpack initialized with resources: %s and total capacity: %d.",
-            self.resources,
-            self._capacity,
-        )
+        logger.debug(f"Backpack initialized with resources: {self.resources} and total capacity: {self._capacity}.")
 
     def has_capacity(self) -> bool:
         """
@@ -32,9 +28,7 @@ class Backpack:
         # Sum the resources stored and check if it is less than the store's total capacity
         total_stored = sum(self.resources.values())
         logger.info("Checking if backpack has capacity.")
-        logger.debug(
-            "Current total stored: %d, Total capacity: %d.", total_stored, self._capacity
-        )
+        logger.debug(f"Current total stored: {total_stored}, Total capacity: {self._capacity}.")
         return total_stored < self._capacity
 
     def what_resource(self) -> Optional[str]:
@@ -49,7 +43,7 @@ class Backpack:
 
         # Find the resource with the highest quantity
         max_resource = max(self.resources, key=self.resources.get)
-        logger.debug("Resource with highest quantity: %s.", max_resource)
+        logger.debug(f"Resource with highest quantity: {max_resource}.")
 
         # If all resources have 0, return 'No resources'
         if self.resources[max_resource] == 0:
@@ -60,52 +54,45 @@ class Backpack:
         """
         Adds a resource to the store, respecting the collective capacity limit.
         """
-        logger.info("Adding resource %s with amount %d.", resource, amount)
+        logger.info(f"Adding resource {resource} with amount {amount}.")
 
         if resource not in self.resources:
-            logger.error("Attempted to add unsupported resource: %s.", resource)
+            logger.error(f"Attempted to add unsupported resource: {resource}.")
             raise ValueError(f"Resource {resource} is not supported by this store.")
 
         # Check if adding this resource would exceed the collective capacity
         if self.has_capacity():
-            logger.debug("Adding %d of %s to the backpack.", amount, resource)
+            logger.debug(f"Adding {amount} of {resource} to the backpack.")
             self.resources[resource] += amount
         else:
-            logger.warning("Not enough capacity to add %d of %s.", amount, resource)
+            logger.warning(f"Not enough capacity to add {amount} of {resource}.")
             raise ValueError("Not enough capacity to add more resources to the store.")
 
     def remove_resource(self, resource: str, amount: int) -> int:
         """
         Removes a resource from the store, returns the amount removed.
         """
-        logger.info("Removing %d of %s from the backpack.", amount, resource)
+        logger.info(f"Removing {amount} of {resource} from the backpack.")
 
         if resource not in self.resources:
-            logger.error("Attempted to remove unsupported resource: %s.", resource)
+            logger.error(f"Attempted to remove unsupported resource: {resource}.")
             raise ValueError(f"Resource {resource} is not supported by this store.")
 
         available = self.resources[resource]
         removed = min(available, amount)
         self.resources[resource] -= removed
-        logger.debug(
-            "Removed %d of %s from the backpack. Remaining: %d.",
-            removed,
-            resource,
-            self.resources[resource],
-        )
+        logger.debug(f"Removed {removed} of {resource} from the backpack. Remaining: {self.resources[resource]}.")
         return removed
 
     def get_resource(self, resource: str) -> int:
         """
         Returns the current amount of a resource stored.
         """
-        logger.info("Fetching the quantity of resource: %s.", resource)
+        logger.info(f"Fetching the quantity of resource: {resource}.")
         if resource not in self.resources:
-            logger.warning("Resource %s is not stored in the backpack.", resource)
+            logger.warning(f"Resource {resource} is not stored in the backpack.")
             return 0
-        logger.debug(
-            "Current amount of %s in the backpack: %d.", resource, self.resources[resource]
-        )
+        logger.debug(f"Current amount of {resource} in the backpack: {self.resources[resource]}.")
         return self.resources[resource]
 
     def get_remaining_capacity(self) -> int:
@@ -116,9 +103,7 @@ class Backpack:
         logger.info("Calculating remaining capacity of the backpack.")
         total_stored = sum(self.resources.values())
         remaining_capacity = self._capacity - total_stored
-        logger.debug(
-            "Total stored: %d, Remaining capacity: %d.", total_stored, remaining_capacity
-        )
+        logger.debug(f"Total stored: {total_stored}, Remaining capacity: {remaining_capacity}.")
         return remaining_capacity
 
     def get_capacity(self) -> int:
@@ -130,5 +115,5 @@ class Backpack:
     def has_items(self) -> bool:
         logger.info("Checking if the backpack contains any items.")
         has_items = self.get_remaining_capacity() != self.get_capacity()
-        logger.debug("Backpack has items: %s.", has_items)
+        logger.debug(f"Backpack has items: {has_items}.")
         return has_items

@@ -9,7 +9,7 @@ def main() -> None:
     logger.info("Starting the simulation program.")
 
     # Access settings via the globally initialized object
-    max_simulations = settings.get("max_simulations", 10)
+    max_simulations = settings.get("max_simulations", 1)
 
     for i in range(max_simulations):
         logger.info(f"Running simulation {i + 1}")

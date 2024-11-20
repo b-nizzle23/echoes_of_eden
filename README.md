@@ -104,18 +104,18 @@ src
             * `work_farm.py`: 
             * `work_mine.py`: 
   * visualization
-    * `visualizer.py`:
+    * `visualizer.py`: manages and displays town grid and simulation stats using grid and state plotters
     * plotter
-      * `grid_plotter.py`: 
-      * `state_plotter.py`:
+      * `grid_plotter.py`: generates and visualizes random grid snapshots with terrain types, displaying them as a slideshow
+      * `state_plotter.py`: aggregates and visualizes simulation states (e.g., grid, people, resources) over time through line plots.
     * state
-      * `grid_disaster_state.py`: 
-      * `grid_state.py`: 
-      * `people_disaster_state.py`: 
-      * `people_state.py`: 
-      * `resource_state.py`: 
-      * `state.py`: 
-      * `task_state.py`: 
+      * `grid_disaster_state.py`: Initialize grid disaster attributes based on counts
+      * `grid_state.py`: establishes counts of grid values (barns, homes, mines, constructions, ...)
+      * `people_disaster_state.py`: Initialize people disaster attributes based on counts
+      * `people_state.py`: establishes averages for people values (hunger, health, etc.)
+      * `resource_state.py`: calculates/stores resource data for barns
+      * `state.py`: generating and formatting state data
+      * `task_state.py`: calculates/stores task data for 
 
 
 ## Dev Tools

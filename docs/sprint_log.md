@@ -101,6 +101,7 @@ Stay organized and on track with your assignments and tasks!
 | 2024-11-18 | 5     | Nate      | fix bugs                                                                                        |
 | 2024-11-18 | 3     | Brighton  | checking/validating all occurrences of Location Object calls to ensure proper variable passing. |
 | 2024-11-19 | 6     | Nate      | Complete my part of the readme and debug                                                        |
+| 2024-11-19 | 4.5   | Brighton  | Complete logging of Visualization directory, added file descriptions to README                  |
 
 ## Sprint 4
 

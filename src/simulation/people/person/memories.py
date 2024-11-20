@@ -39,7 +39,7 @@ class Memories:
         return self._memories
 
     def _get_locations(self, char: str) -> Set[Location]:
-        logger.info(f"Fetching locations associated with character '{char}'.")
+        logger.debug(f"Fetching locations associated with character '{char}'.")
 
         current_time = self._grid.get_time()
         logger.debug(f"Current simulation time is {current_time}.")
@@ -98,7 +98,7 @@ class Memories:
         )
 
     def combine(self, other: "Memories") -> None:
-        logger.info("Combining memories from another instance into the current one.")
+        logger.debug("Combining memories from another instance into the current one.")
 
         other_memories_count = len(other.get_memories())
         logger.debug(f"The other memory instance contains {other_memories_count} memories.")
@@ -124,10 +124,10 @@ class Memories:
                 logger.debug(f"No existing memory found for location {memory.get_where()}. Adding new memory.")
                 self._memories.add(memory)
 
-        logger.info(f"Memory combination complete. Total memories after combination: {len(self._memories)}.")
+        logger.debug(f"Memory combination complete. Total memories after combination: {len(self._memories)}.")
 
     def add(self, what: str, where: Location) -> None:
-        logger.info(f"Adding a new memory with content '{what}' at location {where}.")
+        logger.debug(f"Adding a new memory with content '{what}' at location {where}.")
 
         # Validate location and adjust if necessary
         if not self._grid.is_tree(where) or not self._grid.is_empty(where):
@@ -143,10 +143,10 @@ class Memories:
         new_memory = Memory(what, where, current_time)
         self._memories.add(new_memory)
         logger.debug(f"New memory added: '{what}' at location {where} with timestamp {current_time}.")
-        logger.info(f"Memory successfully added. Total memories: {len(self._memories)}.")
+        logger.debug(f"Memory successfully added. Total memories: {len(self._memories)}.")
 
     def _remove(self, where: Location) -> None:
-        logger.info(f"Attempting to remove memory at location {where}.")
+        logger.debug(f"Attempting to remove memory at location {where}.")
 
         # Count memories before removal
         initial_count = len(self._memories)
@@ -161,6 +161,6 @@ class Memories:
 
         # Log the result of the removal operation
         if final_count < initial_count:
-            logger.info(f"Memory at location {where} was successfully removed.")
+            logger.debug(f"Memory at location {where} was successfully removed.")
         else:
-            logger.warning(f"No memory found at location {where} to remove.")
+            logger.debug(f"No memory found at location {where} to remove.")

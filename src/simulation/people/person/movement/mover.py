@@ -12,17 +12,18 @@ from pathfinding.finder.a_star import AStarFinder
 from src.settings import settings
 from src.simulation.grid.location import Location
 from src.simulation.people.person.movement.vision import Vision
+from src.logger import logger
+
 
 if TYPE_CHECKING:
     from src.simulation.grid.grid import Grid
     from src.simulation.people.person.memories import Memories
     from src.simulation.people.person.person import Person
-    from src.logger import logger
 
 
 class Mover:
     def __init__(self, grid: Grid, person: Person, memories: Memories, speed: int) -> None:
-        logger.info(f"Initializing Mover for person {person} with speed {speed}.")
+        logger.debug(f"Initializing Mover for person {person} with speed {speed}.")
         self._person = person
         self._grid = grid
         self._speed = speed
@@ -32,13 +33,13 @@ class Mover:
         logger.debug("Mover initialized with grid: %s, person: %s, speed: %d.", grid, person, speed)
 
     def explore(self) -> None:
-        logger.info("Explorer is searching for a random location.")
+        logger.debug("Explorer is searching for a random location.")
         random_location = self._get_random_location()
         logger.debug(f"Random location chosen: {random_location}")
         self.towards(random_location)
 
     def towards(self, target: Location) -> None:
-        logger.info(f"Moving towards target location: {target}.")
+        logger.debug(f"Moving towards target location: {target}.")
         if not self._grid.is_in_bounds(target):
             logger.warning(f"Target location {target} is out of bounds, aborting movement.")
             return
@@ -63,13 +64,13 @@ class Mover:
                 logger.warning(f"No valid path found to target: {target}")
 
     def _invalid(self, location: Location) -> bool:
-        logger.info(f"Checking if location {location} is invalid (barn, mine, or home).")
+        logger.debug(f"Checking if location {location} is invalid (barn, mine, or home).")
         result = self._grid.is_barn(location) or self._grid.is_mine(location) or self._grid.is_home(location)
         logger.debug(f"Location {location} is invalid: {result}")
         return result
 
     def _adjust_target(self, target):
-        logger.info(f"Adjusting target location {target} if necessary.")
+        logger.debug(f"Adjusting target location {target} if necessary.")
         neighbors: List[Location] = target.get_neighbors()
         found: bool = False
         for neighbor in neighbors:
@@ -86,7 +87,7 @@ class Mover:
         return target
 
     def get_closest(self, locations: List[Location], current_location=None) -> Optional[Location]:
-        logger.info(f"Getting the closest location from {current_location} to one of the target locations.")
+        logger.debug(f"Getting the closest location from {current_location} to one of the target locations.")
         if not current_location:
             current_location = self._person.get_location()
             logger.debug(f"Current location not provided. Using person's current location: {current_location}")
@@ -104,7 +105,7 @@ class Mover:
         return path_exists
 
     def _place(self, location: Location) -> None:
-        logger.info(f"Placing person at location {location}")
+        logger.debug(f"Placing person at location {location}")
         current_location = deepcopy(self._person.get_location())
 
         if not current_location.is_one_away(location):
@@ -119,7 +120,7 @@ class Mover:
         logger.debug(f"Person successfully placed at location {location}")
 
     def _get_random_location(self) -> Location:
-        logger.info("Getting a random valid location.")
+        logger.debug("Getting a random valid location.")
 
         while True:
             x = randint(0, self._grid.get_width() - 1)
@@ -136,7 +137,7 @@ class Mover:
         self,
         target: Location,
     ) -> List[PathFindingGridNode]:
-        logger.info(f"Finding path to target location {target}")
+        logger.debug(f"Finding path to target location {target}")
         start: Location = deepcopy(self._person.get_location())
 
         if not self._grid.is_in_bounds(start) or self._invalid(start):
@@ -155,7 +156,7 @@ class Mover:
         return path
 
     def _get_path_finding_grid(self) -> PathFindingGrid:
-        logger.info("Generating pathfinding grid.")
+        logger.debug("Generating pathfinding grid.")
 
         # Get the pathfinding matrix from the grid
         matrix = self._grid.get_path_finding_matrix()
@@ -165,7 +166,7 @@ class Mover:
 
     # For debugging
     def _print_grid(self, target: Location, path) -> None:
-        logger.info("Printing grid.")
+        logger.debug("Printing grid.")
 
         grid = self._grid.get_grid()
         person_location = self._person.get_location()

@@ -53,6 +53,8 @@ farm_max_construction_work_count: 2
 farm_max_construction_worker_count: 3
 farm_finished_completion_level: 3
 
+tree_growth_chance: 0.01
+
 # storing
 barn_food_store: 500
 barn_stone_store: 100

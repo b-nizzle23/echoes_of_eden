@@ -55,6 +55,7 @@ class PeopleGenerator:
         return names
 
     def generate(self) -> List[Person]:
+        logger.debug("Generating people...")
         people: List[Person] = []
         names: List[str] = self._get_names()
         empty_spots_near_town: List[Location] = self._grid.get_empty_spots_near_town()
@@ -66,6 +67,7 @@ class PeopleGenerator:
             )
             person: Person = Person(self._simulation, name, pk, location, age)
             people.append(person)
+        logger.info(f"Generated {len(people)} people")
         return people
 
     def make_baby(self, location: Location) -> Person:
@@ -73,4 +75,5 @@ class PeopleGenerator:
         age: int = 0
         self._max_pk += 1
         person: Person = Person(self._simulation, name, self._max_pk, location, age)
+        logger.info("Baby {name} was born!")
         return person

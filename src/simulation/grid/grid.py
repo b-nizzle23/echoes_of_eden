@@ -255,7 +255,8 @@ class Grid:
         logger.debug(f"Found {len(empty_spots)} empty spots near towns.")
         return empty_spots
 
-    def grow_trees(self, chance: int = 0.10) -> None:
+    def grow_trees(self) -> None:
+        chance: int = settings.get("tree_growth_chance", 0.01)
         logger.debug(f"Starting tree growth process with a chance of {chance}.")
 
         for i in range(len(self._grid)):

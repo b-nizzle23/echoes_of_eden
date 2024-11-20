@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING, Callable, Dict, List, Tuple
 
 from src.simulation.grid.location import Location
 from src.simulation.people.person.memories import Memories
+from src.logger import logger
 
 if TYPE_CHECKING:
     from src.simulation.grid.grid import Grid
     from src.simulation.people.person.person import Person
-    from src.logger import logger
 
 
 class Direction(Enum):
@@ -26,16 +26,16 @@ class Vision:
         self._grid = grid
         self._visibility = visibility
         self._directions: List[Tuple[int, int]] = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
-        logger.info(f"Vision system initialized for {self._person} with visibility radius {self._visibility}.", self._person)
+        logger.debug(f"Vision system initialized for {self._person} with visibility radius {self._visibility}.", self._person)
 
     def look_around(self) -> Memories:
         """Initiates the visibility check and returns updated memories."""
-        logger.info(f"{self._person} is looking around.")
+        logger.debug(f"{self._person} is looking around.")
         memories: Memories = Memories(self._grid)
         current_location = deepcopy(self._person.get_location())
         logger.debug(f"Starting vision search from {current_location}.")
         self._search(current_location, self._visibility, memories, set())
-        logger.info(f"Vision search complete for {self._person}. Memory updated.", self._person)
+        logger.debug(f"Vision search complete for {self._person}. Memory updated.", self._person)
         return memories
 
     def _search(
@@ -79,7 +79,7 @@ class Vision:
         }
         for obj_type, check_fn in non_blocking_objects.items():
             if check_fn(location):
-                logger.info(f"{obj_type.capitalize()} found at {location}.")
+                logger.debug(f"{obj_type.capitalize()} found at {location}.")
                 memory.add(f"{obj_type}s", location)
                 return
 
@@ -101,21 +101,21 @@ class Vision:
 
         for obj_type, check_fn in blocking_objects.items():
             if check_fn(location):
-                logger.info(f"Blocking object {obj_type.capitalize()} detected at {location}.")
+                logger.debug(f"Blocking object {obj_type.capitalize()} detected at {location}.")
                 memory.add(f"{obj_type}s", location)
                 return True
         return False
 
     def _block_view(self, blocked: set[Location], location: Location) -> None:
         """Marks the view as blocked for the given location."""
-        logger.info(f"Blocking view from {location}.")
+        logger.debug(f"Blocking view from {location}.")
         blocked.add(location)
         for direction in Direction:
             self._mark_blocked_in_direction(blocked, location, direction)
 
     def _mark_blocked_in_direction(self, blocked: set[Location], location: Location, direction: Direction) -> None:
         """Blocks visibility in a specific direction from the given location."""
-        logger.info(f"Blocking view from location {location} towards {direction.name}.")
+        logger.debug(f"Blocking view from location {location} towards {direction.name}.")
         x, y = location.x, location.y
         if direction == Direction.LEFT:
             for k in range(x, -1, -1):

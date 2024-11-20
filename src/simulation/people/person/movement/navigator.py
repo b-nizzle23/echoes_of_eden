@@ -4,6 +4,7 @@ from collections import defaultdict
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Set, Tuple
 
 import numpy as np
+from src.logger import logger
 
 from src.settings import settings
 from src.simulation.grid.structure.structure_type import StructureType
@@ -18,12 +19,11 @@ if TYPE_CHECKING:
     from src.simulation.grid.structure.structure import Structure
     from src.simulation.people.person.person import Person
     from src.simulation.simulation import Simulation
-    from src.logger import logger
 
 
 class Navigator:
     def __init__(self, simulation: Simulation, person: Person) -> None:
-        logger.info(f"Initializing Navigator for person: {person.get_name()}")
+        logger.debug(f"Initializing Navigator for person: {person.get_name()}")
 
         self._simulation = simulation
         self._person = person
@@ -45,7 +45,7 @@ class Navigator:
         self._actions = defaultdict(lambda: defaultdict(int))
 
     def is_stuck(self) -> bool:
-        logger.info("Checking if navigator is stuck.")
+        logger.debug("Checking if navigator is stuck.")
         location = self._simulation.get_grid().get_open_spot_next_to_town()
 
         stuck = not location or not self._mover.can_get_to(location)
@@ -55,7 +55,7 @@ class Navigator:
 
     def move_to_time_estimate(self) -> int:
         """Estimate the time to move to the current building."""
-        logger.info("Estimating move-to time.")
+        logger.debug("Estimating move-to time.")
         if not self._structure:
             logger.debug("No structure set, returning default time estimate of 5.")
             return 5  # Default estimate if no building is set
@@ -65,26 +65,26 @@ class Navigator:
 
     def move_to_location(self, location: Location):
         """Move directly to the specified location."""
-        logger.info(f"Navigator moving to location: {location}")
+        logger.debug(f"Navigator moving to location: {location}")
         self._reset_moving_state(None)
         self._mover.towards(location)
 
     def explore(self):
         """Explore the area to search for buildings."""
-        logger.info("Exploring the area to search for buildings.")
+        logger.debug("Exploring the area to search for buildings.")
         self._reset_moving_state(None)
         self._mover.explore()
 
     def move_to_home(self) -> Optional[Home]:
         """Move towards home, if it's set."""
-        logger.info("Attempting to move to home.")
+        logger.debug("Attempting to move to home.")
         self._moving_to_structure_type = StructureType.HOME
         self._visited_structures.clear()
         self._structure = self._person.get_home()
         self._mover.towards(self._structure.get_location())
 
         if self._person.get_location().is_one_away(self._structure.get_location()):
-            logger.info("Person is one step away from home. Resetting moving state.")
+            logger.debug("Person is one step away from home. Resetting moving state.")
             self._reset_moving_state(None)
             return self._structure
         logger.debug("Person is not yet at home, still moving.")
@@ -94,7 +94,7 @@ class Navigator:
         self, structure_type: StructureType, resource_name: Optional[str] = None
     ) -> MoveResult:
         """Move to a building that is workable (e.g., has capacity or resources)."""
-        logger.info(f"Moving to workable structure of type: {structure_type}")
+        logger.debug(f"Moving to workable structure of type: {structure_type}")
         if self._moving_to_structure_type != structure_type:
             logger.debug("Structure type has changed. Resetting moving state.")
             self._reset_moving_state(structure_type)
@@ -110,7 +110,7 @@ class Navigator:
                 return MoveResult(failed, None)
 
         if self._is_structure_nearby_and_has_capacity(resource_name):
-            logger.info("Found workable structure with capacity.")
+            logger.debug("Found workable structure with capacity.")
             return MoveResult(False, self._structure)
 
         logger.debug("Structure is not nearby or lacks capacity. Returning failure result.")
@@ -118,7 +118,7 @@ class Navigator:
 
     def update_reward(self, y: float) -> None:
         """Update the reward given the yield."""
-        logger.info("Updating the reward given the yield.")
+        logger.debug("Updating the reward given the yield.")
         if not self._moving_to_structure_type or not self._structure:
             logger.debug("No structure to update reward for.")
             return
@@ -142,7 +142,7 @@ class Navigator:
         self._turn_count = 0
 
     def _find_and_move_to_structure(self, structure_type: StructureType) -> Tuple[bool, Optional[Structure]]:
-        logger.info(f"Finding and moving to structure of type: {structure_type}")
+        logger.debug(f"Finding and moving to structure of type: {structure_type}")
         building_data = self._get_structure_locations()
         construction_tasks = self._get_start_construction_tasks()
         construction_site_data = self._get_construction_structure_locations()
@@ -177,7 +177,7 @@ class Navigator:
                 self._person.get_scheduler().add(construction_type)
             return True, None
 
-        logger.info(f"Successfully moved to structure of type: {structure_type}")
+        logger.debug(f"Successfully moved to structure of type: {structure_type}")
         return False, structure
 
     def _get_structure_locations(self) -> Dict[StructureType, Callable[[], Set[Location]]]:
@@ -221,7 +221,7 @@ class Navigator:
 
     def _is_structure_nearby_and_has_capacity(self, resource_name: Optional[str]) -> bool:
         """Check if the building is nearby and has capacity."""
-        logger.info(f"Checking if structure {self._structure} is nearby and has capacity.")
+        logger.debug(f"Checking if structure {self._structure} is nearby and has capacity.")
         if self._person.get_location().is_one_away(self._structure.get_location()):
             if resource_name and isinstance(self._structure, Store):
                 resource_quantity = self._structure.get_resource(resource_name)
@@ -238,14 +238,14 @@ class Navigator:
 
     def _move_to_closest_structure(self, locations: List[Location]) -> Optional[Structure]:
         """Move to the closest building from the provided locations."""
-        logger.info(f"Finding the closest structure from {len(locations)} locations.")
+        logger.debug(f"Finding the closest structure from {len(locations)} locations.")
         visited_buildings_locations = [b.get_location() for b in self._visited_structures]
         filtered = [l for l in locations if l not in visited_buildings_locations]
         logger.debug(f"Filtered to {len(filtered)} unvisited locations.")
 
         closest = self._mover.get_closest(filtered)
         if closest:
-            logger.info(f"Closest structure found at location {closest}. Moving to it.")
+            logger.debug(f"Closest structure found at location {closest}. Moving to it.")
         else:
             logger.warning("No suitable structure found among the given locations.")
         return self._move_to(closest)
@@ -254,7 +254,7 @@ class Navigator:
         self, structure_type: StructureType, locations: List[Location]
     ) -> Optional[Structure]:
         """Move to the chosen building that is workable."""
-        logger.info(f"Choosing structure of type {structure_type} from {len(locations)} locations.")
+        logger.debug(f"Choosing structure of type {structure_type} from {len(locations)} locations.")
         self._calculate_epsilon(structure_type)
 
         actions, rewards = self._update_rewards_and_actions(locations, structure_type)
@@ -264,10 +264,10 @@ class Navigator:
 
         if np.random.uniform(0, 1) < self._epsilon[structure_type]:
             chosen = np.random.choice(list(rewards.keys()))  # explore
-            logger.info(f"Exploring. Randomly chose location {chosen}.")
+            logger.debug(f"Exploring. Randomly chose location {chosen}.")
         else:
             chosen = max(rewards, key=rewards.get)  # exploit
-            logger.info(f"Exploiting. Chose location {chosen} with highest reward {rewards[chosen]:.4f}.")
+            logger.debug(f"Exploiting. Chose location {chosen} with highest reward {rewards[chosen]:.4f}.")
 
         actions[chosen] += 1
 
@@ -283,7 +283,7 @@ class Navigator:
         logger.debug(f"Updated epsilon for structure type {structure_type} to {self._epsilon[structure_type]:.4f} based on action count.")
 
         if self._person.get_time() - action_count > self._epsilon_reset:
-            logger.info(f"Time since last action exceeds reset threshold ({self._person.get_time() - action_count} > {self._epsilon_reset}). Resetting epsilon and clearing actions.")
+            logger.debug(f"Time since last action exceeds reset threshold ({self._person.get_time() - action_count} > {self._epsilon_reset}). Resetting epsilon and clearing actions.")
             self._epsilon[structure_type] = 1
             actions.clear()
 
@@ -314,12 +314,12 @@ class Navigator:
 
     def _move_to(self, location: Location) -> Optional[Structure]:
         """Move towards the specified location and return the structure at that location."""
-        logger.info(f"Moving towards location: {location}")
+        logger.debug(f"Moving towards location: {location}")
         self._mover.towards(location)
 
         structure = self._simulation.get_grid().get_structure(location)
         if structure:
-            logger.info(f"Arrived at location {location} and found structure: {structure}")
+            logger.debug(f"Arrived at location {location} and found structure: {structure}")
         else:
             logger.warning(f"Arrived at location {location}, but no structure found.")
 

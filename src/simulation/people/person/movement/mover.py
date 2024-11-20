@@ -49,8 +49,8 @@ class Mover:
 
         vision = Vision(self._person, self._grid, settings.get("visibility", 10))
 
-        for _ in range(self._speed):
-            logger.debug(f"Step {_}: Combining vision with current memories.")
+        for step in range(self._speed):
+            logger.debug(f"Step {step}: Combining vision with current memories.")
             self._memories.combine(vision.look_around())
             path = self._get_path(target)
 

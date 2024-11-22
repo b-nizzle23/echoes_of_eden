@@ -135,12 +135,13 @@ class Person:
     def eat(self, building: Barn | Home) -> None:
         logger.info(f"{self._name} is about to eat with hunger {self._hunger}")
         if isinstance(building, Home):
-            self.set_hunger(settings.get("home_eat_satiate", 10))
+            self.set_hunger(settings.get("home_eat_satiate", 15))
+            building.remove_resource(settings.get("food", "food"), settings.get("home_eat_satiate", 15))
             logger.debug(f"{self._name} ate at home and their hunger is now {self._hunger}")
         else:
-            self.set_hunger(settings.get("barn_eat_satiate", 5))
+            self.set_hunger(settings.get("barn_eat_satiate", 10))
+            building.remove_resource(settings.get("food", "food"), settings.get("barn_eat_satiate", 10))
             logger.debug(f"{self._name} ate in a barn and their hunger is now {self._hunger}")
-        building.remove_resource(settings.get("food", "food"), 3)
 
     def set_hunger(self, hunger: int) -> None:
         old_hunger = self._hunger

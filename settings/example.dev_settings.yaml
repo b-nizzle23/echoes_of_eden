@@ -1,9 +1,9 @@
 # simulation.py
 max_simulations: 1
 actions_per_day: 10
-days_per_year: 100
-years: 5
-grid_size: 100
+days_per_year: 30
+years: 3
+grid_size: 50
 
 # resources
 wood: "wood"
@@ -28,69 +28,65 @@ empty_char: " "
 barn_construction_char: "b"
 barn_req_wood: 60
 barn_req_stone: 30
-barn_max_construction_work_count: 3
-barn_max_construction_worker_count: 3
-barn_finished_completion_level: 5
+barn_max_construction_work_count: 2
+barn_max_construction_worker_count: 2
+barn_finished_completion_level: 2
 
 mine_construction_char: "m"
 mine_req_wood: 40
 mine_req_stone: 40
-mine_max_construction_work_count: 5
-mine_max_construction_worker_count: 3
-mine_finished_completion_level: 5
+mine_max_construction_work_count: 2
+mine_max_construction_worker_count: 2
+mine_finished_completion_level: 2
 
 home_construction_char: "h"
 home_req_wood: 20
 home_req_stone: 10
 home_max_construction_work_count: 2
 home_max_construction_worker_count: 2
-home_finished_completion_level: 3
+home_finished_completion_level: 2
 
 farm_construction_char: "f"
-farm_req_wood: 30
+farm_req_wood: 20
 farm_req_stone: 0
 farm_max_construction_work_count: 2
-farm_max_construction_worker_count: 3
-farm_finished_completion_level: 3
+farm_max_construction_worker_count: 2
+farm_finished_completion_level: 2
 
-tree_growth_chance: 0.01
+tree_growth_chance: 0.0001
 
 # storing
 barn_food_store: 500
-barn_stone_store: 100
-barn_wood_store: 200
-home_food_store: 36
-backpack_food_store: 100
-backpack_stone_store: 50
-backpack_wood_store: 50
+barn_stone_store: 200
+barn_wood_store: 300
+home_food_store: 80
+backpack_food_store: 150
+backpack_stone_store: 20
+backpack_wood_store: 35
 
 # working
 farm_yield_var_loc: 0
-farm_yield_var_scale: 4
-farm_min_yield: 25
-farm_max_yield: 50
+farm_yield_var_scale: 5     # this standard deviation is subtracted from the yield
+farm_min_yield: 75          # yield is determined by the temperature it is that day
+farm_max_yield: 150
 farm_max_worker_count: 3
-farm_max_work_count: 3
+farm_max_work_count: 2
 
-mine_yield_func_loc: 3
-mine_yield_func_scale: 1
+mine_yield_func_loc: 15
+mine_yield_func_scale: 1.5
 mine_yield_var_loc: 3
-mine_yield_var_scale: 0.9
-mine_min_yield: 25
-mine_max_yield: 50
+mine_yield_var_scale: 1.5
 mine_max_worker_count: 6
-mine_max_work_count: 4
+mine_max_work_count: 2
 
-tree_yield_func_loc: 3
-tree_yield_func_scale: 1
-tree_yield_var_loc: 3
-tree_yield_var_scale: .9
-tree_min_yield: 25
-tree_max_yield: 50
+tree_yield_func_loc: 30       # mean
+tree_yield_func_scale: 1.5    # standard deviation
+tree_yield_var_loc: 5
+tree_yield_var_scale: 1.5
 tree_max_worker_count: 1
-tree_max_work_count: 2
+tree_max_work_count: 1
 
-# obstacle ratings (0-10) where 0 is easily passable and 10 is completely impassible
+# obstacle ratings (0-10) where 0 is impassible, 1 is easily passable, and as numbers increase so does difficulty to pass through
 home_construction_obstacle_rating: 10
 home_obstacle_rating: 0
 barn_construction_obstacle_rating: 10
@@ -105,10 +101,10 @@ tree_obstacle_rating: 10
 # grid_generator.py
 tree_density: 0.4
 ca_iterations: 40
-town_clearance_radius: 15
+town_clearance_radius: 20
 building_buffer: 1
 
-num_house_min: 3
+num_house_min: 5
 num_house_max: 8
 num_farm_min: 1
 num_farm_max: 3
@@ -117,41 +113,38 @@ num_barn_max: 2
 num_mines_min: 1
 num_mines_max: 2
 
-home_completion_prob: 0.8
-farm_completion_prob: 0.8
-barn_completion_prob: 0.8
-mine_completion_prob: 0.8
+home_completion_prob: 0.9
+farm_completion_prob: 0.9
+barn_completion_prob: 0.9
+mine_completion_prob: 0.9
 
 # Person values
-explore_time: 1
 person_health_cap: 100
 person_hunger_cap: 100
 hunger_pref_min: 50
 hunger_pref_max: 100
-hunger_damage_threshold: 20
+hunger_damage_threshold: 5
 hunger_regen_threshold: 50
-person_epsilon: 0.05
+person_epsilon: 0.37          # used in epsilon-greedy algorithm to decide what work a person does
 person_age_max: 80
-home_eat_satiate: 10
-barn_eat_satiate: 5
+home_eat_satiate: 15
+barn_eat_satiate: 10
 adult_age: 18
 infertile_age: 50
 initial_spawn_age_min: 20
 initial_spawn_age_max: 30
 
 # disaster values
-disaster_chance: 0.50
-sick_health_decr: -30
-craving_hunger_decr: -30
+disaster_chance: 0.05
+sick_health_decr: -10
+craving_hunger_decr: -10
 
 # plotter values
-fig_size: 8
-num_grids: 3
+fig_size: 8                   # how wide the plot should be
 
 # misc
 near: 5
-days_in_year: 365
 mean_temp_f: 70
-visibility: 10
-speed: 10
-memory_expire: 50
+visibility: 15                # how far people can see (if it's higher than 15, things get slow)
+speed: 15
+memory_expire: 30

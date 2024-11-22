@@ -156,27 +156,24 @@ class Thinker:
         # explore > start_construction > transport > resource_gathering > eat > construction > find_home
 
     def _set_find_home_priority(self):
-        # if you've been 20 days without a home, getting a home is priority 1
+        # if you've been 20 steps without a home, getting a home is priority 1
         find_home_priority: int = 11 - min(10, max(1, self._time_without_home // 2))
         construct_home_priority: int = self._task_type_priorities[TaskType.START_HOME_CONSTRUCTION]
 
-        # if you probably need to construct a home, finding a home is less important than constructing one
+        # if you need to build a home, don't even try to find one
         if construct_home_priority < 4:
-            find_home_priority = construct_home_priority + 1
+            find_home_priority = 10
 
         self._task_type_priorities[TaskType.FIND_HOME] = find_home_priority
 
     def _set_eat_priority(self):
-        # these are set to 7 instead of 10 because self._person.get_hunger() - 40 will never be higher than 60
+        # these are set to 6 instead of 10 because self._person.get_hunger() - 40 will never be higher than 60
         eat_priority: int = max(self._person.get_hunger() - 40, 6) // 6
-        # work_farm_priority: int = self._task_type_priorities[TaskType.WORK_FARM]
+        work_farm_priority: int = self._task_type_priorities[TaskType.WORK_FARM]
 
-        # if you're pretty hungry and there's probably food in storage, eating is more important than working a farm
-        # if work_farm_priority > 4 and eat_priority < 3:
-        #     eat_priority = work_farm_priority - 1
-
-        # TODO: some more if statements to cover the other statements
-        # I'm medium hungry and there's a low amount of food in the barn, prioritize what?
+        # if there is no food, there is no point in trying to eat during this cycle
+        if work_farm_priority == 1:
+            eat_priority = 10
 
         self._task_type_priorities[TaskType.EAT] = eat_priority
 

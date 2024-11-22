@@ -40,7 +40,7 @@ class Person:
         self._scheduler: Scheduler = Scheduler(simulation, self)
         self._memories: Memories = Memories(simulation.get_grid())
         self._navigator: Navigator = Navigator(simulation, self)
-        self._thinker: Thinker = Thinker(self, simulation)
+        self._thinker: Thinker = Thinker(simulation, self)
 
     def get_task_type_priority(self, task_type: TaskType) -> int:
         return self._thinker.get_task_type_priority(task_type)

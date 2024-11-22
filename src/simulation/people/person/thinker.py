@@ -9,6 +9,8 @@ from src.logger import logger
 from src.settings import settings
 from src.simulation.grid.structure.store.barn import Barn
 from src.simulation.people.person.scheduler.task.task_type import TaskType
+from src.simulation.people.person.scheduler.task.work.chop_tree import ChopTree
+from src.simulation.people.person.scheduler.task.work.work_farm import WorkFarm
 
 if TYPE_CHECKING:
     from src.simulation.people.person.person import Person
@@ -26,6 +28,7 @@ class Thinker:
             settings.get("hunger_pref_min", 50), settings.get("hunger_pref_max", 100)
         )
 
+        self._personal_time: int = 0
         self._time_without_home: int = 0
 
         self._work_rewards: Dict[TaskType, int] = {TaskType.WORK_FARM: 0, TaskType.WORK_MINE: 0, TaskType.CHOP_TREE: 0}
@@ -56,6 +59,7 @@ class Thinker:
         return self._task_type_priorities[task_type]
 
     def take_action(self) -> None:
+        self._personal_time += 1
         if not self._person.has_home():
             self._time_without_home += 1
         else:
@@ -151,6 +155,24 @@ class Thinker:
 
         # eat should be more important the more hungry you are, but only if there's food in the barns or at home
         self._set_eat_priority()
+
+        # if there is no food, wood, or stone, food is the highest priority
+        if self._task_type_priorities[TaskType.WORK_FARM] == 1 and self._task_type_priorities[TaskType.CHOP_TREE] == 1 and self._task_type_priorities[TaskType.WORK_MINE] == 1:
+            self._task_type_priorities[TaskType.CHOP_TREE] = 2
+            self._task_type_priorities[TaskType.WORK_MINE] = 2
+
+        # if the person is young, explore
+        if self._personal_time < 10:
+            for task_type, priority in self._task_type_priorities.items():
+                if task_type == TaskType.EXPLORE:
+                    self._task_type_priorities[task_type] = 1
+                elif priority == 1:
+                    self._task_type_priorities[task_type] += 1
+
+        # if explore <= 3:
+            # make sure explore is highest priority
+
+        # if your backpack is full, you really need to go unload it
 
         # TODO (maybe) at the end of this we need to make sure that generally
         # explore > start_construction > transport > farm > eat > mine > wood > construction > find_home

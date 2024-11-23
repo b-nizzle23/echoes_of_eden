@@ -9,8 +9,6 @@ from src.logger import logger
 from src.settings import settings
 from src.simulation.grid.structure.store.barn import Barn
 from src.simulation.people.person.scheduler.task.task_type import TaskType
-from src.simulation.people.person.scheduler.task.work.chop_tree import ChopTree
-from src.simulation.people.person.scheduler.task.work.work_farm import WorkFarm
 
 if TYPE_CHECKING:
     from src.simulation.people.person.person import Person
@@ -157,54 +155,74 @@ class Thinker:
         self._set_eat_priority()
 
         # in dire circumstances, priorities should be adjusted (below)
+        self._adjust_for_dire_circumstances()
 
-        # if there is no food, wood, or stone, food is the highest priority
-        if (
-            self._task_type_priorities[TaskType.WORK_FARM] == 1
-            and self._task_type_priorities[TaskType.CHOP_TREE] == 1
-            and self._task_type_priorities[TaskType.WORK_MINE] == 1
-        ):
-            self._task_type_priorities[TaskType.CHOP_TREE] = 2
-            self._task_type_priorities[TaskType.WORK_MINE] = 2
-
-        # if everything is at a priority of 1, eXpLoRaTiOn is prolly most important
-        # TODO: should this just be changed to 'if exploration is at a 1, everything else is less important'?
-        # if all(self._task_type_priorities.values()) == 1:
-        #     for task_type, priority in self._task_type_priorities.items():
-        #         if task_type == [i dunno]:
-        #             # do something
-        #         else:
-        #             self._task_type_priorities[task_type] += 1
+    def _adjust_for_dire_circumstances(self):
+        # explore > start_construction > transport > farm > eat > mine > wood > construction > find_home
+        # but only if the numbers are high, i.e. we only care to priorities farming over mining and wooding if there is no or little food in the barn
+        # other then that we dont care if people wanna mine or wood because there is food to eat
 
         # if you really need to work and your backpack is full, unload your backpack first
         if (
-            self._task_type_priorities[TaskType.TRANSPORT] == 1
-            and self._task_type_priorities[TaskType.WORK_FARM] == 1
-            or self._task_type_priorities[TaskType.CHOP_TREE] == 1
-            or self._task_type_priorities[TaskType.WORK_MINE] == 1
+                self._task_type_priorities[TaskType.TRANSPORT] <= 3
+                and self._task_type_priorities[TaskType.WORK_FARM] <= 3
+                or self._task_type_priorities[TaskType.CHOP_TREE] <= 3
+                or self._task_type_priorities[TaskType.WORK_MINE] <= 3
         ):
-            if self._task_type_priorities[TaskType.CHOP_TREE] == 1:
-                self._task_type_priorities[TaskType.CHOP_TREE] = 2
-            if self._task_type_priorities[TaskType.WORK_MINE] == 1:
-                self._task_type_priorities[TaskType.WORK_MINE] = 2
-            if self._task_type_priorities[TaskType.WORK_FARM] == 1:
-                self._task_type_priorities[TaskType.WORK_FARM] = 2
+            if self._task_type_priorities[TaskType.CHOP_TREE] <= 3:
+                self._task_type_priorities[TaskType.CHOP_TREE] = self._task_type_priorities[TaskType.TRANSPORT] + 1
+            if self._task_type_priorities[TaskType.WORK_MINE] <= 3:
+                self._task_type_priorities[TaskType.WORK_MINE] = self._task_type_priorities[TaskType.TRANSPORT] + 1
+            if self._task_type_priorities[TaskType.WORK_FARM] <= 3:
+                self._task_type_priorities[TaskType.WORK_FARM] = self._task_type_priorities[TaskType.TRANSPORT] + 1
 
-        # if the person is young, explore
-        if self._personal_time < 10:
+        # if there is no food, wood, or stone, food is the highest priority
+        if (
+                self._task_type_priorities[TaskType.WORK_FARM] <= 3
+                and self._task_type_priorities[TaskType.CHOP_TREE] <= 3
+                and self._task_type_priorities[TaskType.WORK_MINE] <= 3
+        ):
+            self._task_type_priorities[TaskType.CHOP_TREE] = self._task_type_priorities[TaskType.WORK_FARM] + 1
+            self._task_type_priorities[TaskType.WORK_MINE] = self._task_type_priorities[TaskType.WORK_FARM] + 1
+
+        # if you really need to eat, that's more important than building, or getting stone or wood
+        if (
+                self._task_type_priorities[TaskType.EAT] <= 3 <= self._task_type_priorities[TaskType.WORK_FARM]
+        ):
+            if self._task_type_priorities[TaskType.CHOP_TREE] <= 3:
+                self._task_type_priorities[TaskType.CHOP_TREE] = self._task_type_priorities[TaskType.EAT] + 1
+            if self._task_type_priorities[TaskType.WORK_MINE] <= 3:
+                self._task_type_priorities[TaskType.WORK_MINE] = self._task_type_priorities[TaskType.EAT] + 1
+            if self._task_type_priorities[TaskType.BUILD_BARN] <= 3:
+                self._task_type_priorities[TaskType.BUILD_BARN] = self._task_type_priorities[TaskType.EAT] + 1
+            if self._task_type_priorities[TaskType.BUILD_HOME] <= 3:
+                self._task_type_priorities[TaskType.BUILD_HOME] = self._task_type_priorities[TaskType.EAT] + 1
+            if self._task_type_priorities[TaskType.BUILD_MINE] <= 3:
+                self._task_type_priorities[TaskType.BUILD_MINE] = self._task_type_priorities[TaskType.EAT] + 1
+            if self._task_type_priorities[TaskType.BUILD_FARM] <= 3:
+                self._task_type_priorities[TaskType.BUILD_FARM] = self._task_type_priorities[TaskType.EAT] + 1
+            if self._task_type_priorities[TaskType.FIND_HOME] <= 3:
+                self._task_type_priorities[TaskType.FIND_HOME] = self._task_type_priorities[TaskType.EAT] + 1
+
+        # if you're low on stone, then that is more important than building
+        if self._task_type_priorities[TaskType.WORK_MINE] <= 3:
+            for task_type, priority in self._task_type_priorities.items():
+                if task_type == TaskType.BUILD_MINE or task_type == TaskType.BUILD_HOME or task_type == TaskType.BUILD_BARN:
+                    self._task_type_priorities[task_type] = self._task_type_priorities[TaskType.WORK_MINE] + 1
+
+        # if you're low on wood, then that is more important than building
+        if self._task_type_priorities[TaskType.CHOP_TREE] <= 3:
+            for task_type, priority in self._task_type_priorities.items():
+                if task_type == TaskType.BUILD_MINE or task_type == TaskType.BUILD_HOME or task_type == TaskType.BUILD_FARM or task_type == TaskType.BUILD_BARN:
+                    self._task_type_priorities[task_type] = self._task_type_priorities[TaskType.CHOP_TREE] + 1
+
+        # if the person is young, or if exploring needs to happen, make sure exploring is the most important thing
+        if self._personal_time < 10 or self._task_type_priorities[TaskType.EXPLORE] <= 3:
             for task_type, priority in self._task_type_priorities.items():
                 if task_type == TaskType.EXPLORE:
                     self._task_type_priorities[task_type] = 1
                 elif priority == 1:
                     self._task_type_priorities[task_type] += 1
-
-        # if explore <= 3:
-            # make sure explore is highest priority
-
-        # TODO (maybe) at the end of this we need to make sure that generally
-        # explore > start_construction > transport > farm > eat > mine > wood > construction > find_home
-        # but only if the numbers are high, i.e. we only care to priorities farming over mining and wooding if there is no or little food in the barn
-        # other then that we dont care if people wanna mine or wood because there is food to eat
 
     def _set_find_home_priority(self):
         # if you've been 20 steps without a home, getting a home is priority 1

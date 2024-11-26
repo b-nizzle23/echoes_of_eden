@@ -122,7 +122,7 @@ class Navigator:
             return MoveResult(False, self._structure)
 
         logger.debug("Structure is not nearby or lacks capacity. Returning failure result.")
-        return MoveResult(False, None)
+        return MoveResult(True, None)
 
     def update_reward(self, y: float) -> None:
         """Update the reward given the yield."""

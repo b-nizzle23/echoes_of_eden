@@ -35,7 +35,14 @@ class Work(Task, ABC):
 
     @override
     def execute(self) -> None:
-        if self._work:
+        if self._work and not (self._person.get_location().is_one_away(self._work.get_location())
+                               or self._person.get_location().is_at_same_location(self._work.get_location())):
+
+            self._person.go_to_location(self._work.get_location())
+
+        if self._work and (self._person.get_location().is_one_away(self._work.get_location())
+                           or self._person.get_location().is_at_same_location(self._work.get_location())):
+
             resource: Optional[int] = self._work.work(self._person)
 
             if resource:
@@ -43,13 +50,14 @@ class Work(Task, ABC):
                 self._person.update_navigator_rewards(resource)
                 self._finished()
                 logger.info(f"{self._person} got {resource} {self._resource_name}")
+
         else:
             move_result: MoveResult = self._person.move_to_workable_structure(self._work_structure)
+            self._work: Optional[WorkStructure] = move_result.get_structure()
             if move_result.has_failed():
                 self._finished(False)
                 logger.warning("Move result failed")
                 return
-            self._work: Optional[WorkStructure] = move_result.get_structure()
             logger.info(f"{self._person} is working at {self._work_structure}")
 
     @override

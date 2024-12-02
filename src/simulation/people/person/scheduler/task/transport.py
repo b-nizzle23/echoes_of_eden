@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional, override
 from src.logger import logger
 from src.simulation.grid.structure.structure_type import StructureType
 from src.simulation.people.person.scheduler.task.task import Task
+from src.simulation.people.person.scheduler.task.task_type import TaskType
 
 if TYPE_CHECKING:
     from src.simulation.grid.structure.store.store import Store
@@ -12,7 +13,6 @@ if TYPE_CHECKING:
     from src.simulation.people.person.backpack import Backpack
     from src.simulation.people.person.movement.move_result import MoveResult
     from src.simulation.people.person.person import Person
-    from src.simulation.people.person.scheduler.task.task_type import TaskType
     from src.simulation.simulation import Simulation
 
 

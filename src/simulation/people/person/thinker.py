@@ -148,6 +148,7 @@ class Thinker:
 
         # find home should be more important the longer you don't have a home, constructing a home matters more
         self._set_find_home_priority()
+        self._set_find_spouse_priority()
 
         # eat should be more important the more hungry you are, but only if there's food in the barns or at home
         self._set_eat_priority()
@@ -366,3 +367,7 @@ class Thinker:
             self._task_type_priorities[TaskType.BUILD_MINE] = 10
             return
         self._task_type_priorities[TaskType.BUILD_MINE] = max(1, min(10, 3 - construction_count))
+
+    def _set_find_spouse_priority(self):
+        if self._person.has_spouse():
+            self._task_type_priorities[TaskType.FIND_SPOUSE] = 10

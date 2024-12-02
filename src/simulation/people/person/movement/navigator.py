@@ -15,7 +15,6 @@ from src.simulation.people.person.scheduler.task.task_type import TaskType
 if TYPE_CHECKING:
     from src.simulation.grid.location import Location
     from src.simulation.grid.structure.store.home import Home
-    from src.simulation.grid.structure.store.store import Store
     from src.simulation.grid.structure.structure import Structure
     from src.simulation.people.person.person import Person
     from src.simulation.simulation import Simulation
@@ -111,17 +110,20 @@ class Navigator:
         if not self._structure:
             logger.debug("No structure set. Attempting to find and move to structure.")
             failed, self._structure = self._find_and_move_to_structure(structure_type)
+            if self._structure:
+                return MoveResult(failed, self._structure)
             if failed:
                 logger.warning("Failed to find the structure. Returning failure result.")
                 return MoveResult(failed, None)
-        
+
         if not self._structure:
             return MoveResult(True, None)
         if self._is_structure_nearby_and_has_capacity(resource_name):
             logger.debug("Found workable structure with capacity.")
             return MoveResult(False, self._structure)
 
-        logger.debug("Structure is not nearby or lacks capacity. Returning failure result.")
+
+        logger.warning("Structure is not nearby or lacks capacity. Returning failure result.")
         return MoveResult(True, None)
 
     def update_reward(self, y: float) -> None:
@@ -236,6 +238,7 @@ class Navigator:
 
     def _is_structure_nearby_and_has_capacity(self, resource_name: Optional[str]) -> bool:
         """Check if the building is nearby and has capacity."""
+        from src.simulation.grid.structure.store.store import Store
         logger.debug(f"Checking if structure {self._structure} is nearby and has capacity.")
         if self._person.get_location().is_one_away(self._structure.get_location()) or self._person.get_location().is_one_away(self._structure.get_location()):
             if resource_name and isinstance(self._structure, Store):

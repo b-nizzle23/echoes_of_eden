@@ -38,7 +38,13 @@ class Build(Task, ABC):
 
     @override
     def execute(self) -> None:
-        if self._build:
+        if self._build and not (self._person.get_location().is_one_away(self._build.get_location())
+                               or self._person.get_location().is_at_same_location(self._build.get_location())):
+
+            self._person.go_to_location(self._build.get_location())
+
+        if self._build and (self._person.get_location().is_one_away(self._build.get_location())
+                           or self._person.get_location().is_at_same_location(self._build.get_location())):
             if self._build.needs_stone():
                 self._what_resource = "stone"
                 logger.debug(f"Needs stone to build")
@@ -78,11 +84,11 @@ class Build(Task, ABC):
         else:
             logger.debug(f"Not building, need to go to different workable structure")
             move_result: MoveResult = self._person.move_to_workable_structure(self._build_structure)
+            self._build: Optional[Construction] = move_result.get_structure()
             if move_result.has_failed():
                 logger.warning("Move result failed")
                 self._finished(False)
                 return
-            self._build: Optional[Construction] = move_result.get_structure()
             logger.debug(f"Building {self._build} assigned to build")
 
     @override
